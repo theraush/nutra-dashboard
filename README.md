@@ -45,5 +45,11 @@ If one source fails, its previous numbers are kept and the page header shows a â
 `alert_warning`, `alert_depleted` and `pause` per offer, based on spend since each test's start date.
 The sync acts on them and records them in NUTRA Tracker so each alert fires once per budget.
 
+Pause rules live on the **NUTRA Settings** Claude artifact (https://claude.ai/artifact/JodMmZTNQmEF95cuqnYVXR, read with the
+ArtifactData tool): `rules/*`, `config/automation`, `networks/*`, `log/recent`, `config/sync`. The sync passes them in the
+payload as `rules`, `automation`, `ruleLog` (log items, for de-duplication) and `jvzAds` (postback rows with `utm_content`, used to
+match checkout visits and sales to ad IDs). `update.py` then adds `pause_ad`, `rule_alert`, `rule_blocked` and `rule_waiting`
+actions. Rules only ever pause ads.
+
 Everything a viewer changes on the page (date range, tile choices, table columns, test budgets,
 manual sales) is saved in that viewer's browser only.

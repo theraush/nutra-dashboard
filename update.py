@@ -88,6 +88,140 @@ def add_rows(cur, rows, since, today, where):
             cur[d] = [round(old[0] + vals[0], 2), old[1] + vals[1], old[2] + vals[2], old[3] + vals[3]] if old else vals
 
 
+RULE_METRICS = {  # metric: (label, direction, unit, denominator index in [spend, impr, clicks, lpv, checkouts, sales])
+    'ctr': ('Link CTR', 'below', '%', None),
+    'cpc': ('CPC', 'above', '$', 2),
+    'cost_per_lpv': ('Cost per landing page view', 'above', '$', 3),
+    'cost_per_checkout': ('Cost per checkout visit', 'above', '$', 4),
+    'cost_per_sale': ('Cost per sale', 'above', '$', 5),
+}
+WINDOW_DAYS = {'today': 1, '3d': 3, '7d': 7}
+
+
+def add_days(d, n):
+    import datetime
+    return (datetime.date.fromisoformat(d) + datetime.timedelta(days=n)).isoformat()
+
+
+def rule_actions(p, data, today):
+    """Pause rules from the NUTRA Settings page -> pause_ad / rule_alert / rule_blocked / rule_waiting actions."""
+    rules = [r for r in (p.get('rules') or []) if r.get('enabled')]
+    auto = p.get('automation') or {}
+    if not rules or auto.get('enabled') is False:
+        return []
+    max_n = int(auto.get('maxPerRun') or 10)
+    protect = auto.get('protectLast', True) is not False
+    # recent log entries (rule id + ad id) so alerts/blocks aren't repeated every hour
+    import datetime
+    now = datetime.datetime.now(datetime.timezone.utc)
+    seen = set()
+    for x in p.get('ruleLog') or []:
+        try:
+            age_h = (now - datetime.datetime.fromisoformat(str(x.get('at')).replace('Z', '+00:00'))).total_seconds() / 3600
+        except ValueError:
+            continue
+        if age_h < (24 if x.get('action') in ('alert', 'blocked', 'waiting') else 6):
+            seen.add((x.get('ruleId'), x.get('adId')))
+    # postback events matched to ads by utm_content = ad id (or ad name); unmatched counted per offer/day
+    ad_conv, unmatched = {}, {}
+    for r in p.get('jvzAds') or []:
+        k, d, n = r.get('product_key'), day(r.get('day')), int(r.get('n') or 0)
+        if not k or not d:
+            continue
+        idx = 4 if r.get('event') == 'initiated' else 5 if str(r.get('type') or 'SALE').upper() != 'RFND' else None
+        if idx is None:
+            continue
+        ads = data['ads'].get(k, {})
+        tag = str(r.get('utm_content') or '').strip()
+        aid = tag if tag in ads else next((a for a, ad in ads.items() if tag and ad['n'].strip().lower() == tag.lower()), None)
+        if aid:
+            ad_conv.setdefault((k, aid), []).append((d, idx, n))
+        else:
+            unmatched.setdefault(k, []).append((d, idx, n))
+
+    out, live = [], {}
+    for o in data['offers']:
+        k = o['key']
+        if o['status'] != 'active':
+            continue
+        ads = data['ads'].get(k, {})
+        live[k] = {aid for aid, ad in ads.items() if ad['s'] == 'ACTIVE'}
+        start = data['settings'].get(k, {}).get('start') or today
+        for r in rules:
+            if r.get('offer') not in (None, '', 'all', k) or r.get('metric') not in RULE_METRICS:
+                continue
+            label, direction, unit, den = RULE_METRICS[r['metric']]
+            thr = float(r.get('threshold') or 0)
+            if thr <= 0:
+                continue
+            frm = start if r.get('window') == 'since_start' else add_days(today, 1 - WINDOW_DAYS.get(r.get('window'), 3))
+            if r['metric'] in ('cost_per_checkout', 'cost_per_sale'):
+                idx = 4 if r['metric'] == 'cost_per_checkout' else 5
+                if any(frm <= d <= today and i == idx and n for d, i, n in unmatched.get(k, [])):
+                    out.append({'action': 'rule_waiting', 'key': k, 'name': o['name'], 'acct': o['acct'], 'ruleId': r.get('id'),
+                                'rule': rule_text(r), 'detail': f'{label}: some {"checkout visits" if idx == 4 else "sales"} could not be matched to an ad (add utm_content={{{{ad.id}}}} to ad URLs)'})
+                    continue
+            for aid in sorted(live[k]):
+                ad = ads[aid]
+                t = [0, 0, 0, 0, 0, 0]
+                for d, v in ad['d'].items():
+                    if frm <= d <= today:
+                        for i in range(4):
+                            t[i] += v[i]
+                for d, i, n in ad_conv.get((k, aid), []):
+                    if frm <= d <= today:
+                        t[i] += n
+                spend = round(t[0], 2)
+                if spend < float(r.get('minSpend') or 0) or t[1] < int(r.get('minImpr') or 0) or spend <= 0:
+                    continue
+                if r['metric'] == 'ctr':
+                    if not t[1]:
+                        continue
+                    value = round(t[2] / t[1] * 100, 2)
+                    hit = value < thr
+                else:
+                    value = round(spend / t[den], 2) if t[den] else None
+                    hit = value > thr if value is not None else spend > thr
+                if hit:
+                    out.append({'action': 'pause_ad' if r.get('mode') != 'alert' else 'rule_alert', 'key': k, 'name': o['name'], 'acct': o['acct'],
+                                'adId': aid, 'adName': ad['n'], 'campaign': ad['c'], 'ruleId': r.get('id'), 'rule': rule_text(r),
+                                'metric': r['metric'], 'value': value, 'threshold': thr, 'spend': spend,
+                                'detail': f'{label} {"none yet" if value is None else (f"{value}%" if unit == "%" else f"${value:,.2f}")} '
+                                          f'(limit {f"{thr}%" if unit == "%" else f"${thr:,.2f}"}) on ${spend:,.2f} spend'})
+
+    # one action per ad (first matching rule wins), skip ones already handled recently
+    final, done = [], set()
+    for a in out:
+        if a['action'] == 'rule_waiting':
+            if (a['ruleId'], None) not in seen and (a['ruleId'], a['key']) not in done:
+                done.add((a['ruleId'], a['key']))
+                final.append(a)
+            continue
+        if (a['key'], a['adId']) in done or (a['ruleId'], a['adId']) in seen:
+            continue
+        done.add((a['key'], a['adId']))
+        final.append(a)
+    # safety: never pause every live ad of an offer at once
+    if protect:
+        for k, ids in live.items():
+            hits = {a['adId'] for a in final if a['action'] == 'pause_ad' and a['key'] == k}
+            if ids and hits >= ids:
+                for a in final:
+                    if a['action'] == 'pause_ad' and a['key'] == k:
+                        a['action'] = 'rule_blocked'
+                        a['detail'] += ' · not paused: the rules would switch off every live ad of this offer'
+    pauses = sorted([a for a in final if a['action'] == 'pause_ad'], key=lambda a: -a['spend'])
+    for a in pauses[max_n:]:
+        final.remove(a)
+    return final
+
+
+def rule_text(r):
+    label, direction, unit, _ = RULE_METRICS.get(r.get('metric'), (r.get('metric'), 'above', '$', None))
+    thr = r.get('threshold')
+    return f'{label} {direction} {thr}%' if unit == '%' else f'{label} {direction} ${float(thr or 0):,.2f}'
+
+
 def apply(p):
     s, a, b, data = read_page()
     for k in ('asOf', 'today', 'since'):
@@ -211,6 +345,7 @@ def apply(p):
             actions.append({**base, 'action': 'alert_depleted'})
         elif pct >= st['warnAt'] and not st['_warned'] and pct < 100:
             actions.append({**base, 'action': 'alert_warning', 'warnAt': st['warnAt']})
+    actions += rule_actions(p, data, today)
     for st in data['settings'].values():
         st.pop('_warned', None), st.pop('_depleted', None)
     write_page(s, a, b, data)
