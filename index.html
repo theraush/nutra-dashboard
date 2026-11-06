@@ -404,6 +404,82 @@ input,select{font-family:inherit;}
 .ptbl tr.focused td{background:var(--accent-lt);}
 .data-badge.stale{background:var(--amber-lt);color:var(--amber);border-color:transparent;}
 .data-badge.stale b{color:inherit;}
+
+/* ── Offer cards extras ── */
+.s-be{font-size:11px;color:var(--fg2);margin-top:8px;padding-top:8px;border-top:1px solid var(--border);}
+.s-be b{color:var(--fg);}
+.s-be a,.n-empty a{color:var(--accent);}
+.s-paused{color:var(--red);font-weight:700;}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:7px;vertical-align:1px;}
+
+/* ── Landing page card ── */
+.lp-card{margin-bottom:14px;}
+.lp-card .ch{padding:14px 16px 4px;}
+.lp-sub{font-size:11px;color:var(--fg3);padding:0 16px 8px;}
+.lp-rate{display:flex;align-items:center;gap:10px;}
+.lp-bar{display:inline-block;width:90px;height:6px;border-radius:3px;background:var(--track);overflow:hidden;}
+.lp-bar i{display:block;height:100%;border-radius:3px;}
+
+/* ── Notes ── */
+.notes-card{padding:14px 16px;margin-bottom:14px;}
+.notes-list{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:6px;}
+.notes-list li{display:flex;gap:10px;align-items:baseline;font-size:12.5px;flex-wrap:wrap;}
+.n-date{font-variant-numeric:tabular-nums;color:var(--fg3);font-size:11.5px;min-width:44px;}
+.n-prod{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--fg2);}
+.n-text{flex:1;min-width:200px;color:var(--fg);}
+.n-empty{color:var(--fg3);}
+.card-link{font-size:11.5px;font-weight:600;color:var(--fg2);text-decoration:none;border:1px solid var(--border);border-radius:20px;padding:5px 11px;white-space:nowrap;}
+.card-link:hover{background:var(--fg);color:var(--surface);border-color:var(--fg);}
+
+/* ── Ads drawer ── */
+.drawer-scrim{position:fixed;inset:0;background:rgba(0,0,0,.38);z-index:180;}
+.drawer-scrim[hidden],.drawer[hidden]{display:none;}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(980px,100vw);z-index:190;background:var(--surface);border-left:1px solid var(--border);
+  box-shadow:-20px 0 60px rgba(0,0,0,.18);display:flex;flex-direction:column;animation:drIn .2s ease-out;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);padding-right:env(safe-area-inset-right,0px);}
+@keyframes drIn{from{transform:translateX(40px);opacity:.4}to{transform:none;opacity:1}}
+.dr-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:18px 20px 10px;}
+.dr-title{font-size:17px;font-weight:800;}
+.dr-sub{font-size:11.5px;color:var(--fg3);margin-top:2px;}
+.dr-close{width:40px;height:40px;flex:none;border-radius:50%;border:1px solid var(--border);background:var(--surface);color:var(--fg2);display:flex;align-items:center;justify-content:center;font-size:16px;}
+.dr-close:hover{background:var(--surface2);color:var(--fg);}
+.dr-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:0 20px 12px;border-bottom:1px solid var(--border);}
+.dr-tabs{display:flex;gap:4px;flex-wrap:wrap;}
+.dr-opts{display:flex;gap:14px;font-size:12px;color:var(--fg2);}
+.dr-opts label{display:flex;align-items:center;gap:6px;cursor:pointer;min-height:32px;}
+.dr-body{flex:1;overflow:auto;}
+.adtbl{width:100%;border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums;}
+.adtbl th{position:sticky;top:0;background:var(--surface);z-index:1;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--fg3);padding:9px 12px;text-align:right;border-bottom:1px solid var(--border);white-space:nowrap;}
+.adtbl th:first-child,.adtbl th:nth-child(2),.adtbl td:first-child,.adtbl td:nth-child(2){text-align:left;}
+.adtbl td{padding:9px 12px;border-bottom:1px solid var(--border);text-align:right;white-space:nowrap;}
+.adtbl td:first-child{white-space:normal;min-width:180px;}
+.ad-name{font-weight:600;}
+.ad-camp td{background:var(--surface2);}
+.adtbl tfoot td{background:var(--surface2);font-weight:700;position:sticky;bottom:0;}
+.ad-st{font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;background:var(--surface2);color:var(--fg2);}
+.ad-st.on{background:var(--green-lt);color:var(--green);}
+.ad-st.bad{background:var(--red-lt);color:var(--red);}
+.ad-empty{text-align:center!important;color:var(--fg3);padding:28px!important;}
+body.noscroll{overflow:hidden;}
+@media(max-width:640px){.drawer{width:100vw;border-left:none;}.dr-head{padding:14px 16px 8px;}.dr-bar{padding:0 16px 10px;}}
+
+/* ── Test budgets (compact) ── */
+.tb-strip{display:flex;flex-wrap:wrap;gap:8px 22px;align-items:center;padding:14px 18px;margin-bottom:14px;font-size:12.5px;color:var(--fg2);}
+.tb-strip b{color:var(--fg);font-variant-numeric:tabular-nums;}
+.tb-strip .neg b{color:var(--red);} .tb-strip .pos b{color:var(--green);}
+.stat.neg{color:var(--red);} .stat.pos{color:var(--green);}
+.tb-card{margin-bottom:24px;}
+.tb td{vertical-align:middle;}
+.tb-bud{min-width:220px;}
+.tb-bar{position:relative;height:8px;border-radius:4px;background:var(--track);margin-bottom:5px;}
+.tb-bar i{position:absolute;left:0;top:0;bottom:0;border-radius:4px;background:var(--green);}
+.tb-bar i.watch{background:var(--amber);} .tb-bar i.depleted{background:repeating-linear-gradient(45deg,var(--red) 0 4px,#EF4444 4px 8px);} .tb-bar i.paused{background:var(--fg3);}
+.tb-bar s{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--fg);opacity:.5;}
+.tb-act{white-space:nowrap;}
+.tb-act .btn{display:inline-flex;align-items:center;height:32px;margin-left:4px;text-decoration:none;}
+.spill.depleted{background:var(--red-lt);color:var(--red);}
+.tb-note{font-size:11px;color:var(--fg3);padding:10px 16px 14px;}
+.settings-btn{text-decoration:none;}
 </style>
 </head>
 <body>
@@ -411,6 +487,12 @@ input,select{font-family:inherit;}
 
 <div id="toast" role="status" aria-live="polite"></div>
 <div class="card-menu" id="cardMenu" role="menu" hidden></div>
+<div class="drawer-scrim" id="adScrim" hidden></div>
+<aside class="drawer" id="adDrawer" role="dialog" aria-modal="true" aria-labelledby="adTitle" hidden>
+  <div class="dr-head"><div><div class="dr-title" id="adTitle">Ads</div><div class="dr-sub" id="adSub"></div></div><button type="button" class="dr-close" id="adClose" aria-label="Close ads panel">✕</button></div>
+  <div class="dr-bar"><div class="dr-tabs" id="adTabs"></div><div class="dr-opts"><label><input type="checkbox" id="adGroup"> Group by campaign</label><label><input type="checkbox" id="adZero"> Hide ads with no delivery</label></div></div>
+  <div class="dr-body"><table class="adtbl"><thead><tr><th>Ad</th><th>Status</th><th>Spend</th><th>Impr.</th><th>Clicks</th><th>CTR</th><th>CPC</th><th>LP views</th><th>Cost / LP view</th></tr></thead><tbody id="adBody"></tbody><tfoot id="adFoot"></tfoot></table></div>
+</aside>
 
 <!-- TOPBAR -->
 <nav class="topbar">
@@ -430,6 +512,7 @@ input,select{font-family:inherit;}
   </div>
   <div class="topbar-right">
     <div class="data-badge" id="dataBadge" title="When the Meta and JVZoo numbers were last pulled">Meta data · <b>—</b></div>
+    <a class="icon-btn settings-btn" href="https://nutra-tracker.lovable.app/offers" target="_blank" rel="noopener" title="Settings: offers, budgets, auto-pause, networks (opens NUTRA Tracker)" aria-label="Settings"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="2.2"/><path d="M8 1.5v1.8M8 12.7v1.8M14.5 8h-1.8M3.3 8H1.5M12.6 3.4l-1.3 1.3M4.7 11.3l-1.3 1.3M12.6 12.6l-1.3-1.3M4.7 4.7L3.4 3.4"/></svg></a>
     <button class="icon-btn" onclick="refresh()" title="Recalculate with your latest manual entries" aria-label="Recalculate">
       <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 8A6 6 0 1 1 8 2a6 6 0 0 0 5 2.6"/><path d="M14 2v3h-3"/></svg>
     </button>
@@ -505,12 +588,7 @@ input,select{font-family:inherit;}
           </div>
           <button class="menu-btn" data-menu="funnel" aria-haspopup="menu" aria-expanded="false" aria-label="Funnel options">···</button>
         </div>
-        <div class="funnel-tabs">
-          <button class="ftab" data-p="all" onclick="setFProd('all',this)">All</button>
-          <button class="ftab" data-p="wellness" onclick="setFProd('wellness',this)">Wellness Notes</button>
-          <button class="ftab" data-p="neuro" onclick="setFProd('neuro',this)">NeuroSharp</button>
-          <button class="ftab" data-p="glp" onclick="setFProd('glp',this)">Glpatches</button>
-        </div>
+        <div class="funnel-tabs" id="fTabs"></div>
       </div>
       <div class="funnel-body">
         <div class="fwrap"><div class="fgrid" id="fGrid"></div></div>
@@ -530,8 +608,21 @@ input,select{font-family:inherit;}
     </div>
   </div>
 
-  <!-- Product cards -->
+  <!-- Landing page conversion -->
+  <div class="card lp-card">
+    <div class="ch"><div class="clabel">Landing page conversion</div></div>
+    <div class="lp-sub" id="lpSub"></div>
+    <div class="tbl-wrap"><table class="ptbl"><thead><tr><th>Landing page</th><th>Page views</th><th>Clicked to offer</th><th>Click-through</th><th>Sales</th><th>Checkout → sale</th></tr></thead><tbody id="lpBody"></tbody></table></div>
+  </div>
+
+  <!-- Offer cards -->
   <div class="spark-grid" id="sparkGrid"></div>
+
+  <!-- Notes -->
+  <div class="card notes-card">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;"><div class="clabel">Notes in this period</div><a class="card-link" href="https://nutra-tracker.lovable.app/notes" target="_blank" rel="noopener">+ Add note ↗</a></div>
+    <ul class="notes-list" id="notesList"></ul>
+  </div>
 
   <!-- Products table -->
   <div class="card prod-card">
@@ -553,119 +644,50 @@ input,select{font-family:inherit;}
 <div id="budgetView" hidden>
 <div class="page">
   <div class="ph">
-    <div>
-      <div class="ph-title">Test Budgets</div>
-      <div class="ph-sub">Spend counts from each test’s start date, whatever range you pick on the Overview</div>
-    </div>
-    <div class="ph-actions">
-      <div class="fpills">
-        <button class="fpill active" onclick="setFilter('all',this)">All <span class="fcnt" id="cntAll">3</span></button>
-        <button class="fpill" onclick="setFilter('active',this)">Active <span class="fcnt" id="cntActive">0</span></button>
-        <button class="fpill" onclick="setFilter('depleted',this)">Depleted <span class="fcnt" id="cntDepleted">0</span></button>
-        <button class="fpill" onclick="setFilter('paused',this)">Paused <span class="fcnt" id="cntPaused">0</span></button>
-      </div>
-    </div>
+    <div><div class="ph-title">Test Budgets</div><div class="ph-sub">Spend counts from each test’s start date · budgets and auto-pause are set in NUTRA Tracker</div></div>
+    <div class="ph-actions"><div class="fpills" id="tbFilters"></div><a class="btn btn-g" href="https://nutra-tracker.lovable.app/offers" target="_blank" rel="noopener" style="height:42px;display:inline-flex;align-items:center;padding:0 14px;text-decoration:none;">+ Add offer / edit ↗</a></div>
   </div>
-
-  <!-- Summary -->
-  <div class="bsum">
-    <div class="card kcard"><div class="clabel">Total Spent</div><div class="knum" id="bkSpent">$0</div><div class="ksub" id="bkSpentOf">of $0 assigned</div></div>
-    <div class="card kcard"><div class="clabel">Remaining</div><div class="knum" id="bkLeft">$0</div><div class="ksub">active tests</div></div>
-    <div class="card kcard"><div class="clabel">Affiliate Rev</div><div class="knum" id="bkRev">$0</div><div class="ksub" id="bkRevSub">Waiting on JVZoo</div></div>
-    <div class="card kcard"><div class="clabel">Net / ROAS</div><div class="knum" id="bkNet">$0</div><div class="ksub" id="bkRoas">0.00× ROAS</div></div>
-  </div>
-
-  <!-- Stacked bar -->
-  <div class="card" style="padding:12px 16px;margin-bottom:14px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;">
-      <div class="clabel">Budget allocation</div>
-    </div>
-    <div class="strack" id="stackBar"></div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;" id="stackLeg"></div>
-  </div>
-
-  <!-- Alert -->
+  <div class="card tb-strip" id="tbStrip"></div>
   <div id="alertEl"></div>
-
-  <!-- Budget cards -->
-  <div class="bcards" id="bcards"></div>
-
-  <!-- Form + Log -->
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px;">
-    <div class="card" style="padding:18px;" id="formCard">
-      <div class="slabel" id="formTitle">Assign a Test Budget</div>
-      <div class="form-grid">
-        <div>
-          <div class="fg-label">Product</div>
-          <select class="fg-select" id="fProd" onchange="updatePreview()">
-            <option value="wellness">Wellness Notes</option>
-            <option value="neuro">NeuroSharp</option>
-            <option value="glp">Glpatches</option>
-          </select>
-        </div>
-        <div>
-          <div class="fg-label">Test Budget (USD)</div>
-          <input class="fg-input" type="number" id="fAmt" placeholder="100" min="1" oninput="updatePreview()">
-          <div class="preview-box" id="prevBox" style="display:none;"></div>
-        </div>
-        <div>
-          <div class="fg-label">Warn me at</div>
-          <select class="fg-select" id="fWarn">
-            <option value="50">50%</option>
-            <option value="70" selected>70%</option>
-            <option value="80">80%</option>
-            <option value="90">90%</option>
-          </select>
-        </div>
-        <div>
-          <div class="fg-label">Start Date</div>
-          <input class="fg-input" type="date" id="fStart">
-        </div>
-      </div>
-      <div class="cbrow" style="margin:10px 0;">
-        <input type="checkbox" id="fAuto" checked>
-        <label for="fAuto">Pause ads automatically at 100%</label>
-      </div>
-      <div style="display:flex;gap:6px;">
-        <button class="btn btn-p" onclick="saveBudget()">Save Budget</button>
-        <button class="btn btn-g" onclick="resetForm()">Reset</button>
-      </div>
-    </div>
-    <div class="card" style="padding:18px;">
-      <div class="slabel">Budget Log</div>
-      <div class="tbl-wrap" style="max-height:270px;overflow-y:auto;">
-        <table class="ltbl">
-          <thead><tr><th>Date</th><th>Product</th><th>Event</th><th>Amount</th></tr></thead>
-          <tbody id="logBody"></tbody>
-        </table>
-      </div>
-    </div>
+  <div class="card tb-card">
+    <div class="tbl-wrap"><table class="ptbl tb"><thead><tr><th>Offer</th><th>Budget</th><th>CPC</th><th>Lander CTR</th><th>Checkouts</th><th>Sales / break-even</th><th>Net</th><th>Status</th><th></th></tr></thead><tbody id="tbBody"></tbody></table></div>
+    <div class="tb-note">Tests that need attention are listed first. The tick on each bar is your warning level. At 100%, auto-pause pauses that offer’s active campaigns; it never turns anything back on.</div>
   </div>
 </div>
 </div>
 
 <script>
 // @@DATA_START (numbers only; refreshed hourly by the "NUTRA Dashboard Meta Sync" scheduled task via update.py, see README.md)
-const DATA = {"asOf":"2026-11-06T23:15:00+01:00","jvz":{"glp":{"2026-11-06":[1,0,0,0]},"neuro":{},"wellness":{"2026-11-06":[1,0,0,0]}},"jvzSince":"2026-11-06","meta":{"glp":{"2026-11-03":[3.31,1068,1,0],"2026-11-04":[34.75,4197,25,7],"2026-11-05":[73.86,6867,19,9],"2026-11-06":[72.78,1484,16,13]},"neuro":{"2026-11-03":[2.96,1218,0,0],"2026-11-04":[21.5,3802,24,2],"2026-11-05":[20.12,3333,17,9],"2026-11-06":[2.74,600,2,1]},"wellness":{"2026-11-03":[1.25,394,0,0],"2026-11-04":[35.23,2212,40,19],"2026-11-05":[59.9,4241,12,5],"2026-11-06":[182.58,1268,38,29]}},"metaFrom":"2026-10-28","today":"2026-11-06","warn":[]};
+const DATA = {"ads":{"glp":{"120249955958100407":{"a":"ads-1-wide-fp","c":"Awareness","d":{"2026-11-03":[0.26,117,0,0],"2026-11-04":[0.21,84,0,0],"2026-11-05":[0.03,10,0,0],"2026-11-06":[0.0,2,0,0]},"n":"fp-1","s":"ACTIVE"},"120249956044460407":{"a":"ads-1-wide-fp","c":"Awareness","d":{"2026-11-03":[0.02,15,0,0],"2026-11-04":[0.13,53,0,0],"2026-11-05":[0.01,9,0,0]},"n":"fp-2","s":"ACTIVE"},"120249956047190407":{"a":"ads-1-wide-fp","c":"Awareness","d":{"2026-11-03":[0.3,94,0,0],"2026-11-04":[2.13,621,0,0],"2026-11-05":[5.33,1527,0,0],"2026-11-06":[0.95,240,0,0]},"n":"fp-3","s":"ACTIVE"},"120249956052170407":{"a":"ads-1-wide-fp","c":"Awareness","d":{"2026-11-03":[0.55,170,0,0],"2026-11-04":[1.47,417,0,0],"2026-11-05":[0.01,22,0,0]},"n":"fp-4","s":"ACTIVE"},"120249956198360407":{"a":"ads-1-wide-fp","c":"Awareness-=GLP","d":{"2026-11-03":[0.87,257,1,0],"2026-11-04":[5.8,1658,2,2],"2026-11-05":[7.86,2202,7,6],"2026-11-06":[1.13,270,0,0]},"n":"1","s":"ACTIVE"},"120249956218070407":{"a":"ads-1-wide-fp","c":"Awareness-=GLP","d":{"2026-11-03":[0.01,8,0,0],"2026-11-04":[0.0,3,0,0],"2026-11-05":[0.46,134,0,0],"2026-11-06":[0.04,9,0,0]},"n":"3","s":"ACTIVE"},"120249956218080407":{"a":"ads-1-wide-fp","c":"Awareness-=GLP","d":{"2026-11-03":[0.06,34,0,0],"2026-11-05":[2.19,538,0,0],"2026-11-06":[0.0,1,0,0]},"n":"4","s":"ACTIVE"},"120249956218090407":{"a":"ads-1-wide-fp","c":"Awareness-=GLP","d":{"2026-11-03":[1.24,373,0,0],"2026-11-04":[1.86,544,1,0],"2026-11-05":[0.58,156,0,0],"2026-11-06":[0.06,33,0,0]},"n":"2","s":"ACTIVE"},"120249969595090407":{"a":"Adset_wide_FP","c":"Engagement","d":{"2026-11-04":[9.19,123,16,0],"2026-11-05":[11.33,199,8,0],"2026-11-06":[2.1,55,1,0]},"n":"1","s":"ACTIVE"},"120249975910540407":{"a":"ads1","c":"Sales. Prosp.","d":{"2026-11-04":[13.27,651,5,4],"2026-11-05":[10.65,535,1,1]},"n":"1","s":"CAMPAIGN_PAUSED"},"120249975953880407":{"a":"ads1","c":"Sales. Prosp.","d":{"2026-11-05":[23.99,1086,1,1]},"n":"2","s":"CAMPAIGN_PAUSED"},"120249975953890407":{"a":"ads1","c":"Sales. Prosp.","d":{"2026-11-05":[0.57,32,0,0]},"n":"3","s":"CAMPAIGN_PAUSED"},"120249975953900407":{"a":"ads1","c":"Sales. Prosp.","d":{"2026-11-04":[0.44,23,1,1],"2026-11-05":[3.27,120,1,0]},"n":"4","s":"CAMPAIGN_PAUSED"},"120249975953910407":{"a":"ads1","c":"Sales. Prosp.","d":{"2026-11-05":[2.02,88,0,0]},"n":"5","s":"CAMPAIGN_PAUSED"},"120249975953920407":{"a":"ads1","c":"Sales. Prosp.","d":{"2026-11-04":[0.25,20,0,0],"2026-11-05":[5.56,209,1,1]},"n":"6","s":"CAMPAIGN_PAUSED"},"120250012846960407":{"a":"GLP | S1 Clean Concepts | US W40+ | FB | Purchase - Copy","c":"GLP | Sales | Statics v1 | 2026-11-06","d":{"2026-11-06":[16.38,111,1,1]},"n":"C1 | Hand Callouts","s":"ACTIVE"},"120250012846970407":{"a":"GLP | S1 Clean Concepts | US W40+ | FB | Purchase - Copy","c":"GLP | Sales | Statics v1 | 2026-11-06","d":{},"n":"C4 | 3 PM Moment","s":"ACTIVE"},"120250012846980407":{"a":"GLP | S1 Clean Concepts | US W40+ | FB | Purchase - Copy","c":"GLP | Sales | Statics v1 | 2026-11-06","d":{"2026-11-06":[1.7,38,0,0]},"n":"C6 | Bundle Value","s":"ACTIVE"},"120250012846990407":{"a":"GLP | S1 Clean Concepts | US W40+ | FB | Purchase - Copy","c":"GLP | Sales | Statics v1 | 2026-11-06","d":{"2026-11-06":[27.25,230,3,3]},"n":"C3 | Us vs Them","s":"ACTIVE"},"120250012847000407":{"a":"GLP | S1 Clean Concepts | US W40+ | FB | Purchase - Copy","c":"GLP | Sales | Statics v1 | 2026-11-06","d":{"2026-11-06":[0.15,3,0,0]},"n":"C2 | Pouch Headline","s":"ACTIVE"},"120250012847010407":{"a":"GLP | S1 Clean Concepts | US W40+ | FB | Purchase - Copy","c":"GLP | Sales | Statics v1 | 2026-11-06","d":{"2026-11-06":[0.62,36,1,1]},"n":"C5 | Native Story","s":"ACTIVE"},"120250012850190407":{"a":"GLP | S2 Scroll-Stoppers | US W40+ | FB | Purchase - Copy","c":"GLP | Sales | Statics v1 | 2026-11-06","d":{"2026-11-06":[14.69,440,8,7]},"n":"C7 | Powder Explosion","s":"ACTIVE"},"120250012850200407":{"a":"GLP | S2 Scroll-Stoppers | US W40+ | FB | Purchase - Copy","c":"GLP | Sales | Statics v1 | 2026-11-06","d":{"2026-11-06":[0.63,4,1,1]},"n":"C8 | Trash Can","s":"ACTIVE"},"120250012850210407":{"a":"GLP | S2 Scroll-Stoppers | US W40+ | FB | Purchase - Copy","c":"GLP | Sales | Statics v1 | 2026-11-06","d":{"2026-11-06":[19.84,86,0,0]},"n":"C9 | Cookie Jar","s":"ACTIVE"},"120250012850220407":{"a":"GLP | S2 Scroll-Stoppers | US W40+ | FB | Purchase - Copy","c":"GLP | Sales | Statics v1 | 2026-11-06","d":{"2026-11-06":[3.14,135,2,1]},"n":"C10 | Fridge Note","s":"ACTIVE"}},"neuro":{"120249202057450701":{"a":"ads-1-wide-FP","c":"Awareness","d":{"2026-11-03":[0.23,106,0,0],"2026-11-04":[6.24,2057,4,2],"2026-11-05":[8.72,2908,9,9],"2026-11-06":[1.44,522,1,1]},"n":"1","s":"ACTIVE"},"120249202122140701":{"a":"ads-1-wide-FP","c":"Awareness","d":{"2026-11-03":[1.08,471,0,0],"2026-11-04":[0.48,187,0,0],"2026-11-05":[0.1,36,0,0],"2026-11-06":[0.04,26,0,0]},"n":"3","s":"ACTIVE"},"120249202122150701":{"a":"ads-1-wide-FP","c":"Awareness","d":{"2026-11-03":[0.11,59,0,0],"2026-11-04":[0.37,141,0,0],"2026-11-05":[0.06,41,0,0],"2026-11-06":[0.01,2,0,0]},"n":"4","s":"ACTIVE"},"120249202122160701":{"a":"ads-1-wide-FP","c":"Awareness","d":{"2026-11-03":[0.39,178,0,0],"2026-11-04":[1.42,526,0,0],"2026-11-05":[0.13,78,0,0],"2026-11-06":[0.0,6,0,0]},"n":"5","s":"ACTIVE"},"120249202122170701":{"a":"ads-1-wide-FP","c":"Awareness","d":{"2026-11-03":[1.15,404,0,0],"2026-11-04":[2.33,751,0,0],"2026-11-05":[0.09,54,0,0],"2026-11-06":[0.01,5,0,0]},"n":"2","s":"ACTIVE"},"120249216501740701":{"a":"adset-wide-fp","c":"Engagement","d":{"2026-11-04":[10.66,140,20,0],"2026-11-05":[11.02,216,8,0],"2026-11-06":[1.32,41,1,0]},"n":"1","s":"ACTIVE"}},"wellness":{"120251114982180118":{"a":"ads1_wide_FP","c":"Awareness","d":{"2026-11-03":[0.02,22,0,0],"2026-11-04":[0.19,73,0,0],"2026-11-05":[0.01,4,0,0],"2026-11-06":[0.01,3,0,0]},"n":"1","s":"ACTIVE"},"120251114991870118":{"a":"ads1_wide_FP","c":"Awareness","d":{"2026-11-03":[0.16,54,0,0],"2026-11-04":[2.53,692,0,0],"2026-11-05":[4.98,1335,0,0],"2026-11-06":[0.79,209,0,0]},"n":"2","s":"ACTIVE"},"120251114991880118":{"a":"ads1_wide_FP","c":"Awareness","d":{"2026-11-03":[0.0,5,0,0],"2026-11-04":[0.09,49,0,0],"2026-11-05":[0.0,4,0,0]},"n":"3","s":"ACTIVE"},"120251114991890118":{"a":"ads1_wide_FP","c":"Awareness","d":{"2026-11-03":[0.04,28,0,0],"2026-11-04":[0.12,52,0,0],"2026-11-05":[0.05,22,0,0]},"n":"4","s":"ACTIVE"},"120251114991900118":{"a":"ads1_wide_FP","c":"Awareness","d":{"2026-11-03":[1.03,285,0,0],"2026-11-04":[1.1,349,0,0],"2026-11-05":[0.07,45,0,0],"2026-11-06":[0.01,9,0,0]},"n":"5","s":"ACTIVE"},"120251128269520118":{"a":"ads-wide-FP","c":"Engagement","d":{"2026-11-04":[9.15,117,19,0],"2026-11-05":[9.99,213,4,0],"2026-11-06":[2.4,53,0,0]},"n":"1","s":"ACTIVE"},"120251131824380118":{"a":"ads_wide_advert","c":"Sales. Prospecting.","d":{"2026-11-04":[1.89,124,0,0],"2026-11-05":[1.62,104,0,0]},"n":"1","s":"CAMPAIGN_PAUSED"},"120251131874340118":{"a":"ads_wide_advert","c":"Sales. Prospecting.","d":{"2026-11-04":[1.26,67,2,2],"2026-11-05":[0.73,42,0,0]},"n":"3","s":"CAMPAIGN_PAUSED"},"120251131874350118":{"a":"ads_wide_advert","c":"Sales. Prospecting.","d":{"2026-11-04":[3.91,243,5,5],"2026-11-05":[7.21,525,2,1]},"n":"6","s":"CAMPAIGN_PAUSED"},"120251131874360118":{"a":"ads_wide_advert","c":"Sales. Prospecting.","d":{"2026-11-04":[3.67,177,2,2],"2026-11-05":[6.7,486,1,1]},"n":"2","s":"CAMPAIGN_PAUSED"},"120251131874370118":{"a":"ads_wide_advert","c":"Sales. Prospecting.","d":{"2026-11-04":[7.64,125,10,9],"2026-11-05":[0.58,22,2,1],"2026-11-06":[0.09,3,0,0]},"n":"4","s":"CAMPAIGN_PAUSED"},"120251131874380118":{"a":"ads_wide_advert","c":"Sales. Prospecting.","d":{"2026-11-04":[3.68,144,2,1],"2026-11-05":[27.96,1439,3,2]},"n":"5","s":"CAMPAIGN_PAUSED"},"120251166746230118":{"a":"AS1-PainCallout_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[24.65,109,3,3]},"n":"C19_Over55Checklist_Static45_v1","s":"ACTIVE"},"120251166748170118":{"a":"AS1-PainCallout_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[11.34,38,3,1]},"n":"C22_ThisIsForYouIf_Static45_v1","s":"ACTIVE"},"120251166750180118":{"a":"AS2-EasyNoRisk_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[18.3,55,5,5]},"n":"C20_2SecScorecard_Static45_v1","s":"ACTIVE"},"120251166752370118":{"a":"AS2-EasyNoRisk_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[10.28,60,4,2]},"n":"C21_OfferStack_Static45_v1","s":"ACTIVE"},"120251166753810118":{"a":"AS2-EasyNoRisk_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[15.48,45,6,4]},"n":"C24_NotAMiracle_Static45_v1","s":"ACTIVE"},"120251166754720118":{"a":"AS2-EasyNoRisk_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[4.16,14,2,2]},"n":"C25_3QuestionsFAQ_Static45_v1","s":"ACTIVE"},"120251166755650118":{"a":"AS3-Outcome_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[0.18,3,0,0]},"n":"C23_MorningNowVsWith_Static45_v1","s":"ACTIVE"},"120251166756480118":{"a":"AS3-Outcome_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[7.86,50,3,5]},"n":"C26_BeTheOneWhoRemembers_Static45_v1","s":"ACTIVE"},"120251167391700118":{"a":"AS1-PainCallout_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[2.22,13,0,0]},"n":"C13_HerNameAgain_Static45_v1","s":"ACTIVE"},"120251167392130118":{"a":"AS1-PainCallout_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[0.11,4,0,0]},"n":"C15_Error404Word_Static45_v1","s":"ACTIVE"},"120251167392720118":{"a":"AS3-Outcome_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[6.59,29,0,0]},"n":"C27_BrainWatercolor_Static45_v1","s":"ACTIVE"},"120251167393780118":{"a":"AS3-Outcome_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[15.66,60,4,2]},"n":"C28_BrainFlatBold_Static45_v1","s":"ACTIVE"},"120251167394190118":{"a":"AS4-PatternInterrupt_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[1.26,22,1,0]},"n":"C16_StickyOverload_Static45_v1","s":"ACTIVE"},"120251167394560118":{"a":"AS4-PatternInterrupt_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[4.03,22,0,0]},"n":"C11_TabloidKeysFreezer_Static45_v1","s":"ACTIVE"},"120251167395300118":{"a":"AS4-PatternInterrupt_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[20.07,160,2,2]},"n":"C12_EvidenceBag_Static45_v1","s":"ACTIVE"},"120251167396320118":{"a":"AS4-PatternInterrupt_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[0.02,2,0,0]},"n":"C14_MissingPieces_Static45_v1","s":"ACTIVE"},"120251167396960118":{"a":"AS4-PatternInterrupt_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[0.0,1,0,0]},"n":"C17_47Reminders_Static45_v1","s":"ACTIVE"},"120251167397680118":{"a":"AS4-PatternInterrupt_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[5.39,28,0,0]},"n":"C18_UglyGraphic_Static45_v1","s":"ACTIVE"},"120251167398450118":{"a":"AS5-R1Clean_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[15.62,67,3,3]},"n":"C1_HandCallouts_Static45_v1","s":"ACTIVE"},"120251167399840118":{"a":"AS5-R1Clean_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[5.82,40,3,1]},"n":"C2_StickyNotesFridge_Static45_v1","s":"ACTIVE"},"120251167404310118":{"a":"AS5-R1Clean_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[0.43,4,1,0]},"n":"C3_UsVsThem_Static45_v1","s":"ACTIVE"},"120251167405220118":{"a":"AS5-R1Clean_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[2.74,68,0,0]},"n":"C5_NativeStoryPuzzle_Static45_v1","s":"ACTIVE"},"120251167406060118":{"a":"AS5-R1Clean_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{},"n":"C6_6MonthBundle_Static45_v1","s":"PAUSED"},"120251167406430118":{"a":"AS6-R1ScrollStoppers_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[18.27,71,1,1]},"n":"C7_KeysInFridge_Static45_v1","s":"ACTIVE"},"120251167407190118":{"a":"AS6-R1ScrollStoppers_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[6.45,75,2,1]},"n":"C9_UglyPhoneRedCircle_Static45_v1","s":"ACTIVE"},"120251167407960118":{"a":"AS6-R1ScrollStoppers_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[0.2,6,0,0]},"n":"C10_TrashCanOldRoutine_Static45_v1","s":"ACTIVE"},"120251167424810118":{"a":"AS5-R1Clean_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[1.47,29,0,0]},"n":"C4_TipOfTongueCrossword_Static45_v1","s":"ACTIVE"},"120251167425450118":{"a":"AS6-R1ScrollStoppers_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[3.36,32,0,0]},"n":"C8_StickyNoteExplosion_Static45_v1","s":"ACTIVE"}}},"asOf":"2026-11-06T23:20:00Z","jvz":{"glp":{"2026-11-06":[1,0,0,0]},"neuro":{},"wellness":{"2026-11-06":[1,0,0,0]}},"jvzSince":"2026-11-06","meta":{"glp":{"2026-11-03":[3.31,1068,1,0],"2026-11-04":[34.75,4197,25,7],"2026-11-05":[73.86,6867,19,9],"2026-11-06":[94.26,1821,19,15]},"neuro":{"2026-11-03":[2.96,1218,0,0],"2026-11-04":[21.5,3802,24,2],"2026-11-05":[20.12,3333,17,9],"2026-11-06":[2.82,602,2,1]},"wellness":{"2026-11-03":[1.25,394,0,0],"2026-11-04":[35.23,2212,40,19],"2026-11-05":[59.9,4241,12,5],"2026-11-06":[208.71,1416,46,32]}},"metaFrom":"2026-10-01","networks":{"jvzoo":{"name":"JVZoo"}},"notes":[{"d":"2026-11-06","p":null,"t":"New campaigns launched: SYN_Sales_ABO-Test_US_261106 (Wellness Notes) and GLP | Sales | Statics v1 (Glpatches)"}],"offers":[{"acct":"1614901483744859","buy":[{"label":"2 bottles","url":"https://www.jvzoo.com/b/117503/451967/99?src=yOj909O&aid=3601021"},{"label":"3 bottles","url":"https://www.jvzoo.com/b/117503/451969/99?src=yOj909O&aid=3601021"},{"label":"6 bottles","url":"https://www.jvzoo.com/b/117503/451971/99?src=yOj909O&aid=3601021"}],"color":"#2563EB","key":"wellness","lander":"https://wellnestnotes.com","name":"Wellness Notes","network":"jvzoo","offer":"Synaptril","sort":1,"status":"active"},{"acct":"1105909655657509","buy":[{"label":"2 bottles","url":"https://www.jvzoo.com/b/118457/453339/99?aid=3601021"},{"label":"3 bottles","url":"https://www.jvzoo.com/b/118457/453343/99?aid=3601021"},{"label":"6 bottles","url":"https://www.jvzoo.com/b/118457/453345/99?aid=3601021"}],"color":"#7C3AED","key":"neuro","lander":"https://vitalroutinedaily.com","name":"NeuroSharp","network":"jvzoo","offer":"NeuroSharp","sort":2,"status":"active"},{"acct":"1148819018097191","buy":[{"label":"2 pack","url":"https://www.jvzoo.com/b/117757/446537/99?aid=3601021"},{"label":"3 pack","url":"https://www.jvzoo.com/b/117757/447307/99?aid=3601021"},{"label":"6 pack","url":"https://www.jvzoo.com/b/117757/447309/99?aid=3601021"}],"color":"#DB2777","key":"glp","lander":"https://everydaywellnesspicks.com","name":"Glpatches","network":"jvzoo","offer":"GLPatches","sort":3,"status":"active"}],"settings":{"glp":{"autoPause":true,"autopausedAt":null,"budget":500.0,"cps":null,"start":"2026-11-03","warnAt":70},"neuro":{"autoPause":true,"autopausedAt":null,"budget":500.0,"cps":null,"start":"2026-11-03","warnAt":70},"wellness":{"autoPause":true,"autopausedAt":null,"budget":500.0,"cps":null,"start":"2026-11-03","warnAt":70}},"today":"2026-11-06","warn":[]};
 // @@DATA_END
 // DATA.meta[product][YYYY-MM-DD] = [spend, impressions, link clicks, landing page views]   Meta Ads API, ad account days
 // DATA.jvz[product][YYYY-MM-DD]  = [checkout visits, sales, refunds, commission]           JVZoo postbacks (NUTRA Tracker), UTC days
 // Nothing on this page is estimated: a number either comes from these two sources, from manual entries, or shows as "—".
 
-const PROD = {
-  wellness:{name:'Wellness Notes', offer:'Synaptril',  acct:'1614901483744859', color:'#2563EB', tint:'var(--accent-lt)', ink:'var(--accent)', cls:'c1',
-            lander:'https://wellnestnotes.com',          buy:[['2 bottles','https://www.jvzoo.com/b/117503/451967/99?src=yOj909O&aid=3601021'],['3 bottles','https://www.jvzoo.com/b/117503/451969/99?src=yOj909O&aid=3601021'],['6 bottles','https://www.jvzoo.com/b/117503/451971/99?src=yOj909O&aid=3601021']]},
-  neuro:   {name:'NeuroSharp',     offer:'NeuroSharp', acct:'1105909655657509', color:'#7C3AED', tint:'var(--purple-lt)', ink:'var(--purple)', cls:'c2',
-            lander:'https://vitalroutinedaily.com',      buy:[['2 bottles','https://www.jvzoo.com/b/118457/453339/99?aid=3601021'],['3 bottles','https://www.jvzoo.com/b/118457/453343/99?aid=3601021'],['6 bottles','https://www.jvzoo.com/b/118457/453345/99?aid=3601021']]},
-  glp:     {name:'Glpatches',      offer:'GLPatches',  acct:'1148819018097191', color:'#DB2777', tint:'var(--pink-lt)',   ink:'var(--pink)',   cls:'c3',
-            lander:'https://everydaywellnesspicks.com',  buy:[['2 pack','https://www.jvzoo.com/b/117757/446537/99?aid=3601021'],['3 pack','https://www.jvzoo.com/b/117757/447307/99?aid=3601021'],['6 pack','https://www.jvzoo.com/b/117757/447309/99?aid=3601021']]},
-};
-const KEYS = ['wellness','neuro','glp'];
-const JVZOO_REPORTS='https://www.jvzoo.com/affiliatereportcenter';
-const TRACKER_URL='https://nutra-tracker.lovable.app';
+// Offers come from NUTRA Tracker (Offers & budgets) via the hourly sync. FALLBACK is only used if a page has no offers block yet.
+const FALLBACK_OFFERS=[
+  {key:'wellness',name:'Wellness Notes',offer:'Synaptril',network:'jvzoo',acct:'1614901483744859',color:'#2563EB',lander:'https://wellnestnotes.com',sort:1,
+   buy:[{label:'2 bottles',url:'https://www.jvzoo.com/b/117503/451967/99?src=yOj909O&aid=3601021'},{label:'3 bottles',url:'https://www.jvzoo.com/b/117503/451969/99?src=yOj909O&aid=3601021'},{label:'6 bottles',url:'https://www.jvzoo.com/b/117503/451971/99?src=yOj909O&aid=3601021'}]},
+  {key:'neuro',name:'NeuroSharp',offer:'NeuroSharp',network:'jvzoo',acct:'1105909655657509',color:'#7C3AED',lander:'https://vitalroutinedaily.com',sort:2,
+   buy:[{label:'2 bottles',url:'https://www.jvzoo.com/b/118457/453339/99?aid=3601021'},{label:'3 bottles',url:'https://www.jvzoo.com/b/118457/453343/99?aid=3601021'},{label:'6 bottles',url:'https://www.jvzoo.com/b/118457/453345/99?aid=3601021'}]},
+  {key:'glp',name:'Glpatches',offer:'GLPatches',network:'jvzoo',acct:'1148819018097191',color:'#DB2777',lander:'https://everydaywellnesspicks.com',sort:3,
+   buy:[{label:'2 pack',url:'https://www.jvzoo.com/b/117757/446537/99?aid=3601021'},{label:'3 pack',url:'https://www.jvzoo.com/b/117757/447307/99?aid=3601021'},{label:'6 pack',url:'https://www.jvzoo.com/b/117757/447309/99?aid=3601021'}]},
+];
+const PALETTE=['#2563EB','#7C3AED','#DB2777','#0891B2','#EA580C','#16A34A','#CA8A04','#4F46E5','#BE123C','#0D9488'];
+const OFFERS=((DATA.offers&&DATA.offers.length)?DATA.offers:FALLBACK_OFFERS).filter(o=>o.status!=='archived').sort((a,b)=>(a.sort||0)-(b.sort||0)||a.name.localeCompare(b.name));
+const NETWORKS=Object.assign({jvzoo:{name:'JVZoo',reports:'https://www.jvzoo.com/affiliatereportcenter'}},DATA.networks||{});
+const PROD={};
+OFFERS.forEach((o,i)=>{const c=/^#[0-9a-f]{6}$/i.test(o.color||'')?o.color:PALETTE[i%PALETTE.length];
+  PROD[o.key]={name:o.name,offer:o.offer||o.name,network:o.network||'jvzoo',acct:o.acct||'',color:c,
+    tint:`color-mix(in srgb, ${c} 14%, var(--surface))`,ink:c,lander:o.lander||'',buy:(o.buy||[]).filter(b=>b&&b.url).map(b=>[b.label||'Buy link',b.url])};});
+const KEYS=OFFERS.map(o=>o.key);
+const netName=k=>(NETWORKS[PROD[k].network]||{}).name||PROD[k].network;
+const netReports=k=>(NETWORKS[PROD[k].network]||{}).reports||null;
+const TRACKER_URL='https://nutra-tracker.lovable.app', TRACKER_BUDGETS=TRACKER_URL+'/offers', TRACKER_NOTES=TRACKER_URL+'/notes';
 
 // ── Dates: plain YYYY-MM-DD strings, handled in UTC so time zones can't shift a day ──
 const DATA_AS_OF=new Date(DATA.asOf), TODAY=DATA.today, FIRST=DATA.metaFrom, JVZ_SINCE=DATA.jvzSince;
+const SET=DATA.settings||{}, NOTES=DATA.notes||[], ADS=DATA.ads||{};
 const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const MONL=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const D0=s=>new Date(s+'T00:00:00Z');
@@ -688,24 +710,16 @@ const berlin=d=>d.toLocaleString('en-GB',{timeZone:'Europe/Berlin',day:'numeric'
 function ls(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch(e){return d;}}
 function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
 
-let budgets  = ls('nutra_budgets_v3',{
-  wellness:{budget:50, warnAt:70, autoPause:true, paused:false, start:'2026-11-03'},
-  neuro:   {budget:75, warnAt:70, autoPause:true, paused:false, start:'2026-11-03'},
-  glp:     {budget:100,warnAt:70, autoPause:true, paused:false, start:'2026-11-03'},
-});
-let blogEvents = ls('nutra_blog_v3',[
-  {date:'2026-11-03',prod:'wellness',event:'assigned',amount:50},
-  {date:'2026-11-03',prod:'neuro',   event:'assigned',amount:75},
-  {date:'2026-11-03',prod:'glp',     event:'assigned',amount:100},
-]);
-Object.values(budgets).forEach(b=>{if(b&&b.start==='2026-10-28')b.start='2026-11-03';});
-blogEvents.forEach(e=>{if(e.date==='2026-10-28'&&e.event==='assigned')e.date='2026-11-03';});
-let afSales = ls('nutra_afsales_v1',[]);
+// Test budgets come from NUTRA Tracker (Products & budgets), copied in by the hourly sync, so every device and the auto-pause agree
+const budgets=Object.fromEntries(KEYS.map(k=>{const t=SET[k]||{};return[k,{budget:+t.budget||0,warnAt:+t.warnAt||70,autoPause:t.autoPause!==false,
+  start:t.start||FIRST,cps:t.cps!=null&&t.cps!==''?+t.cps:null,autopausedAt:t.autopausedAt||null,paused:!!t.autopausedAt}];}));
+const afSales=[]; // manual sales are entered in NUTRA Tracker and arrive with the JVZoo numbers
 
-const VIEW_DEFAULT={kpis:['spend','clicks','cpc','rev'],funnel:'counts',rev:'rev',spark:{wellness:'spend',neuro:'spend',glp:'spend'},
-  cols:['spend','impr','clicks','ctr','cpc','lpv','checkouts','budget','status'],sort:'spend',focus:null};
+const VIEW_DEFAULT={kpis:['spend','clicks','lpCtr','rev'],funnel:'counts',rev:'rev',spark:{wellness:'spend',neuro:'spend',glp:'spend'},
+  cols:['spend','clicks','ctr','cpc','lpv','lpCtr','checkouts','sales','budget','status'],sort:'spend',focus:null,adsGroup:true,adsHideZero:true};
 let view=Object.assign({},VIEW_DEFAULT,ls('nutra_view_v1',{}));
 view.spark=Object.assign({},VIEW_DEFAULT.spark,view.spark||{});
+if(!view.v){if(view.cols.includes('lpv')&&!view.cols.includes('lpCtr'))view.cols.splice(view.cols.indexOf('lpv')+1,0,'lpCtr');view.v=2;}
 const saveView=()=>lsSet('nutra_view_v1',view);
 
 let activeTab='overview', bFilter='all', fProd='all';
@@ -721,16 +735,18 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 
 // ── Aggregation over any date range ──
 function agg(ks,from,to){
-  const o={spend:0,impr:0,clicks:0,lpv:0,checkouts:0,sales:0,refunds:0,commission:0,manual:0,manualRev:0};
+  const o={spend:0,impr:0,clicks:0,lpv:0,lpvJ:0,checkouts:0,sales:0,refunds:0,commission:0,manual:0,manualRev:0,be:0,beOk:true};
   ks.forEach(k=>{
     const m=DATA.meta[k]||{},j=DATA.jvz[k]||{};
-    for(const d in m)if(d>=from&&d<=to){const r=m[d];o.spend+=r[0];o.impr+=r[1];o.clicks+=r[2];o.lpv+=r[3];}
+    let ks_sp=0;for(const d in m)if(d>=from&&d<=to){const r=m[d];o.spend+=r[0];o.impr+=r[1];o.clicks+=r[2];o.lpv+=r[3];ks_sp+=r[0];if(d>=JVZ_SINCE)o.lpvJ+=r[3];}
+    const cps=budgets[k]&&budgets[k].cps;if(cps>0)o.be+=ks_sp/cps;else if(ks_sp>0)o.beOk=false;
     for(const d in j)if(d>=from&&d<=to){const r=j[d];o.checkouts+=r[0];o.sales+=r[1];o.refunds+=r[2];o.commission+=r[3];}
     afSales.forEach(s=>{if(s.prod===k&&s.date>=from&&s.date<=to){o.manual++;o.manualRev+=s.amount;}});
   });
   o.spend=Math.round(o.spend*100)/100;
   o.rev=Math.round((o.commission+o.manualRev)*100)/100;
   o.allSales=o.sales+o.manual;
+  o.cps=ks.length===1?budgets[ks[0]].cps:null;
   return o;
 }
 function sinceStart(k){const b=budgets[k]||{};return agg([k],b.start||FIRST,TODAY);}
@@ -749,11 +765,14 @@ const METRICS={
   lpv:      {label:'Landing page views', f:c=>c.lpv,                                     fmt:fmtN,                   good:true},
   lpvRate:  {label:'Page-load rate',     f:c=>c.clicks?c.lpv/c.clicks*100:null,          fmt:v=>pct(v,0),            good:true, hint:'Share of link clicks that loaded your landing page'},
   cplpv:    {label:'Cost per page view', f:c=>c.lpv?c.spend/c.lpv:null,                  fmt:v=>fmt(v),              good:false},
-  checkouts:{label:'JVZoo checkouts',    f:c=>c.checkouts,                               fmt:fmtN,                   good:true, jvz:true},
+  lpCtr:    {label:'Lander click-through', f:c=>c.lpvJ?c.checkouts/c.lpvJ*100:null,     fmt:v=>pct(v,0),            good:true, jvz:true, hint:'Landing page views that clicked through to the JVZoo checkout (counted from when JVZoo tracking started)'},
+  checkouts:{label:'Checkout visits',    f:c=>c.checkouts,                               fmt:fmtN,                   good:true, jvz:true},
   sales:    {label:'Sales',              f:c=>c.allSales,                                fmt:fmtN,                   good:true, jvz:true},
   rev:      {label:'Commission',         f:c=>c.rev,                                     fmt:v=>fmt(v),              good:true, jvz:true},
   roas:     {label:'ROAS',               f:c=>c.spend?c.rev/c.spend:null,                fmt:v=>v==null?'—':v.toFixed(2)+'×', good:true, jvz:true},
   net:      {label:'Net profit',         f:c=>c.rev-c.spend,                             fmt:v=>fmt(v),              good:true, jvz:true},
+  coRate:   {label:'Checkout → sale',    f:c=>c.checkouts?c.allSales/c.checkouts*100:null, fmt:v=>pct(v,0),          good:true, jvz:true},
+  beSales:  {label:'Sales to break even',f:c=>c.beOk&&c.spend>0?Math.ceil(c.be-1e-9):null, fmt:v=>v==null?'—':fmtN(v), good:null, hint:'Spend ÷ commission per sale (set per product in the tracker)'},
   cpa:      {label:'Cost per sale',      f:c=>c.allSales?c.spend/c.allSales:null,        fmt:v=>fmt(v),              good:false, jvz:true},
 };
 const TABLE_COLS={...Object.fromEntries(Object.entries(METRICS).map(([k,m])=>[k,m.label])),budget:'Budget (since start)',status:'Status'};
@@ -766,7 +785,7 @@ function bStatus(k){
   if(p>=b.warnAt)return'watch';
   return'on-track';
 }
-const STL={'on-track':'ON TRACK',watch:'WATCH',depleted:'DEPLETED',paused:'PAUSED'};
+const STL={'on-track':'RUNNING',watch:'WATCH',depleted:'OVER BUDGET',paused:'AUTO-PAUSED'};
 
 // ── Date range: presets, stepping, picker ──
 const PRESETS=[
@@ -906,20 +925,20 @@ function menuSpec(kind,btn){
     {type:'action',items:[{id:'reset',label:'Reset tiles to default',run:()=>{view.kpis=[...VIEW_DEFAULT.kpis];}}]}]};}
   if(kind==='funnel')return{title:'Funnel',groups:[
     {type:'radio',label:'Show',items:[{id:'counts',label:'Counts',on:view.funnel==='counts'},{id:'rates',label:'Conversion rates',on:view.funnel==='rates'}],pick:id=>{view.funnel=id;}},
-    {type:'action',items:[{id:'tracker',label:'Open sales tracker ↗',href:TRACKER_URL}]}]};
+    {type:'action',items:[{id:'tracker',label:'Open sales tracker ↗',href:TRACKER_URL+'/sales'}]}]};
   if(kind==='rev')return{title:'Revenue panel',groups:[
     {type:'radio',label:'Compare products by',items:['rev','allsales','roas','net'].map(id=>{const k=id==='allsales'?'sales':id;return{id:k,label:METRICS[k].label,on:view.rev===k};}),pick:id=>{view.rev=id;}},
-    {type:'action',items:[{id:'jvz',label:'Open JVZoo reports ↗',href:JVZOO_REPORTS},{id:'tracker',label:'Open sales tracker ↗',href:TRACKER_URL}]}]};
+    {type:'action',items:[{id:'jvz',label:'Open JVZoo reports ↗',href:NETWORKS.jvzoo.reports},{id:'tracker',label:'Open sales tracker ↗',href:TRACKER_URL+'/sales'}]}]};
   if(kind==='spark'){const k=btn.dataset.k,P=PROD[k];return{title:P.name,groups:[
     {type:'radio',label:'Daily chart',items:[['spend','Spend'],['impr','Impressions'],['clicks','Link clicks'],['lpv','Landing page views']].map(([id,l])=>({id,label:l,on:view.spark[k]===id})),pick:id=>{view.spark[k]=id;}},
     {type:'action',label:'Dashboard',items:[{id:'focus',label:view.focus===k?'Show all products again':`Focus dashboard on ${P.name}`,run:()=>{view.focus=view.focus===k?null:k;fProd=view.focus||'all';}}]},
-    {type:'action',label:'Links',items:[{id:'lander',label:`Open landing page ↗`,href:P.lander,sub:P.lander.replace('https://','')},
+    {type:'action',label:'Links',items:[{id:'ads',label:'Show ads for this offer',run:()=>openAds(k),keepToast:true},...(P.lander?[{id:'lander',label:`Open landing page ↗`,href:P.lander,sub:P.lander.replace(/^https?:\/\//,'')}]:[]),{id:'edit',label:'Edit offer & budget ↗',href:TRACKER_BUDGETS},
       ...P.buy.map(([l,u])=>({id:'buy',label:`Copy ${l} buy link`,copy:u,sub:'Copy only: opening it counts as a checkout visit'})),
       {id:'ads',label:'Copy Ads Manager link',copy:`https://adsmanager.facebook.com/adsmanager/manage/campaigns?act=${P.acct}`,sub:`Account ${P.acct}`}]}]};}
   if(kind==='table')return{title:'Ad accounts table',groups:[
     {type:'check',label:'Columns',items:Object.entries(TABLE_COLS).map(([k,l])=>({id:k,label:l,on:view.cols.includes(k)})),
      toggle:id=>{view.cols=view.cols.includes(id)?view.cols.filter(c=>c!==id):Object.keys(TABLE_COLS).filter(c=>c===id||view.cols.includes(c));}},
-    {type:'radio',label:'Sort by',items:['spend','clicks','ctr','cpc','lpv','checkouts','rev','roas'].map(k=>({id:k,label:METRICS[k].label,on:view.sort===k})),pick:id=>{view.sort=id;},keep:true},
+    {type:'radio',label:'Sort by',items:['spend','clicks','ctr','cpc','lpv','lpCtr','checkouts','rev','roas'].map(k=>({id:k,label:METRICS[k].label,on:view.sort===k})),pick:id=>{view.sort=id;},keep:true},
     {type:'action',items:[{id:'copy',label:'Copy table',run:()=>copyTable(),keepToast:true},{id:'reset',label:'Reset columns',run:()=>{view.cols=[...VIEW_DEFAULT.cols];view.sort='spend';}}]}]};
   return null;
 }
@@ -1019,7 +1038,7 @@ function renderOverview(){
 
   // KPI tiles
   $('kpiGrid').innerHTML=view.kpis.map((key,i)=>{const M=METRICS[key];const v=M.f(c),pv=p?M.f(p):null;
-    const note=M.jvz&&jvzPartial?`<div class="ksub">JVZoo counted from ${fmtD(JVZ_SINCE)}</div>`:'';
+    const note=M.jvz&&jvzPartial?`<div class="ksub">Network data counted from ${fmtD(JVZ_SINCE)}</div>`:'';
     return`<div class="card kcard">
       <div class="kc-head"><div class="clabel"${M.hint?` title="${esc(M.hint)}"`:''}>${M.label}</div>
         <button class="menu-btn" data-menu="kpi" data-i="${i}" aria-haspopup="menu" aria-expanded="false" aria-label="Change what this tile shows">···</button></div>
@@ -1033,46 +1052,53 @@ function renderOverview(){
   const RM=METRICS[view.rev]||METRICS.rev;
   $('revLabel').textContent=view.rev==='rev'?'Affiliate Revenue':RM.label;
   $('revHero').textContent=RM.fmt(RM.f(c));
-  $('revSub').textContent=r.to<JVZ_SINCE?`JVZoo tracking starts ${fmtD(JVZ_SINCE)}`:(jvzPartial?`JVZoo counted from ${fmtD(JVZ_SINCE)} · plus manual entries`:'JVZoo postbacks + manual entries');
+  $('revSub').textContent=r.to<JVZ_SINCE?`Network tracking starts ${fmtD(JVZ_SINCE)}`:(jvzPartial?`Network postbacks + manual sales, counted from ${fmtD(JVZ_SINCE)}`:'Network postbacks + manual sales');
   const vals=KEYS.map(k=>({k,v:RM.f(agg([k],r.from,r.to))}));
   const mx=Math.max(...vals.map(x=>Math.abs(x.v||0)),1e-9);
   $('revRows').innerHTML=vals.map(({k,v})=>`<div>
     <div class="rrow-lbl">${PROD[k].name}<span>${RM.fmt(v)}</span></div>
-    <div class="rbar-track"><div class="rbar-fill ${PROD[k].cls}" style="width:${v>0?(v/mx*100).toFixed(1):0}%"></div></div>
+    <div class="rbar-track"><div class="rbar-fill" style="width:${v>0?(v/mx*100).toFixed(1):0}%;background:${PROD[k].color}"></div></div>
   </div>`).join('');
   const note=$('jvzooNote');
   if(c.rev===0&&c.allSales===0){note.hidden=false;
-    note.innerHTML=r.to<JVZ_SINCE?`<strong>No JVZoo data for this period</strong>JVZoo tracking started ${fmtD(JVZ_SINCE)}, after the dates you picked.`
-      :`<strong>No sales ${r.preset==='today'?'today':'in this period'}</strong>JVZoo reported ${c.checkouts} checkout visit${c.checkouts===1?'':'s'}${jvzPartial?` since ${fmtD(JVZ_SINCE)}`:''} and no sales. New sales show up here within the hour.`;}
+    note.innerHTML=r.to<JVZ_SINCE?`<strong>No network data for this period</strong>Postback tracking started ${fmtD(JVZ_SINCE)}, after the dates you picked.`
+      :`<strong>No sales ${r.preset==='today'?'today':'in this period'}</strong>The networks reported ${c.checkouts} checkout visit${c.checkouts===1?'':'s'}${jvzPartial?` since ${fmtD(JVZ_SINCE)}`:''} and no sales. New sales show up here within the hour.`;}
   else note.hidden=true;
 
-  // Product cards
+  // Offer cards
   const cap=len>31?addD(r.to,-30):r.from;
-  $('sparkGrid').innerHTML=KEYS.map(k=>{const P=PROD[k],a=agg([k],r.from,r.to),key=view.spark[k],M=METRICS[key];
+  $('sparkGrid').innerHTML=KEYS.map(k=>{const P=PROD[k],a=agg([k],r.from,r.to),key=view.spark[k]||'spend',M=METRICS[key],b=budgets[k];
+    const rep=netReports(k),nn=netName(k);
+    const be=b.cps?`Break-even: <b>${fmtN(Math.ceil(sinceStart(k).spend/b.cps-1e-9))} sales</b> at ${fmt(b.cps,0)} commission · ${fmtN(sinceStart(k).allSales)} so far`
+      :`<a href="${TRACKER_BUDGETS}" target="_blank" rel="noopener">Add commission per sale</a> to see break-even`;
     return`<div class="card scard${view.focus===k?' focused':''}${view.focus&&view.focus!==k?' dimmed':''}">
       <div class="ch" style="padding:0;margin-bottom:6px;">
-        <div><div class="clabel">${P.name}</div><div class="s-offer">${P.offer} · JVZoo</div></div>
-        <button class="menu-btn" data-menu="spark" data-k="${k}" aria-haspopup="menu" aria-expanded="false" aria-label="${P.name} options">···</button>
+        <div style="min-width:0"><div class="clabel">${esc(P.name)}</div><div class="s-offer">${esc(P.offer)} · ${esc(nn)}${b.paused?' · <span class="s-paused">Auto-paused</span>':''}</div></div>
+        <button class="menu-btn" data-menu="spark" data-k="${k}" aria-haspopup="menu" aria-expanded="false" aria-label="${esc(P.name)} options">···</button>
       </div>
       <div class="links">
-        <a class="lnk" href="${P.lander}" target="_blank" rel="noopener" title="Open ${P.lander.replace('https://','')}"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1.5" y="2.5" width="13" height="11" rx="2"/><path d="M1.5 5.5h13"/></svg>Lander</a>
-        <a class="lnk" href="${JVZOO_REPORTS}" target="_blank" rel="noopener" title="Open your JVZoo affiliate reports"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 13V7M6 13V3M10 13V8M14 13V5"/></svg>JVZoo</a>
-        <button type="button" class="lnk" data-menu="spark" data-k="${k}" aria-haspopup="menu" title="Copy buy links and Ads Manager link"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6.5 9.5l3-3M7 4.5l1.2-1.2a2.8 2.8 0 014 4L11 8.5M9 11.5l-1.2 1.2a2.8 2.8 0 01-4-4L5 7.5"/></svg>Links</button>
+        <button type="button" class="lnk" data-ads="${k}" title="Which ads are spending"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1.5" y="2.5" width="13" height="11" rx="2"/><path d="M4.5 10.5l2-3 2 2 3-4"/></svg>Ads</button>
+        ${P.lander?`<a class="lnk" href="${esc(P.lander)}" target="_blank" rel="noopener" title="Open ${esc(P.lander.replace(/^https?:\/\//,''))}"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1.5" y="2.5" width="13" height="11" rx="2"/><path d="M1.5 5.5h13"/></svg>Lander</a>`:''}
+        ${rep?`<a class="lnk" href="${rep}" target="_blank" rel="noopener" title="Open your ${esc(nn)} reports"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 13V7M6 13V3M10 13V8M14 13V5"/></svg>${esc(nn)}</a>`:''}
+        <button type="button" class="lnk" data-menu="spark" data-k="${k}" aria-haspopup="menu" title="Buy links, Ads Manager link, edit"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6.5 9.5l3-3M7 4.5l1.2-1.2a2.8 2.8 0 014 4L11 8.5M9 11.5l-1.2 1.2a2.8 2.8 0 01-4-4L5 7.5"/></svg>Links</button>
       </div>
       <div class="scard-top">
         <div><div class="snum">${M.fmt(M.f(a))}</div><div class="ksub">${M.label}</div></div>
         <div style="text-align:right;">
           <div class="sdelta" style="background:${P.tint};color:${P.ink}">${METRICS.cpc.fmt(METRICS.cpc.f(a))} CPC</div>
-          <div class="ksub" style="margin-top:3px;">${METRICS.cpm.fmt(METRICS.cpm.f(a))} CPM</div>
+          <div class="ksub" style="margin-top:3px;">${METRICS.lpCtr.fmt(METRICS.lpCtr.f(a))} lander CTR</div>
         </div>
       </div>
-      <canvas id="dot-${k}" style="width:100%;display:block;height:64px;" height="64" role="img" aria-label="Daily chart"></canvas>
-      <div class="spark-days">Daily ${M.label.toLowerCase()} · ${fmtRange(cap,r.to)}${len>31?' (last 31 days)':''}</div>
+      <canvas id="dot-${k}" style="width:100%;display:block;height:70px;" height="70" role="img" aria-label="Daily chart"></canvas>
+      <div class="spark-days">Daily ${M.label.toLowerCase()} · ${fmtRange(cap,r.to)}${len>31?' (last 31 days)':''}${notesIn(cap,r.to,k).length?' · ◆ = note':''}</div>
+      <div class="s-be">${be}</div>
     </div>`;}).join('');
   redrawSparks();
+  renderLanding(r);
+  renderNotes(r);
 
   renderTable(r);
-  $('fNote').textContent=`Meta numbers: ${fmtRange(r.from,r.to)}, updated ${berlin(DATA_AS_OF)} (Berlin). JVZoo checkouts and sales count from ${fmtD(JVZ_SINCE)}, when the postbacks were connected. Nothing on this page is estimated.`;
+  $('fNote').textContent=`Meta numbers: ${fmtRange(r.from,r.to)}, updated ${berlin(DATA_AS_OF)} (Berlin). Checkouts and sales come from the affiliate networks’ postbacks, counted from ${fmtD(JVZ_SINCE)}. Nothing on this page is estimated.`;
 }
 
 function renderTable(r){
@@ -1098,61 +1124,82 @@ function copyTable(){
   copyText(lines.join('\n'),`Table copied (${fmtRange(r.from,r.to)}) · paste into Sheets or Excel`);
 }
 
+
 // ── Funnel ──
-function setFProd(p,btn){fProd=p;document.querySelectorAll('.ftab').forEach(b=>b.classList.toggle('active',b===btn));renderFunnel();}
+function setFProd(p){fProd=p;renderFunnel();}
 function renderFunnel(){
-  document.querySelectorAll('.ftab').forEach(b=>b.classList.toggle('active',b.dataset.p===fProd));
-  const r=curRange(),ks=fProd==='all'?KEYS:[fProd],c=agg(ks,r.from,r.to);
-  const jvzOn=r.to>=JVZ_SINCE,jvzPartial=r.from<JVZ_SINCE,since=`counted from ${fmtD(JVZ_SINCE)}`;
+  $('fTabs').innerHTML=['all',...KEYS].map(k=>`<button type="button" class="ftab${fProd===k?' active':''}" data-fp="${k}">${k==='all'?'All':esc(PROD[k].name)}</button>`).join('');
+  const r=curRange(),ks=fProd==='all'||!PROD[fProd]?KEYS:[fProd],c=agg(ks,r.from,r.to);
+  const on=r.to>=JVZ_SINCE,part=r.from<JVZ_SINCE,since=` since ${fmtD(JVZ_SINCE)}`;
+  const lpCtr=c.lpvJ?c.checkouts/c.lpvJ*100:null,coR=c.checkouts?c.allSales/c.checkouts*100:null;
   const steps=[
-    {n:'Link clicks',       src:'Meta ads',   v:c.clicks, cv:`${c.impr?(c.clicks/c.impr*100).toFixed(2):'0'}% of ${fmtK(c.impr)} impressions`},
-    {n:'Landing page views',src:'Meta Pixel', v:c.lpv},
-    {n:'JVZoo checkout',    src:'JVZoo postback', v:jvzOn?c.checkouts:null, how:`JVZoo tracking started ${fmtD(JVZ_SINCE)}`, cv:jvzPartial?since:'', noRatio:jvzPartial},
-    {n:'Sales',             src:c.manual?'JVZoo + manual':'JVZoo postback', v:jvzOn||c.manual?c.allSales:null, how:`JVZoo tracking started ${fmtD(JVZ_SINCE)}`, cv:jvzPartial?since:'', noRatio:jvzPartial},
+    {n:'Link clicks',src:'Meta ads',v:c.clicks,rate:c.impr?c.clicks/c.impr*100:null,cv:`${c.impr?(c.clicks/c.impr*100).toFixed(2):'0'}% of ${fmtK(c.impr)} impressions`},
+    {n:'Landing page views',src:'Meta Pixel',v:c.lpv,rate:c.clicks?c.lpv/c.clicks*100:null},
+    {n:'Clicked to offer',src:'Network postback',v:on?c.checkouts:null,rate:lpCtr,how:`Postback tracking started ${fmtD(JVZ_SINCE)}`,
+      cv:lpCtr!=null?`${pct(lpCtr,lpCtr<10?1:0)} of page views${part?since:''}`:(on?'no page views yet':'')},
+    {n:'Sales',src:c.manual?'Postback + manual':'Network postback',v:on||c.manual?c.allSales:null,rate:coR,how:`Postback tracking started ${fmtD(JVZ_SINCE)}`,
+      cv:coR!=null?`${pct(coR,0)} of checkouts`:(on?'no checkouts yet':'')},
   ];
-  const maxV=Math.max(c.clicks,1);let prev=null;
+  const maxV=Math.max(c.clicks,1);
   $('fGrid').innerHTML=steps.map((s,i)=>{
-    const on=s.v!=null;
-    const ratio=i>0&&on&&prev&&!s.noRatio&&prev.v>0?s.v/prev.v*100:null;
-    let big=on?fmtN(s.v):'—',cv=s.cv||'';
-    if(on&&i>0&&!s.noRatio&&prev)cv=ratio!=null?`${ratio.toFixed(0)}% of ${prev.n.toLowerCase()}`:'—';
-    if(view.funnel==='rates'&&on&&i>0){big=ratio!=null?ratio.toFixed(ratio<10?1:0)+'%':'—';cv=`${fmtN(s.v)} total${s.noRatio?' · '+since:''}`;}
-    if(view.funnel==='rates'&&i===0)big=c.impr?(c.clicks/c.impr*100).toFixed(2)+'%':'—',cv=`${fmtN(c.clicks)} clicks of ${fmtK(c.impr)} impressions`;
-    const h=on&&s.v>0?Math.max(s.v/maxV*100,4):0;
-    const bar=on?`<div class="fbar ${i===0?'solid':'hatched'}" style="height:${h}%" title="${s.n}: ${fmtN(s.v)}"></div>`:`<div class="fbar empty">${s.how}</div>`;
-    if(on)prev=s;
-    return`<div class="fcol">
-      <div class="fstep-label">${s.n}</div>
-      <span class="fsrc ${on?'on':''}">${on?s.src:'Not tracked'}</span>
-      <div class="fstep-num ${on?'':'dim'}">${big}</div>
-      <div class="fstep-cv">${cv}</div>
-      <div class="fbar-area">${bar}</div>
-      <div class="fbar-floor"></div>
-    </div>`;}).join('');
+    const ok=s.v!=null;
+    let big=ok?fmtN(s.v):'—',cv=s.cv||(i>0&&ok&&s.rate!=null?`${pct(s.rate,0)} of ${steps[i-1].n.toLowerCase()}`:'');
+    if(view.funnel==='rates'&&ok){big=s.rate!=null?pct(s.rate,s.rate<10?(i===0?2:1):0):'—';cv=`${fmtN(s.v)} ${i===0?'clicks':'total'}`;}
+    const h=ok&&s.v>0?Math.max(s.v/maxV*100,4):0;
+    const bar=ok?`<div class="fbar ${i===0?'solid':'hatched'}" style="height:${h}%" title="${s.n}: ${fmtN(s.v)}"></div>`:`<div class="fbar empty">${s.how}</div>`;
+    return`<div class="fcol"><div class="fstep-label">${s.n}</div><span class="fsrc ${ok?'on':''}">${ok?s.src:'Not tracked'}</span>
+      <div class="fstep-num ${ok?'':'dim'}">${big}</div><div class="fstep-cv">${cv}</div>
+      <div class="fbar-area">${bar}</div><div class="fbar-floor"></div></div>`;}).join('');
 }
 
-// ── Daily dot charts ──
+// ── Landing page conversion ──
+function renderLanding(r){
+  const on=r.to>=JVZ_SINCE,from=r.from<JVZ_SINCE?JVZ_SINCE:r.from;
+  $('lpSub').textContent=on?`Page views from the Meta Pixel, click-throughs from the networks’ checkout postbacks · ${fmtRange(from,r.to)}${r.from<JVZ_SINCE?` (tracking started ${fmtD(JVZ_SINCE)})`:''}`
+    :`Click-through tracking started ${fmtD(JVZ_SINCE)}, after the dates you picked.`;
+  if(!on){$('lpBody').innerHTML='';return;}
+  const rows=KEYS.map(k=>({k,a:agg([k],r.from,r.to)})).sort((x,y)=>y.a.lpvJ-x.a.lpvJ);
+  const best=Math.max(...rows.map(x=>x.a.lpvJ?x.a.checkouts/x.a.lpvJ:0),0.0001);
+  const tot=agg(KEYS,r.from,r.to);
+  const row=(name,sub,a,color)=>{const ctr=a.lpvJ?a.checkouts/a.lpvJ*100:null,co=a.checkouts?a.allSales/a.checkouts*100:null;
+    return`<tr><td><div class="pname">${name}</div><div class="pacct">${sub}</div></td>
+      <td><div class="stat">${fmtN(a.lpvJ)}</div></td><td><div class="stat">${fmtN(a.checkouts)}</div></td>
+      <td><div class="lp-rate"><span class="stat">${ctr==null?'—':pct(ctr,ctr<10?1:0)}</span>${color&&ctr!=null?`<span class="lp-bar"><i style="width:${Math.min(ctr/100/best*100,100)}%;background:${color}"></i></span>`:''}</div></td>
+      <td><div class="stat">${fmtN(a.allSales)}</div></td><td><div class="stat">${co==null?'—':pct(co,0)}</div></td></tr>`;};
+  $('lpBody').innerHTML=rows.map(({k,a})=>row(esc(PROD[k].name),PROD[k].lander?`<a href="${esc(PROD[k].lander)}" target="_blank" rel="noopener">${esc(PROD[k].lander.replace(/^https?:\/\//,''))}</a>`:'No landing page set',a,PROD[k].color)).join('')
+    +`<tr class="tot">${row('All offers',fmtRange(from,r.to),tot,null).slice(4)}`;
+}
+
+// ── Notes (from NUTRA Tracker → Notes) ──
+function notesIn(from,to,k){return NOTES.filter(n=>n.d>=from&&n.d<=to&&(!k||!n.p||n.p===k));}
+function renderNotes(r){
+  const list=notesIn(r.from,r.to,view.focus).sort((a,b)=>b.d<a.d?-1:1);
+  $('notesList').innerHTML=list.length?list.map(n=>`<li><span class="n-date">${fmtD(n.d)}</span>${n.p&&PROD[n.p]?`<span class="n-prod" style="color:${PROD[n.p].color}">${esc(PROD[n.p].name)}</span>`:'<span class="n-prod">All offers</span>'}<span class="n-text">${esc(n.t)}</span></li>`).join('')
+    :`<li class="n-empty">No notes in this period.</li>`;
+}
+
+// ── Daily dot charts (with ◆ note markers) ──
 const SPARK_IDX={spend:0,impr:1,clicks:2,lpv:3};
 function redrawSparks(){
   const r=curRange(),len=diffD(r.from,r.to)+1,from=len>31?addD(r.to,-30):r.from;
-  KEYS.forEach(k=>drawDaily(`dot-${k}`,series(k,from,r.to,SPARK_IDX[view.spark[k]]),PROD[k].color,view.spark[k]));
+  KEYS.forEach(k=>{const key=view.spark[k]||'spend';drawDaily(`dot-${k}`,series(k,from,r.to,SPARK_IDX[key]),PROD[k].color,key,new Set(notesIn(from,r.to,k).map(n=>n.d)));});
 }
-function drawDaily(id,pts,color,key){
+function drawDaily(id,pts,color,key,noteDays){
   const cv=document.getElementById(id);if(!cv)return;
-  const dpr=window.devicePixelRatio||1,W=cv.offsetWidth||260,H=64;
+  const dpr=window.devicePixelRatio||1,W=cv.offsetWidth||260,H=70;
   cv.width=W*dpr;cv.height=H*dpr;
   const ctx=cv.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);
   const css=getComputedStyle(document.documentElement);
-  const track=css.getPropertyValue('--track').trim()||'#ECECEF',lbl=css.getPropertyValue('--fg3').trim()||'#A0A0AE';
+  const track=css.getPropertyValue('--track').trim()||'#ECECEF',lbl=css.getPropertyValue('--fg3').trim()||'#A0A0AE',fg=css.getPropertyValue('--fg').trim()||'#111';
   const cols=pts.length,gap=cols>14?3:cols>7?6:10,colW=(W-gap*(cols-1))/cols;
-  const across=cols<=7?4:cols<=14?2:1,rows=6,labelH=14,area=H-labelH;
+  const across=cols<=7?4:cols<=14?2:1,rows=6,labelH=14,top=8,area=H-labelH-top;
   const px=colW/across,py=area/rows,rad=Math.max(1.2,Math.min(px,py)*.3);
-  const max=Math.max(...pts.map(p=>p.v),0.0001),money=key==='spend';
-  const vfmt=v=>money?'$'+Math.round(v):fmtK(v);
+  const max=Math.max(...pts.map(p=>p.v),0.0001),money=key==='spend',vfmt=v=>money?'$'+Math.round(v):fmtK(v);
   ctx.font='600 10px Inter, system-ui, sans-serif';ctx.textBaseline='alphabetic';
   pts.forEach((p,i)=>{
     const lit=p.v>0?Math.max(1,Math.round(p.v/max*rows)):0,x0=i*(colW+gap);
-    for(let row=0;row<rows;row++)for(let c=0;c<across;c++){ctx.beginPath();ctx.arc(x0+px*(c+.5),area-py*(row+.5),rad,0,Math.PI*2);ctx.fillStyle=row<lit?color:track;ctx.fill();}
+    for(let row=0;row<rows;row++)for(let c=0;c<across;c++){ctx.beginPath();ctx.arc(x0+px*(c+.5),top+area-py*(row+.5),rad,0,Math.PI*2);ctx.fillStyle=row<lit?color:track;ctx.fill();}
+    if(noteDays&&noteDays.has(p.d)){const cx=x0+colW/2;ctx.fillStyle=fg;ctx.beginPath();ctx.moveTo(cx,0);ctx.lineTo(cx+3.5,3.5);ctx.lineTo(cx,7);ctx.lineTo(cx-3.5,3.5);ctx.closePath();ctx.fill();}
     ctx.fillStyle=lbl;const day=D0(p.d).getUTCDate();
     if(cols<=7){ctx.textAlign='center';ctx.fillText(`${day} · ${vfmt(p.v)}`,x0+colW/2,H-2);}
     else if(cols<=14){ctx.textAlign='center';ctx.fillText(String(day),x0+colW/2,H-2);}
@@ -1162,166 +1209,95 @@ function drawDaily(id,pts,color,key){
   cv.setAttribute('aria-label','Daily values: '+pts.map(p=>`${fmtD(p.d)} ${money?fmt(p.v):fmtN(p.v)}`).join(', '));
 }
 
+// ── Ads drawer ──
+let adsK=null;
+const ST_LABEL={ACTIVE:['Active','on'],PAUSED:['Paused',''],CAMPAIGN_PAUSED:['Campaign paused',''],ADSET_PAUSED:['Ad set paused',''],WITH_ISSUES:['Issues','bad'],DISAPPROVED:['Disapproved','bad'],PENDING_REVIEW:['In review',''],ARCHIVED:['Archived',''],DELETED:['Deleted','']};
+function adAgg(ad,from,to){const o={spend:0,impr:0,clicks:0,lpv:0};for(const d in ad.d)if(d>=from&&d<=to){const r=ad.d[d];o.spend+=r[0];o.impr+=r[1];o.clicks+=r[2];o.lpv+=r[3];}return o;}
+function openAds(k){adsK=PROD[k]?k:KEYS[0];closeMenu(false);closeDP(false);renderAds();$('adDrawer').hidden=false;$('adScrim').hidden=false;document.body.classList.add('noscroll');$('adClose').focus();}
+function closeAds(){if($('adDrawer').hidden)return;$('adDrawer').hidden=true;$('adScrim').hidden=true;document.body.classList.remove('noscroll');}
+function renderAds(){
+  const r=curRange(),P=PROD[adsK],ads=ADS[adsK]||{};
+  $('adTitle').textContent=`${P.name} · ads`;
+  $('adSub').textContent=`${fmtRange(r.from,r.to)} · ad account ${P.acct||'—'} · from Meta, refreshed hourly`;
+  $('adTabs').innerHTML=KEYS.map(k=>`<button type="button" class="ftab${k===adsK?' active':''}" data-adk="${k}">${esc(PROD[k].name)}</button>`).join('');
+  $('adGroup').checked=!!view.adsGroup;$('adZero').checked=!!view.adsHideZero;
+  let rows=Object.entries(ads).map(([id,ad])=>({id,n:ad.n,c:ad.c,a:ad.a,s:ad.s,m:adAgg(ad,r.from,r.to)}));
+  if(view.adsHideZero)rows=rows.filter(x=>x.m.spend>0||x.m.impr>0);
+  rows.sort((x,y)=>y.m.spend-x.m.spend);
+  const cell=m=>`<td>${fmt(m.spend)}</td><td>${fmtK(m.impr)}</td><td>${fmtN(m.clicks)}</td><td>${m.impr?pct(m.clicks/m.impr*100,2):'—'}</td><td>${m.clicks?fmt(m.spend/m.clicks):'—'}</td><td>${fmtN(m.lpv)}</td><td>${m.lpv?fmt(m.spend/m.lpv):'—'}</td>`;
+  const adRow=x=>{const st=ST_LABEL[x.s]||[x.s?x.s.toLowerCase().replace(/_/g,' '):'—',''];
+    return`<tr><td><div class="ad-name">${esc(x.n||x.id)}</div><div class="pacct">${view.adsGroup?esc(x.a||''):esc((x.c||'')+(x.a?' · '+x.a:''))}</div></td><td><span class="ad-st ${st[1]}">${esc(st[0])}</span></td>${cell(x.m)}</tr>`;};
+  let body='';
+  if(!Object.keys(ads).length)body=`<tr><td colspan="9" class="ad-empty">No ad-level data for this offer yet. It arrives with the next hourly sync.</td></tr>`;
+  else if(!rows.length)body=`<tr><td colspan="9" class="ad-empty">No ads delivered in this period.</td></tr>`;
+  else if(view.adsGroup){const g={};rows.forEach(x=>{(g[x.c||'—']=g[x.c||'—']||[]).push(x);});
+    body=Object.entries(g).map(([c,xs])=>{const t=xs.reduce((o,x)=>({spend:o.spend+x.m.spend,impr:o.impr+x.m.impr,clicks:o.clicks+x.m.clicks,lpv:o.lpv+x.m.lpv}),{spend:0,impr:0,clicks:0,lpv:0});
+      return`<tr class="ad-camp"><td colspan="2"><b>${esc(c)}</b> <span class="pacct">${xs.length} ad${xs.length>1?'s':''}</span></td>${cell(t)}</tr>`+xs.map(adRow).join('');}).join('');}
+  else body=rows.map(adRow).join('');
+  $('adBody').innerHTML=body;
+  const tot=rows.reduce((o,x)=>({spend:o.spend+x.m.spend,impr:o.impr+x.m.impr,clicks:o.clicks+x.m.clicks,lpv:o.lpv+x.m.lpv}),{spend:0,impr:0,clicks:0,lpv:0});
+  $('adFoot').innerHTML=rows.length?`<tr class="tot"><td colspan="2"><b>${rows.length} ad${rows.length>1?'s':''}</b></td>${cell(tot)}</tr>`:'';
+}
+function initAds(){
+  document.addEventListener('click',e=>{const b=e.target.closest('[data-ads]');if(b){e.stopPropagation();openAds(b.dataset.ads);}
+    const f=e.target.closest('[data-fp]');if(f)setFProd(f.dataset.fp);});
+  $('adScrim').addEventListener('click',closeAds);$('adClose').addEventListener('click',closeAds);
+  $('adDrawer').addEventListener('click',e=>{e.stopPropagation();const t=e.target.closest('[data-adk]');if(t){adsK=t.dataset.adk;renderAds();}});
+  $('adGroup').addEventListener('change',e=>{view.adsGroup=e.target.checked;saveView();renderAds();});
+  $('adZero').addEventListener('change',e=>{view.adsHideZero=e.target.checked;saveView();renderAds();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('adDrawer').hidden)closeAds();});
+}
+
+// ── Test budgets: one compact row per test ──
+let tbFilter='all';
+function tbStatus(k){const b=budgets[k],sp=sinceStart(k).spend,p=b.budget>0?sp/b.budget*100:0;
+  if(b.paused)return{key:'paused',label:'AUTO-PAUSED',rank:3,p};
+  if(p>=100)return{key:'depleted',label:'OVER BUDGET',rank:0,p};
+  if(p>=b.warnAt)return{key:'watch',label:'WATCH',rank:1,p};
+  return{key:'on-track',label:'RUNNING',rank:2,p};}
+function bStatusKey(k){return tbStatus(k).key;}
+function renderBudgets(){
+  const rows=KEYS.map(k=>({k,st:tbStatus(k),a:sinceStart(k),b:budgets[k]}));
+  const running=rows.filter(x=>x.st.key!=='paused');
+  const wkFrom=addD(TODAY,-dow(TODAY)),wk=agg(KEYS,wkFrom,TODAY),all=rows.reduce((o,x)=>({sp:o.sp+x.a.spend,rev:o.rev+x.a.rev}),{sp:0,rev:0});
+  const att=rows.filter(x=>x.st.key==='depleted'||x.st.key==='watch').length;
+  $('tbStrip').innerHTML=`<span><b>${running.length}</b> test${running.length===1?'':'s'} running</span><span><b>${fmt(wk.spend)}</b> spent this week</span><span><b>${fmt(all.sp)}</b> spent since the tests started</span><span><b>${fmt(all.rev)}</b> commission</span><span class="${all.rev-all.sp<0?'neg':'pos'}">Net <b>${fmt(all.rev-all.sp)}</b></span>`;
+  $('tbFilters').innerHTML=[['all','All',rows.length],['att','Needs attention',att],['paused','Paused',rows.filter(x=>x.st.key==='paused').length]]
+    .map(([id,l,n])=>`<button type="button" class="fpill${tbFilter===id?' active':''}" data-tbf="${id}">${l} <span class="fcnt">${n}</span></button>`).join('');
+  const over=rows.filter(x=>x.st.key==='depleted');
+  $('alertEl').innerHTML=over.map(x=>`<div class="alert-dep"><p><strong>${esc(PROD[x.k].name)}</strong> is over its ${fmt(x.b.budget,0)} test budget (${fmt(x.a.spend)} spent). ${x.b.autoPause?'Auto-pause is on: the hourly sync pauses its active campaigns on its next run.':'Auto-pause is off for this offer, so pause it in Ads Manager if you want it stopped.'}</p>
+    <div style="display:flex;gap:6px;"><a class="btn btn-g" href="${TRACKER_BUDGETS}" target="_blank" rel="noopener">Raise budget ↗</a></div></div>`).join('');
+  let list=rows;if(tbFilter==='att')list=rows.filter(x=>x.st.key==='depleted'||x.st.key==='watch');if(tbFilter==='paused')list=rows.filter(x=>x.st.key==='paused');
+  list.sort((x,y)=>x.st.rank-y.st.rank||y.st.p-x.st.p);
+  $('tbBody').innerHTML=list.length?list.map(({k,st,a,b})=>{const P=PROD[k],days=Math.max(1,diffD(b.start,TODAY)+1),avg=a.spend/days,rem=Math.max(b.budget-a.spend,0),dl=avg>0?rem/avg:Infinity;
+    const pace=b.paused?`Paused ${b.autopausedAt?fmtD(b.autopausedAt.slice(0,10)):''}`:st.key==='depleted'?`${fmt(a.spend-b.budget)} over`:dl===Infinity?'no spend yet':dl<1?'< 1 day left':`≈ ${Math.round(dl)} day${Math.round(dl)===1?'':'s'} left`;
+    const pw=Math.min(st.p,100),lp=METRICS.lpCtr.f(a),be=b.cps?Math.ceil(a.spend/b.cps-1e-9):null;
+    return`<tr class="tb-${st.key}">
+      <td><div class="pname"><span class="dot" style="background:${P.color}"></span>${esc(P.name)}</div><div class="pacct">${esc(P.offer)} · ${esc(netName(k))} · day ${days}</div></td>
+      <td class="tb-bud"><div class="tb-bar"><i class="${st.key}" style="width:${pw}%"></i><s style="left:${Math.min(b.warnAt,100)}%"></s></div>
+        <div class="stat-s"><b>${fmt(a.spend,0)}</b> of ${fmt(b.budget,0)} · ${st.p.toFixed(0)}% · ${pace}</div></td>
+      <td><div class="stat">${METRICS.cpc.fmt(METRICS.cpc.f(a))}</div></td>
+      <td><div class="stat">${lp==null?'—':pct(lp,lp<10?1:0)}</div></td>
+      <td><div class="stat">${fmtN(a.checkouts)}</div></td>
+      <td><div class="stat">${fmtN(a.allSales)}${be!=null?`<span class="stat-s"> / ${fmtN(be)}</span>`:''}</div></td>
+      <td><div class="stat ${a.rev-a.spend<0?'neg':'pos'}">${fmt(a.rev-a.spend,0)}</div></td>
+      <td><span class="spill ${st.key}">${st.label}</span></td>
+      <td class="tb-act"><button type="button" class="btn btn-g" data-ads="${k}">Ads</button><a class="btn btn-g" href="${TRACKER_BUDGETS}" target="_blank" rel="noopener" title="Edit budget, auto-pause and offer details">Edit ↗</a></td>
+    </tr>`;}).join(''):`<tr><td colspan="9" class="ad-empty">No tests match this filter.</td></tr>`;
+}
+function initBudgets(){
+  document.addEventListener('click',e=>{const f=e.target.closest('[data-tbf]');if(f){tbFilter=f.dataset.tbf;renderBudgets();}});
+}
+function refresh(){activeTab==='overview'?renderOverview():renderBudgets();toast('Recalculated');}
+
 // ── Tab switch ──
 function switchTab(tab){
-  activeTab=tab;closeDP(false);closeMenu(false);
+  activeTab=tab;closeDP(false);closeMenu(false);closeAds();
   $('overviewView').hidden=tab!=='overview';
   $('budgetView').hidden=tab!=='budgets';
   ['overview','budgets'].forEach(t=>$('tab-'+t).classList.toggle('active',t===tab));
   tab==='overview'?renderOverview():renderBudgets();
 }
-
-// ── Budgets ───────────────────────────────────────────────────────────────
-function renderBudgets(){
-  const totBu=KEYS.reduce((a,k)=>a+(budgets[k]?.budget||0),0);
-  const ss=Object.fromEntries(KEYS.map(k=>[k,sinceStart(k)]));
-  const totSp=KEYS.reduce((a,k)=>a+ss[k].spend,0);
-  const totRev=KEYS.reduce((a,k)=>a+ss[k].rev,0);
-  const net=totRev-totSp;
-  const roas=totSp>0?totRev/totSp:0;
-  $('bkSpent').textContent=fmt(totSp);$('bkSpentOf').textContent=`of ${fmt(totBu)} assigned`;
-  $('bkLeft').textContent=fmt(Math.max(totBu-totSp,0));
-  $('bkRev').textContent=fmt(totRev);$('bkRevSub').textContent=totRev===0?'Waiting on JVZoo':'Since each test started';
-  $('bkNet').textContent=fmt(net);$('bkRoas').textContent=roas.toFixed(2)+'× ROAS';
-
-  // Stacked
-  $('stackBar').innerHTML=KEYS.map(k=>`<div class="sseg" style="width:${totBu>0?(budgets[k]?.budget||0)/totBu*100:0}%;background:${PROD[k].color};"></div>`).join('');
-  $('stackLeg').innerHTML=KEYS.map(k=>`<div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--fg2);">
-    <span style="width:9px;height:9px;border-radius:50%;background:${PROD[k].color};display:inline-block;"></span>
-    ${PROD[k].name} · ${fmt(budgets[k]?.budget||0)}
-  </div>`).join('');
-
-  // Filter counts
-  const sts=KEYS.map(k=>bStatus(k));
-  $('cntAll').textContent=KEYS.length;
-  $('cntActive').textContent=sts.filter(s=>s==='on-track'||s==='watch').length;
-  $('cntDepleted').textContent=sts.filter(s=>s==='depleted').length;
-  $('cntPaused').textContent=sts.filter(s=>s==='paused').length;
-
-  // Alerts
-  const dep=KEYS.filter(k=>bStatus(k)==='depleted'&&!budgets[k]?.paused);
-  $('alertEl').innerHTML=dep.map(k=>{
-    const ov=Math.max(ss[k].spend-(budgets[k]?.budget||0),0);
-    return`<div class="alert-dep">
-      <p><strong>${PROD[k].name}</strong> has used its full test budget.${ov>0?` Spend is ${fmt(ov)} over the ${fmt(budgets[k].budget)} assigned.`:''}</p>
-      <div style="display:flex;gap:6px;">
-        <button class="btn btn-r" onclick="pauseProd('${k}')">Pause ${PROD[k].name}</button>
-        <button class="btn btn-g" onclick="extendBudget('${k}')">Extend</button>
-      </div>
-    </div>`;
-  }).join('');
-
-  // Cards
-  const filtered=bFilter==='all'?KEYS:bFilter==='active'?KEYS.filter(k=>['on-track','watch'].includes(bStatus(k))):bFilter==='depleted'?KEYS.filter(k=>bStatus(k)==='depleted'):KEYS.filter(k=>bStatus(k)==='paused');
-  $('bcards').innerHTML=filtered.map(k=>{
-    const b=budgets[k]||{},sp=ss[k].spend,bu=b.budget||0;
-    const pct=bu>0?Math.min(sp/bu*100,100):0;
-    const st=bStatus(k);
-    const stl={'on-track':'ON TRACK',watch:'WATCH',depleted:'DEPLETED',paused:'PAUSED'}[st];
-    const rev=ss[k].rev,roas=sp>0?rev/sp:0;
-    const days=Math.max(1,diffD(b.start||FIRST,TODAY)+1);
-    const avg=sp/days;const rem=Math.max(bu-sp,0);const dl=avg>0?rem/avg:999;
-    const pace=sp>=bu?`<span style="color:var(--red);font-weight:600;">Budget depleted</span>`:dl>14?`≈ ${Math.round(dl/7)} weeks at this pace`:`≈ ${Math.round(dl)} days at this pace`;
-    return`<div class="card bcard" id="bc-${k}">
-      <div class="bcard-top"><div><div class="bcard-name">${PROD[k].name}</div><div class="bcard-sub">Started ${b.start||'—'}</div></div><span class="spill ${st}">${stl}</span></div>
-      <div class="bspent">${fmt(sp)}</div><div class="bof">of ${fmt(bu)} budget</div>
-      <div class="prog-track">
-        <div class="prog-fill ${st}" style="width:${pct}%;"></div>
-        <div class="prog-tick" style="left:${Math.min(b.warnAt||70,100)}%;"></div>
-      </div>
-      <div class="bpct"><span>${pct.toFixed(0)}% used</span><span>${fmt(Math.max(bu-sp,0))} left</span></div>
-      <div class="bpace">${pace}</div>
-      <div class="bmetrics">
-        <div><div class="bml">Rev</div><div class="bmv">${fmt(rev)}</div></div>
-        <div><div class="bml">ROAS</div><div class="bmv">${roas.toFixed(2)}×</div></div>
-        <div><div class="bml">Clicks</div><div class="bmv">${fmtN(ss[k].clicks)}</div></div>
-      </div>
-      <div class="bactions">
-        <button class="btn btn-g" onclick="editBudget('${k}')">Edit</button>
-        <button class="btn btn-g" onclick="recordSale('${k}')">+ Sale</button>
-        ${b.paused?`<button class="btn btn-g" onclick="resumeProd('${k}')">Resume</button>`:`<button class="btn btn-r" onclick="pauseProd('${k}')">Pause</button>`}
-      </div>
-    </div>`;
-  }).join('');
-
-  renderLog();updatePreview();
-}
-
-function renderLog(){
-  const rows=[...blogEvents,...afSales.map(s=>({...s,event:'sale'}))].sort((a,b)=>new Date(b.date)-new Date(a.date));
-  $('logBody').innerHTML=rows.slice(0,30).map(r=>`<tr>
-    <td style="color:var(--fg3);">${r.date}</td>
-    <td>${PROD[r.prod]?.name||r.prod}</td>
-    <td><span class="levt ${r.event}">${r.event}</span></td>
-    <td style="font-variant-numeric:tabular-nums;">${r.amount!=null?fmt(r.amount):''}</td>
-  </tr>`).join('');
-}
-
-// ── Budget actions ─────────────────────────────────────────────────────────
-function saveBudget(){
-  const prod=$('fProd').value,amount=parseFloat($('fAmt').value),warn=parseInt($('fWarn').value);
-  const start=$('fStart').value||new Date().toISOString().slice(0,10);
-  if(!amount||amount<=0){toast('Enter a valid budget amount');return;}
-  const existed=!!budgets[prod];
-  budgets[prod]={budget:amount,warnAt:warn,autoPause:$('fAuto').checked,paused:false,start};
-  lsSet('nutra_budgets_v3',budgets);
-  blogEvents.unshift({date:new Date().toISOString().slice(0,10),prod,event:existed?'extended':'assigned',amount});
-  lsSet('nutra_blog_v3',blogEvents);
-  toast(`${PROD[prod].name} budget ${existed?'updated':'assigned'}: ${fmt(amount)}`);
-  resetForm();renderBudgets();
-}
-function editBudget(k){
-  $('fProd').value=k;$('fAmt').value=budgets[k]?.budget||'';
-  $('fWarn').value=budgets[k]?.warnAt||70;$('fAuto').checked=budgets[k]?.autoPause!==false;
-  $('formTitle').textContent=`Edit ${PROD[k].name} Budget`;
-  $('formCard').scrollIntoView({behavior:'smooth',block:'nearest'});
-  updatePreview();
-}
-function extendBudget(k){editBudget(k);$('fAmt').value=((budgets[k]?.budget||0)+25).toFixed(2);updatePreview();}
-function resetForm(){$('fAmt').value='';$('formTitle').textContent='Assign a Test Budget';$('prevBox').style.display='none';}
-function updatePreview(){
-  const p=$('fProd')?.value,a=parseFloat($('fAmt')?.value),pb=$('prevBox');
-  if(!pb)return;
-  if(!p||!a||isNaN(a)){pb.style.display='none';return;}
-  const sp=sinceStart(p).spend,bu=a,pct=(sp/bu*100).toFixed(0);
-  pb.style.display='block';pb.textContent=`With ${fmt(a)}, ${PROD[p].name} will be at ${pct}% used (${fmt(Math.max(bu-sp,0))} left).`;
-}
-function pauseProd(k){
-  budgets[k].paused=true;lsSet('nutra_budgets_v3',budgets);
-  blogEvents.unshift({date:new Date().toISOString().slice(0,10),prod:k,event:'paused',amount:null});
-  lsSet('nutra_blog_v3',blogEvents);toast(`${PROD[k].name} paused`);renderBudgets();
-}
-function resumeProd(k){
-  budgets[k].paused=false;lsSet('nutra_budgets_v3',budgets);
-  blogEvents.unshift({date:new Date().toISOString().slice(0,10),prod:k,event:'resumed',amount:null});
-  lsSet('nutra_blog_v3',blogEvents);toast(`${PROD[k].name} resumed`);renderBudgets();
-}
-function recordSale(k){
-  const card=$(`bc-${k}`);if(!card||card.querySelector('.sale-form'))return;
-  const f=document.createElement('div');f.className='sale-form';
-  f.innerHTML=`<div class="fg-label" style="margin-bottom:5px;">Record Sale</div><div style="display:flex;gap:6px;">
-    <input class="fg-input" type="number" id="sa-${k}" placeholder="$0.00" min="0.01" step="0.01" style="flex:1;">
-    <button class="btn btn-p" onclick="addSale('${k}')">Add</button>
-    <button class="btn btn-g" onclick="this.closest('.sale-form').remove()">✕</button>
-  </div>`;
-  card.appendChild(f);
-}
-function addSale(k){
-  const inp=$(`sa-${k}`),amt=parseFloat(inp?.value);
-  if(!amt||amt<=0){toast('Enter sale amount');return;}
-  const today=new Date().toISOString().slice(0,10);
-  afSales.push({date:today,prod:k,amount:amt,source:'manual'});lsSet('nutra_afsales_v1',afSales);
-  blogEvents.unshift({date:today,prod:k,event:'sale',amount:amt});lsSet('nutra_blog_v3',blogEvents);
-  toast(`Sale recorded: ${fmt(amt)} for ${PROD[k].name}`);
-  document.querySelectorAll('.sale-form').forEach(f=>f.remove());renderBudgets();
-}
-
-function setFilter(f,btn){
-  bFilter=f;document.querySelectorAll('.fpill').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderBudgets();
-}
-
-function updateSyncTime(){/* Meta data is a dated snapshot; see DATA_AS_OF */}
-function refresh(){activeTab==='overview'?renderOverview():renderBudgets();toast('Recalculated with your latest manual entries');}
 
 // ── Appearance ───────────────────────────────────────────────────────────
 const hostTheme=document.documentElement.getAttribute('data-theme');
@@ -1355,8 +1331,7 @@ function initBadge(){
   b.title=warn.length?warn.join('\n'):(hrs>3?'The hourly sync hasn’t updated this page for a while':'Meta and JVZoo numbers, refreshed hourly');
 }
 document.addEventListener('DOMContentLoaded',()=>{
-  $('fStart').value=new Date().toISOString().slice(0,10);
-  initDP();initMenus();initBadge();
+  initDP();initMenus();initBadge();initAds();initBudgets();
   $('focusChip').addEventListener('click',()=>{view.focus=null;fProd='all';rerenderAll();});
   renderOverview();
   let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{if(activeTab==='overview')redrawSparks();},150);});

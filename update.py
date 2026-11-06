@@ -1,21 +1,16 @@
 #!/usr/bin/env python3
-"""Refresh the numbers in dashboard.html and rebuild index.html.
+"""Refresh the numbers in dashboard.html, rebuild index.html, and work out budget alerts / auto-pauses.
 
-    python3 update.py payload.json   # merge fresh Meta + JVZoo numbers, then build
+    python3 update.py payload.json   # merge fresh data, rebuild, write actions.json
     python3 update.py --build        # only rebuild index.html from dashboard.html
 
-dashboard.html is the source (it is also what gets published to the claude.ai artifact).
-index.html is the GitHub Pages copy (dashboard.html wrapped in a full HTML document).
-Only the block between "// @@DATA_START" and "// @@DATA_END" is ever rewritten.
-See README.md for the payload format.
+dashboard.html is the source (also published to the claude.ai artifact); index.html is the GitHub Pages copy.
+Only the block between "// @@DATA_START" and "// @@DATA_END" is rewritten. See README.md for the payload format.
 """
 import json, re, sys, os, math
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-SRC, OUT = os.path.join(HERE, 'dashboard.html'), os.path.join(HERE, 'index.html')
-KEYS = ['wellness', 'neuro', 'glp']
-NAMES = {'wellness': 'Wellness Notes (Synaptril)', 'neuro': 'NeuroSharp', 'glp': 'Glpatches'}
-OFFER_TO_KEY = {'synaptril': 'wellness', 'neurosharp': 'neuro', 'glpatches': 'glp'}
+SRC, OUT, ACT = (os.path.join(HERE, f) for f in ('dashboard.html', 'index.html', 'actions.json'))
 DATE = re.compile(r'^\d{4}-\d{2}-\d{2}$')
 HEAD = '''<!doctype html>
 <html lang="en">
@@ -45,7 +40,7 @@ def read_page():
 
 def write_page(s, a, b, data):
     first = s[a:b].split('\n', 1)[0]
-    block = first + '\nconst DATA = ' + json.dumps(data, separators=(',', ':'), sort_keys=True) + ';\n'
+    block = first + '\nconst DATA = ' + json.dumps(data, separators=(',', ':'), sort_keys=True, ensure_ascii=False) + ';\n'
     open(SRC, 'w', encoding='utf-8').write(s[:a] + block + s[b:])
 
 
@@ -67,52 +62,123 @@ def num(v, kind, where):
     return round(x, 2) if kind == 'money' else int(round(x))
 
 
-def apply(payload):
+def day(v):
+    d = str(v or '')[:10]
+    return d if DATE.match(d) else None
+
+
+def merge_daily(cur, rows, since, today, where):
+    """Replace days within [since, today] for one series dict {date: [spend, impr, clicks, lpv]}."""
+    for d in [d for d in cur if since <= d <= today]:
+        del cur[d]
+    add_rows(cur, rows, since, today, where)
+
+
+def add_rows(cur, rows, since, today, where):
+    for r in rows:
+        d = day(r.get('date'))
+        if not d or not (since <= d <= today):
+            fail(f'{where}: bad or out-of-range date {r.get("date")!r}')
+        vals = [num(r.get('spend'), 'money', where), num(r.get('impr'), 'int', where),
+                num(r.get('clicks'), 'int', where), num(r.get('lpv'), 'int', where)]
+        if min(vals) < 0:
+            fail(f'{where} {d}: negative value')
+        if any(vals):
+            old = cur.get(d)
+            cur[d] = [round(old[0] + vals[0], 2), old[1] + vals[1], old[2] + vals[2], old[3] + vals[3]] if old else vals
+
+
+def apply(p):
     s, a, b, data = read_page()
     for k in ('asOf', 'today', 'since'):
-        if k not in payload:
+        if k not in p:
             fail(f'payload is missing "{k}"')
-    today, since = payload['today'], payload['since']
+    today, since = p['today'], p['since']
     if not DATE.match(today) or not DATE.match(since) or since > today:
         fail('"today"/"since" must be YYYY-MM-DD with since <= today')
     if today < data.get('today', today):
         fail(f'payload today {today} is older than the page ({data["today"]}); refusing to go backwards')
-
     warn = []
-    meta = payload.get('meta') or {}
-    for k in KEYS:
+
+    # Offers + their budget settings (NUTRA Tracker "products" table)
+    if p.get('offers') is not None:
+        offers, settings = [], {}
+        for o in p['offers']:
+            k = str(o.get('key') or '').strip()
+            if not re.match(r'^[a-z0-9_-]{1,40}$', k):
+                fail(f'offer key {k!r} is not a simple lowercase key')
+            buy = o.get('buy_links') or []
+            if isinstance(buy, str):
+                buy = json.loads(buy or '[]')
+            offers.append({'key': k, 'name': o.get('name') or k, 'offer': o.get('offer') or o.get('name') or k,
+                           'network': o.get('network') or 'jvzoo', 'acct': str(o.get('ad_account_id') or ''),
+                           'lander': o.get('lander_url') or '', 'buy': [{'label': x.get('label', ''), 'url': x.get('url', '')} for x in buy if isinstance(x, dict)],
+                           'color': o.get('color') or '', 'status': o.get('status') or 'active', 'sort': num(o.get('sort'), 'int', 'offers.sort')})
+            settings[k] = {'budget': num(o.get('budget'), 'money', f'{k}.budget'), 'start': day(o.get('start_date')) or since,
+                           'warnAt': num(o.get('warn_at') or 70, 'int', f'{k}.warn_at'), 'autoPause': bool(o.get('auto_pause', True)),
+                           'cps': None if o.get('commission_per_sale') in (None, '') else num(o['commission_per_sale'], 'money', f'{k}.cps'),
+                           'autopausedAt': o.get('autopaused_at') or None,
+                           '_warned': bool(o.get('warn_alerted_at')), '_depleted': bool(o.get('depleted_alerted_at'))}
+        data['offers'], data['settings'] = offers, settings
+    elif 'offers' not in data:
+        fail('page has no offers yet and the payload has none')
+    else:
+        warn.append('Offer settings not refreshed this hour (kept previous)')
+    keys = [o['key'] for o in data['offers']]
+
+    if p.get('networks') is not None:
+        data['networks'] = {str(n['key']): {'name': n.get('name') or n['key']} for n in p['networks'] if n.get('key')}
+    if p.get('notes') is not None:
+        data['notes'] = sorted([{'d': day(n.get('day')), 'p': n.get('product') or None, 't': str(n.get('text') or '')[:300]}
+                                for n in p['notes'] if day(n.get('day'))], key=lambda n: n['d'])
+
+    # Meta account-level daily numbers
+    meta = p.get('meta') or {}
+    data.setdefault('meta', {})
+    for k in keys:
         rows = meta.get(k)
         if rows is None:
-            warn.append(f'{NAMES[k]}: Meta data not refreshed this hour (kept previous numbers)')
+            if any(o['key'] == k and o['status'] == 'active' for o in data['offers']):
+                warn.append(f'{k}: Meta data not refreshed this hour (kept previous numbers)')
             continue
-        cur = data['meta'].setdefault(k, {})
-        for d in [d for d in cur if since <= d <= today]:
-            del cur[d]
-        for r in rows:
-            d = r.get('date')
-            if not d or not DATE.match(d) or not (since <= d <= today):
-                fail(f'meta.{k}: bad or out-of-range date {d!r}')
-            vals = [num(r.get('spend'), 'money', f'meta.{k}.{d}.spend'), num(r.get('impr'), 'int', f'meta.{k}.{d}.impr'),
-                    num(r.get('clicks'), 'int', f'meta.{k}.{d}.clicks'), num(r.get('lpv'), 'int', f'meta.{k}.{d}.lpv')]
-            if min(vals) < 0:
-                fail(f'meta.{k}.{d}: negative value')
-            if any(vals):
-                cur[d] = vals
+        merge_daily(data['meta'].setdefault(k, {}), rows, since, today, f'meta.{k}')
 
-    jv = payload.get('jvz')
+    # Meta ad-level daily numbers (only the recent window is re-pulled each hour)
+    ads_since = p.get('adsSince') or since
+    data.setdefault('ads', {})
+    for k, rows in (p.get('ads') or {}).items():
+        if rows is None or k not in keys:
+            continue
+        cur = data['ads'].setdefault(k, {})
+        for ad in cur.values():
+            for d in [d for d in ad['d'] if ads_since <= d <= today]:
+                del ad['d'][d]
+        for r in rows:
+            aid = str(r.get('id') or '')
+            if not aid:
+                continue
+            ad = cur.setdefault(aid, {'n': '', 'c': '', 'a': '', 's': '', 'd': {}})
+            ad['n'], ad['c'], ad['a'] = r.get('name') or ad['n'], r.get('campaign') or ad['c'], r.get('adset') or ad['a']
+            ad['s'] = r.get('status') or ad['s']
+            add_rows(ad['d'], [r], ads_since, today, f'ads.{k}.{aid}')
+        for aid in [aid for aid, ad in cur.items() if not ad['d'] and ad['s'] in ('DELETED', 'ARCHIVED')]:
+            del cur[aid]
+
+    # Network postbacks (checkout visits, sales, refunds, commission) per offer and UTC day
+    jv = p.get('jvz')
     if jv is None:
-        warn.append('JVZoo: tracker not refreshed this hour (kept previous numbers)')
+        warn.append('Network postbacks not refreshed this hour (kept previous numbers)')
     else:
-        new, skipped = {k: {} for k in KEYS}, 0
+        by_name = {o['offer'].lower().replace(' ', ''): o['key'] for o in data['offers']}
+        new, skipped = {k: {} for k in keys}, 0
         for r in jv:
-            key = OFFER_TO_KEY.get(str(r.get('offer', '')).lower().replace(' ', ''))
-            d = str(r.get('day', ''))[:10]
-            if not key or not DATE.match(d):
+            key = r.get('product_key') or by_name.get(str(r.get('offer', '')).lower().replace(' ', ''))
+            d = day(r.get('day'))
+            if key not in new or not d:
                 skipped += 1
                 continue
             arr = new[key].setdefault(d, [0, 0, 0, 0])
-            n = num(r.get('n'), 'int', 'jvz.n')
-            c = num(r.get('commission'), 'money', 'jvz.commission')
+            n, c = num(r.get('n'), 'int', 'jvz.n'), num(r.get('commission'), 'money', 'jvz.commission')
             if r.get('event') == 'initiated':
                 arr[0] += n
             elif r.get('event') == 'purchase':
@@ -124,26 +190,44 @@ def apply(payload):
                     arr[3] = round(arr[3] + c, 2)
         data['jvz'] = new
         if skipped:
-            print(f'note: skipped {skipped} JVZoo row(s) for other/unknown offers')
+            print(f'note: skipped {skipped} postback row(s) not matched to an offer')
 
-    data['asOf'] = payload['asOf']
-    data['today'] = today
+    data['asOf'], data['today'] = p['asOf'], today
     data['metaFrom'] = min(data.get('metaFrom', since), since)
     data['warn'] = warn
+
+    # Budget alerts / auto-pause decisions
+    actions = []
+    for o in data['offers']:
+        k, st = o['key'], data['settings'].get(o['key'], {})
+        if o['status'] != 'active' or not st.get('budget'):
+            continue
+        spent = round(sum(v[0] for d, v in data['meta'].get(k, {}).items() if st['start'] <= d <= today), 2)
+        pct = spent / st['budget'] * 100
+        base = {'key': k, 'name': o['name'], 'acct': o['acct'], 'spent': spent, 'budget': st['budget'], 'pct': round(pct, 1)}
+        if pct >= 100 and st['autoPause'] and not st['autopausedAt']:
+            actions.append({**base, 'action': 'pause'})
+        if pct >= 100 and not st['_depleted']:
+            actions.append({**base, 'action': 'alert_depleted'})
+        elif pct >= st['warnAt'] and not st['_warned'] and pct < 100:
+            actions.append({**base, 'action': 'alert_warning', 'warnAt': st['warnAt']})
+    for st in data['settings'].values():
+        st.pop('_warned', None), st.pop('_depleted', None)
     write_page(s, a, b, data)
     build()
+    json.dump(actions, open(ACT, 'w'), indent=1)
 
-    print(f'updated: asOf={data["asOf"]} today={today} warnings={len(warn)}')
+    print(f'updated: asOf={data["asOf"]} today={today} offers={len(keys)} warnings={len(warn)}')
     month = today[:8] + '01'
-    for k in KEYS:
+    for o in data['offers']:
+        k = o['key']
         m = data['meta'].get(k, {})
-        sp = sum(v[0] for d, v in m.items() if d >= month)
-        cl = sum(v[2] for d, v in m.items() if d >= month)
-        j = data['jvz'].get(k, {})
-        print(f'  {NAMES[k]:28} this month: spend ${sp:,.2f}, clicks {cl}, '
-              f'checkouts {sum(v[0] for v in j.values())}, sales {sum(v[1] for v in j.values())} (all time)')
+        print(f'  {o["name"][:26]:26} {o["status"]:8} month spend ${sum(v[0] for d, v in m.items() if d >= month):,.2f}'
+              f' · ads {len(data["ads"].get(k, {}))} · checkouts {sum(v[0] for v in data["jvz"].get(k, {}).values())}'
+              f' · sales {sum(v[1] for v in data["jvz"].get(k, {}).values())}')
     for w in warn:
         print('  WARNING:', w)
+    print('actions:', json.dumps(actions) if actions else 'none')
 
 
 if __name__ == '__main__':

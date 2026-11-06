@@ -28,25 +28,22 @@ If one source fails, its previous numbers are kept and the page header shows a �
 
 ```json
 {
-  "asOf":  "2026-11-07T09:00:00Z",          // when the pull ran (ISO)
-  "today": "2026-11-07",                    // last date Meta returned (ad account day)
-  "since": "2026-10-01",                    // first date requested from Meta
-  "meta": {                                  // one list per product; null = that account failed
-    "wellness": [{"date": "2026-11-06", "spend": 182.58, "impr": 1268, "clicks": 38, "lpv": 29}],
-    "neuro":    [ ... ],
-    "glp":      [ ... ]
-  },
-  "jvz": [                                   // rows from NUTRA Tracker; null = query failed
-    {"offer": "Synaptril", "day": "2026-11-06", "event": "initiated", "type": null, "n": 1, "commission": 0},
-    {"offer": "GLPatches", "day": "2026-11-06", "event": "purchase",  "type": "SALE", "n": 1, "commission": 48.50}
-  ]
+  "asOf": "2026-11-07T09:00:00Z", "today": "2026-11-07", "since": "2026-10-01", "adsSince": "2026-11-05",
+  "offers":   [ rows of NUTRA Tracker `products` (key, name, offer, network, ad_account_id, lander_url, buy_links, color,
+                status, sort, budget, start_date, warn_at, auto_pause, commission_per_sale, autopaused_at,
+                warn_alerted_at, depleted_alerted_at) ],
+  "networks": [ {"key": "jvzoo", "name": "JVZoo"} ],
+  "notes":    [ {"day": "2026-11-06", "product": null, "text": "..."} ],
+  "meta":     { "<offer key>": [ {"date": "...", "spend": 1.2, "impr": 100, "clicks": 3, "lpv": 2} ] | null },
+  "ads":      { "<offer key>": [ {"id", "name", "campaign", "adset", "status", "date", "spend", "impr", "clicks", "lpv"} ] | null },
+  "jvz":      [ {"product_key": "wellness", "offer": "Synaptril", "day": "2026-11-06", "event": "initiated|purchase",
+                "type": "SALE|RFND|null", "n": 1, "commission": 0} ] | null
 }
 ```
 
-Products: `wellness` = Wellness Notes ad account `1614901483744859` (offer Synaptril),
-`neuro` = NeuroSharp `1105909655657509`, `glp` = Glpatches `1148819018097191` (offer GLPatches).
-Meta days are rows with `spend`/`impr`/`clicks`/`lpv` from fields `amount_spent`, `impressions`,
-`link_click`, `omni_landing_page_view` (null counts → 0).
+`update.py` also writes `actions.json` (never committed): budget alerts and auto-pauses that are due —
+`alert_warning`, `alert_depleted` and `pause` per offer, based on spend since each test's start date.
+The sync acts on them and records them in NUTRA Tracker so each alert fires once per budget.
 
 Everything a viewer changes on the page (date range, tile choices, table columns, test budgets,
 manual sales) is saved in that viewer's browser only.
