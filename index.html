@@ -272,12 +272,145 @@ input,select{font-family:inherit;}
 
 /* sale-form */
 .sale-form{margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
+
+/* ── Date range picker ── */
+.ph-actions{align-items:center;flex-wrap:wrap;}
+.dp{position:relative;display:flex;align-items:stretch;}
+.dp-step,.dp-btn{background:var(--surface);border:1px solid var(--border);color:var(--fg);height:42px;transition:background .15s;}
+.dp-step{width:36px;display:flex;align-items:center;justify-content:center;color:var(--fg2);padding:0;}
+.dp-step.prev{border-radius:10px 0 0 10px;}
+.dp-step.next{border-radius:0 10px 10px 0;}
+.dp-btn{display:flex;align-items:center;gap:10px;padding:0 12px;border-left:none;border-right:none;min-width:0;}
+.dp-step:hover:not(:disabled),.dp-btn:hover,.dp-btn[aria-expanded="true"]{background:var(--surface2);}
+.dp-step:disabled{opacity:.35;cursor:default;}
+.dp-btn>svg{flex:none;color:var(--fg2);}
+.dp-lbl{display:flex;flex-direction:column;align-items:flex-start;line-height:1.2;text-align:left;min-width:0;}
+.dp-lbl b,.dp-lbl span{max-width:100%;overflow:hidden;text-overflow:ellipsis;}
+.dp-btn .dp-lbl{flex:1;}
+.dp-lbl b{font-size:12.5px;font-weight:700;white-space:nowrap;}
+.dp-lbl span{font-size:10.5px;color:var(--fg3);font-variant-numeric:tabular-nums;white-space:nowrap;}
+.dp-caret{transition:transform .2s;}
+.dp-btn[aria-expanded="true"] .dp-caret{transform:rotate(180deg);}
+.dp-scrim{display:none;}
+.dp-pop{position:absolute;right:0;top:calc(100% + 8px);z-index:160;background:var(--surface);border:1px solid var(--border);border-radius:16px;
+  box-shadow:0 22px 60px rgba(0,0,0,.16),0 4px 12px rgba(0,0,0,.06);display:grid;grid-template-columns:184px auto;overflow:hidden;width:max-content;max-width:calc(100vw - 32px);
+  animation:dpIn .16s ease-out;}
+.dp-pop[hidden]{display:none;}
+@keyframes dpIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.dp-presets{display:flex;flex-direction:column;gap:2px;padding:10px;background:var(--surface2);border-right:1px solid var(--border);}
+.dp-preset{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:1px;text-align:left;min-height:40px;padding:4px 11px;border:none;border-radius:9px;background:transparent;color:var(--fg);font-size:12.5px;font-weight:600;}
+.dp-preset small{font-size:10px;font-weight:500;color:var(--fg3);font-variant-numeric:tabular-nums;}
+.dp-preset:hover{background:var(--surface);}
+.dp-preset.on{background:var(--fg);color:var(--surface);}
+.dp-preset.on small{color:inherit;opacity:.7;}
+.dp-main{display:flex;flex-direction:column;padding:14px 16px 12px;min-width:0;}
+.dp-cals{display:flex;gap:24px;}
+.dp-month{width:266px;}
+.dp-mhead{display:flex;align-items:center;gap:6px;height:34px;margin-bottom:6px;}
+.dp-mtitle{flex:1;text-align:center;font-size:13px;font-weight:700;}
+.dp-nav{width:32px;height:32px;flex:none;border-radius:9px;border:1px solid var(--border);background:var(--surface);color:var(--fg2);display:flex;align-items:center;justify-content:center;padding:0;}
+.dp-nav:hover:not(:disabled){background:var(--surface2);color:var(--fg);}
+.dp-nav:disabled{opacity:.3;cursor:default;}
+.dp-nav.ghost{visibility:hidden;}
+.dp-wk,.dp-grid{display:grid;grid-template-columns:repeat(7,38px);}
+.dp-wk span{height:24px;line-height:24px;text-align:center;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--fg3);}
+.dp-blank{height:38px;}
+.dp-day{position:relative;height:38px;border:none;background:transparent;color:var(--fg);font-size:12.5px;font-weight:500;font-variant-numeric:tabular-nums;padding:0;}
+.dp-day span{position:relative;z-index:1;display:inline-flex;width:34px;height:34px;align-items:center;justify-content:center;border-radius:50%;transition:background .12s;}
+.dp-day:hover:not(:disabled) span{background:var(--surface2);}
+.dp-day.mid{background:var(--accent-lt);}
+.dp-day.start{background:linear-gradient(90deg,transparent 50%,var(--accent-lt) 50%);}
+.dp-day.end{background:linear-gradient(90deg,var(--accent-lt) 50%,transparent 50%);}
+.dp-day.start.end{background:transparent;}
+.dp-day.start span,.dp-day.end span{background:var(--accent)!important;color:#fff;font-weight:700;}
+.dp-day.today span{box-shadow:inset 0 0 0 1.5px var(--fg2);}
+.dp-day.data::after{content:"";position:absolute;bottom:3px;left:50%;width:4px;height:4px;margin-left:-2px;border-radius:50%;background:var(--green);z-index:2;}
+.dp-day.start.data::after,.dp-day.end.data::after{background:#fff;}
+.dp-day:disabled{color:var(--fg3);opacity:.4;cursor:default;}
+.dp-day:focus-visible{outline:none;}
+.dp-day:focus-visible span{outline:2px solid var(--accent);outline-offset:1px;}
+.dp-legend{display:flex;gap:14px;font-size:10.5px;color:var(--fg3);margin-top:8px;}
+.dp-legend i{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);margin-right:5px;vertical-align:1px;}
+.dp-legend i.t{background:transparent;box-shadow:inset 0 0 0 1.5px var(--fg2);width:9px;height:9px;vertical-align:-1px;}
+.dp-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:10px;padding-top:12px;border-top:1px solid var(--border);}
+.dp-sel{font-size:12px;color:var(--fg2);font-variant-numeric:tabular-nums;}
+.dp-sel b{color:var(--fg);}
+.dp-actions{display:flex;gap:6px;}
+.dp-actions .btn{height:36px;padding:0 16px;font-size:12px;}
+.btn:disabled{opacity:.4;cursor:default;}
+.focus-chip{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 6px 0 12px;border-radius:20px;background:var(--fg);color:var(--surface);font-size:11.5px;font-weight:600;border:none;}
+.focus-chip[hidden]{display:none;}
+.focus-chip span.x{display:inline-flex;width:20px;height:20px;border-radius:50%;align-items:center;justify-content:center;background:rgba(255,255,255,.18);}
+@media(max-width:819px){.dp-pop{grid-template-columns:168px auto;}}
+@media(max-width:640px){
+  .ph-actions{width:100%;}
+  .dp{flex:1;min-width:0;}
+  .dp-btn{flex:1;}
+  .dp-scrim{display:block;position:fixed;inset:0;background:rgba(0,0,0,.38);z-index:155;}
+  .dp-scrim[hidden]{display:none;}
+  .dp-pop{position:fixed;left:0;right:0;bottom:0;top:auto;width:auto;max-width:none;border-radius:20px 20px 0 0;grid-template-columns:1fr;max-height:88vh;overflow:auto;
+    padding-bottom:env(safe-area-inset-bottom,0px);animation:dpUp .2s ease-out;}
+  @keyframes dpUp{from{transform:translateY(30px);opacity:.5}to{transform:none;opacity:1}}
+  .dp-presets{flex-direction:row;overflow-x:auto;border-right:none;border-bottom:1px solid var(--border);padding:12px;gap:6px;}
+  .dp-preset{flex:none;min-height:36px;border:1px solid var(--border);background:var(--surface);border-radius:20px;padding:0 14px;}
+  .dp-preset small{display:none;}
+  .dp-main{padding:12px 14px 14px;}
+  .dp-month{width:100%;}
+  .dp-wk,.dp-grid{grid-template-columns:repeat(7,1fr);}
+  .dp-day{height:44px;}
+  .dp-day span{width:40px;height:40px;}
+  .dp-actions{width:100%;}
+  .dp-actions .btn{flex:1;height:44px;}
+}
+
+/* ── Card menus ── */
+.menu-btn{width:32px;height:32px;flex:none;cursor:pointer;}
+.menu-btn[aria-expanded="true"]{background:var(--fg);color:var(--surface);border-color:var(--fg);}
+.kc-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:-6px -8px 0 0;}
+.card-menu{position:fixed;z-index:170;width:268px;max-height:min(70vh,520px);overflow:auto;background:var(--surface);border:1px solid var(--border);border-radius:14px;
+  box-shadow:0 22px 60px rgba(0,0,0,.16),0 4px 12px rgba(0,0,0,.06);padding:6px;animation:dpIn .14s ease-out;}
+.card-menu[hidden]{display:none;}
+.cm-title{font-size:12px;font-weight:700;padding:8px 10px 6px;color:var(--fg);}
+.cm-label{font-size:9.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--fg3);padding:10px 10px 4px;border-top:1px solid var(--border);margin-top:4px;}
+.cm-title+.cm-group,.cm-title+.cm-label{border-top:none;margin-top:0;}
+.cm-item{display:flex;align-items:center;gap:10px;width:100%;min-height:38px;padding:6px 10px;border:none;border-radius:9px;background:transparent;color:var(--fg);font-size:12.5px;font-weight:500;text-align:left;text-decoration:none;cursor:pointer;}
+.cm-item:hover:not([disabled]),.cm-item:focus-visible{background:var(--surface2);outline:none;}
+.cm-item[disabled]{opacity:.45;cursor:default;}
+.cm-txt{flex:1;display:flex;flex-direction:column;min-width:0;}
+.cm-txt small{font-size:10.5px;color:var(--fg3);font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cm-item em{font-style:normal;font-size:10px;color:var(--fg3);}
+.cm-check{flex:none;width:16px;height:16px;border-radius:50%;border:1.5px solid var(--border);display:inline-flex;align-items:center;justify-content:center;}
+.cm-check.box{border-radius:5px;}
+.cm-item.on .cm-check{border-color:var(--accent);background:var(--accent);}
+.cm-item.on .cm-check::after{content:"";width:6px;height:3px;border:solid #fff;border-width:0 0 1.8px 1.8px;transform:rotate(-45deg) translate(1px,-1px);}
+
+/* ── KPI comparison + product links ── */
+.kcmp{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.cmp{font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:20px;background:var(--surface2);color:var(--fg2);font-variant-numeric:tabular-nums;}
+.cmp.up{background:var(--green-lt);color:var(--green);}
+.cmp.dn{background:var(--red-lt);color:var(--red);}
+.cmp-vs{font-size:10.5px;color:var(--fg3);}
+.s-offer{font-size:10.5px;color:var(--fg3);margin-top:1px;}
+.links{display:flex;gap:6px;flex-wrap:wrap;margin:2px 0 10px;}
+.lnk{display:inline-flex;align-items:center;gap:5px;height:28px;padding:0 10px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--fg2);font-size:11px;font-weight:600;text-decoration:none;cursor:pointer;transition:all .15s;}
+.lnk svg{width:12px;height:12px;flex:none;}
+.lnk:hover{background:var(--fg);color:var(--surface);border-color:var(--fg);}
+.scard{transition:opacity .2s, box-shadow .2s;}
+.scard.focused{box-shadow:0 0 0 2px var(--fg),var(--sh);}
+.scard.dimmed{opacity:.5;}
+.pacct a{color:inherit;text-decoration:underline;text-decoration-color:var(--border);text-underline-offset:2px;}
+.pacct a:hover{color:var(--fg);}
+.ptbl tr.tot td{background:var(--surface2);}
+.ptbl tr.focused td{background:var(--accent-lt);}
+.data-badge.stale{background:var(--amber-lt);color:var(--amber);border-color:transparent;}
+.data-badge.stale b{color:inherit;}
 </style>
 </head>
 <body>
 
 
-<div id="toast"></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<div class="card-menu" id="cardMenu" role="menu" hidden></div>
 
 <!-- TOPBAR -->
 <nav class="topbar">
@@ -296,7 +429,7 @@ input,select{font-family:inherit;}
     </button>
   </div>
   <div class="topbar-right">
-    <div class="data-badge" title="Meta numbers are a snapshot pulled on this date, not a live feed">Meta data · <b>6 Nov, 23:15</b></div>
+    <div class="data-badge" id="dataBadge" title="When the Meta and JVZoo numbers were last pulled">Meta data · <b>—</b></div>
     <button class="icon-btn" onclick="refresh()" title="Recalculate with your latest manual entries" aria-label="Recalculate">
       <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 8A6 6 0 1 1 8 2a6 6 0 0 0 5 2.6"/><path d="M14 2v3h-3"/></svg>
     </button>
@@ -329,40 +462,37 @@ input,select{font-family:inherit;}
   <div class="ph">
     <div>
       <div class="ph-title">Performance Overview</div>
-      <div class="ph-sub">Nov 1–6, 2026 · 3 ad accounts · ads started spending Nov 3</div>
+      <div class="ph-sub" id="phSub"></div>
     </div>
     <div class="ph-actions">
-      <button class="btn btn-g" onclick="switchTab('budgets')">+ Test Budget</button>
+      <button type="button" class="focus-chip" id="focusChip" hidden title="Show all products again">Focused: <b id="focusName"></b><span class="x" aria-hidden="true">✕</span></button>
+      <div class="dp" id="dp">
+        <button type="button" class="dp-step prev" id="dpPrev" aria-label="Previous period"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 3L5 8l5 5"/></svg></button>
+        <button type="button" class="dp-btn" id="dpBtn" aria-haspopup="dialog" aria-expanded="false" aria-controls="dpPop">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1.5" y="2.5" width="13" height="12" rx="2"/><path d="M1.5 6.5h13M5 1v3M11 1v3"/></svg>
+          <span class="dp-lbl"><b id="dpName">This month</b><span id="dpDates"></span></span>
+          <svg class="dp-caret" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>
+        </button>
+        <button type="button" class="dp-step next" id="dpNext" aria-label="Next period"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3l5 5-5 5"/></svg></button>
+        <div class="dp-scrim" id="dpScrim" hidden></div>
+        <div class="dp-pop" id="dpPop" role="dialog" aria-label="Choose a date range" hidden>
+          <div class="dp-presets" id="dpPresets"></div>
+          <div class="dp-main">
+            <div class="dp-cals" id="dpCals"></div>
+            <div class="dp-legend"><span><i></i>Days with ad spend</span><span><i class="t"></i>Today</span></div>
+            <div class="dp-foot">
+              <div class="dp-sel" id="dpSel" aria-live="polite"></div>
+              <div class="dp-actions"><button type="button" class="btn btn-g" id="dpCancel">Cancel</button><button type="button" class="btn btn-p" id="dpApply">Apply</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-g" onclick="switchTab('budgets')" style="height:42px;padding:0 14px;">+ Test Budget</button>
     </div>
   </div>
 
   <!-- KPIs -->
-  <div class="kpi-grid">
-    <div class="card kcard">
-      <div class="clabel">Total Spend</div>
-      <div class="knum" id="kSpend">$0.00</div>
-      <span class="kdelta neu">3 accounts</span>
-      <div class="ksub">MTD Nov 2026</div>
-    </div>
-    <div class="card kcard">
-      <div class="clabel">Impressions</div>
-      <div class="knum" id="kImpr">0</div>
-      <span class="kdelta neu" id="kCpm">$0 CPM</span>
-      <div class="ksub">All accounts</div>
-    </div>
-    <div class="card kcard">
-      <div class="clabel">Clicks</div>
-      <div class="knum" id="kClicks">0</div>
-      <span class="kdelta neu" id="kCpc">$0 CPC</span>
-      <div class="ksub">Link clicks MTD</div>
-    </div>
-    <div class="card kcard">
-      <div class="clabel">Affiliate Rev</div>
-      <div class="knum" id="kRev">$0.00</div>
-      <span class="kdelta neu" id="kRoas">0.00× ROAS</span>
-      <div class="ksub">JVZoo postbacks + manual entries</div>
-    </div>
-  </div>
+  <div class="kpi-grid" id="kpiGrid"></div>
 
   <!-- Funnel + Rev -->
   <div class="main-cols">
@@ -373,99 +503,45 @@ input,select{font-family:inherit;}
             <div class="clabel">Conversion Funnel</div>
             <div style="font-size:11px;color:var(--fg3);margin-top:1px;">Ad click → your landing page → JVZoo checkout → sale</div>
           </div>
-          <button class="menu-btn">···</button>
+          <button class="menu-btn" data-menu="funnel" aria-haspopup="menu" aria-expanded="false" aria-label="Funnel options">···</button>
         </div>
         <div class="funnel-tabs">
-          <button class="ftab active" onclick="setFProd('all',this)">All</button>
-          <button class="ftab" onclick="setFProd('wellness',this)">Wellness Notes</button>
-          <button class="ftab" onclick="setFProd('neuro',this)">NeuroSharp</button>
-          <button class="ftab" onclick="setFProd('glp',this)">Glpatches</button>
+          <button class="ftab" data-p="all" onclick="setFProd('all',this)">All</button>
+          <button class="ftab" data-p="wellness" onclick="setFProd('wellness',this)">Wellness Notes</button>
+          <button class="ftab" data-p="neuro" onclick="setFProd('neuro',this)">NeuroSharp</button>
+          <button class="ftab" data-p="glp" onclick="setFProd('glp',this)">Glpatches</button>
         </div>
       </div>
       <div class="funnel-body">
         <div class="fwrap"><div class="fgrid" id="fGrid"></div></div>
-        <div class="fnote">Meta numbers cover Nov 1–6, pulled 6 Nov at 23:15 (Berlin). JVZoo steps count from Nov 6, when the postbacks were connected, so they aren’t compared against the full month of clicks. Nothing on this chart is estimated.</div>
+        <div class="fnote" id="fNote"></div>
       </div>
     </div>
 
     <div class="card rev-panel">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;">
-        <div class="clabel">Affiliate Revenue</div>
-        <button class="menu-btn">···</button>
+        <div class="clabel" id="revLabel">Affiliate Revenue</div>
+        <button class="menu-btn" data-menu="rev" aria-haspopup="menu" aria-expanded="false" aria-label="Revenue panel options">···</button>
       </div>
       <div class="rev-hero" id="revHero">$0.00</div>
-      <div class="rev-sub">JVZoo postbacks (since Nov 6) + manual entries</div>
+      <div class="rev-sub" id="revSub"></div>
       <div class="rev-rows" id="revRows"></div>
-      <div class="jvzoo-note" id="jvzooNote">
-        <strong>No sales yet</strong>
-        JVZoo is connected and has reported 2 checkout visits since Nov 6. Commissions show here on the next dashboard refresh after a sale.
-      </div>
+      <div class="jvzoo-note" id="jvzooNote"></div>
     </div>
   </div>
 
-  <!-- Dot sparklines -->
-  <div class="spark-grid">
-    <div class="card scard">
-      <div class="ch" style="padding:0;margin-bottom:6px;">
-        <div class="clabel">Wellness Notes</div>
-        <button class="menu-btn">···</button>
-      </div>
-      <div class="scard-top">
-        <div><div class="snum" id="spWSpend">$0</div><div class="ksub">Spend MTD</div></div>
-        <div style="text-align:right;">
-          <div class="sdelta" style="background:var(--accent-lt);color:var(--accent)" id="spWCpc">$0 CPC</div>
-          <div class="ksub" style="margin-top:3px;" id="spWCpm">$0 CPM</div>
-        </div>
-      </div>
-      <canvas id="dotW" style="width:100%;display:block;height:64px;" height="64" role="img" aria-label="Daily spend chart"></canvas>
-      <div class="spark-days">Daily spend · each column is one day · taller = more spend</div>
-    </div>
-    <div class="card scard">
-      <div class="ch" style="padding:0;margin-bottom:6px;">
-        <div class="clabel">NeuroSharp</div>
-        <button class="menu-btn">···</button>
-      </div>
-      <div class="scard-top">
-        <div><div class="snum" id="spNSpend">$0</div><div class="ksub">Spend MTD</div></div>
-        <div style="text-align:right;">
-          <div class="sdelta" style="background:var(--purple-lt);color:var(--purple)" id="spNCpc">$0 CPC</div>
-          <div class="ksub" style="margin-top:3px;" id="spNCpm">$0 CPM</div>
-        </div>
-      </div>
-      <canvas id="dotN" style="width:100%;display:block;height:64px;" height="64" role="img" aria-label="Daily spend chart"></canvas>
-      <div class="spark-days">Daily spend · each column is one day · taller = more spend</div>
-    </div>
-    <div class="card scard">
-      <div class="ch" style="padding:0;margin-bottom:6px;">
-        <div class="clabel">Glpatches</div>
-        <button class="menu-btn">···</button>
-      </div>
-      <div class="scard-top">
-        <div><div class="snum" id="spGSpend">$0</div><div class="ksub">Spend MTD</div></div>
-        <div style="text-align:right;">
-          <div class="sdelta" style="background:var(--pink-lt);color:var(--pink)" id="spGCpc">$0 CPC</div>
-          <div class="ksub" style="margin-top:3px;" id="spGCpm">$0 CPM</div>
-        </div>
-      </div>
-      <canvas id="dotG" style="width:100%;display:block;height:64px;" height="64" role="img" aria-label="Daily spend chart"></canvas>
-      <div class="spark-days">Daily spend · each column is one day · taller = more spend</div>
-    </div>
-  </div>
+  <!-- Product cards -->
+  <div class="spark-grid" id="sparkGrid"></div>
 
   <!-- Products table -->
   <div class="card prod-card">
     <div class="ch" style="padding:12px 16px;">
       <div class="clabel">Ad Accounts</div>
-      <button class="menu-btn">···</button>
+      <button class="menu-btn" data-menu="table" aria-haspopup="menu" aria-expanded="false" aria-label="Table options">···</button>
     </div>
     <div class="tbl-wrap">
       <table class="ptbl">
-        <thead>
-          <tr>
-            <th>Product</th><th>Spend MTD</th><th>Impressions</th>
-            <th>Clicks</th><th>CPC</th><th>CPM</th><th>Budget Use</th><th>Status</th>
-          </tr>
-        </thead>
+        <thead id="pthead"></thead>
         <tbody id="ptbody"></tbody>
       </table>
     </div>
@@ -479,7 +555,7 @@ input,select{font-family:inherit;}
   <div class="ph">
     <div>
       <div class="ph-title">Test Budgets</div>
-      <div class="ph-sub">Track spend against test allocations per product</div>
+      <div class="ph-sub">Spend counts from each test’s start date, whatever range you pick on the Overview</div>
     </div>
     <div class="ph-actions">
       <div class="fpills">
@@ -569,33 +645,46 @@ input,select{font-family:inherit;}
 </div>
 
 <script>
-// ── Meta data snapshot ──────────────────────────────────────────────────
-// Pulled from the Meta Ads API on 6 Nov 2026, 23:15 Berlin. Range: this month (Nov 1–6; Nov 6 still in progress).
-// clicks = link clicks, lpv = landing page views (fired by the Meta Pixel on the lander).
-// daily = amount spent per day, Nov 1–6. Nothing here is estimated.
-const DATA_AS_OF = new Date('2026-11-06T23:15:00+01:00');
-const DAY_LABELS = ['Nov 1','Nov 2','Nov 3','Nov 4','Nov 5','Nov 6'];
-const LIVE = {
-  wellness: {spend:278.96, impr:8115, clicks:90, lpv:53, daily:[0.00,0.00,1.25,35.23,59.90,182.58]},
-  neuro:    {spend:47.32, impr:8953, clicks:43, lpv:12, daily:[0.00,0.00,2.96,21.50,20.12,2.74]},
-  glp:      {spend:184.7, impr:13616, clicks:61, lpv:29, daily:[0.00,0.00,3.31,34.75,73.86,72.78]},
-};
-// JVZoo S2S postbacks received by NUTRA Tracker (connected 6 Nov 2026, ~02:00 Berlin). wellness = Synaptril.
-const JVZ_SINCE = 'Nov 6';
-const JVZ = {
-  wellness: {checkouts:1, sales:0, refunds:0, commission:0},
-  neuro:    {checkouts:0, sales:0, refunds:0, commission:0},
-  glp:      {checkouts:1, sales:0, refunds:0, commission:0},
-};
-Object.values(LIVE).forEach(d=>{d.cpc=d.clicks?d.spend/d.clicks:null;d.cpm=d.impr?d.spend/d.impr*1000:null;});
+// @@DATA_START (numbers only; refreshed hourly by the "NUTRA Dashboard Meta Sync" scheduled task via update.py, see README.md)
+const DATA = {"asOf":"2026-11-06T23:15:00+01:00","jvz":{"glp":{"2026-11-06":[1,0,0,0]},"neuro":{},"wellness":{"2026-11-06":[1,0,0,0]}},"jvzSince":"2026-11-06","meta":{"glp":{"2026-11-03":[3.31,1068,1,0],"2026-11-04":[34.75,4197,25,7],"2026-11-05":[73.86,6867,19,9],"2026-11-06":[72.78,1484,16,13]},"neuro":{"2026-11-03":[2.96,1218,0,0],"2026-11-04":[21.5,3802,24,2],"2026-11-05":[20.12,3333,17,9],"2026-11-06":[2.74,600,2,1]},"wellness":{"2026-11-03":[1.25,394,0,0],"2026-11-04":[35.23,2212,40,19],"2026-11-05":[59.9,4241,12,5],"2026-11-06":[182.58,1268,38,29]}},"metaFrom":"2026-10-28","today":"2026-11-06","warn":[]};
+// @@DATA_END
+// DATA.meta[product][YYYY-MM-DD] = [spend, impressions, link clicks, landing page views]   Meta Ads API, ad account days
+// DATA.jvz[product][YYYY-MM-DD]  = [checkout visits, sales, refunds, commission]           JVZoo postbacks (NUTRA Tracker), UTC days
+// Nothing on this page is estimated: a number either comes from these two sources, from manual entries, or shows as "—".
+
 const PROD = {
-  wellness:{name:'Wellness Notes', acct:'1614901483744859', color:'#2563EB', cls:'c1'},
-  neuro:   {name:'NeuroSharp',      acct:'1105909655657509', color:'#7C3AED', cls:'c2'},
-  glp:     {name:'Glpatches',       acct:'1148819018097191', color:'#DB2777', cls:'c3'},
+  wellness:{name:'Wellness Notes', offer:'Synaptril',  acct:'1614901483744859', color:'#2563EB', tint:'var(--accent-lt)', ink:'var(--accent)', cls:'c1',
+            lander:'https://wellnestnotes.com',          buy:[['2 bottles','https://www.jvzoo.com/b/117503/451967/99?src=yOj909O&aid=3601021'],['3 bottles','https://www.jvzoo.com/b/117503/451969/99?src=yOj909O&aid=3601021'],['6 bottles','https://www.jvzoo.com/b/117503/451971/99?src=yOj909O&aid=3601021']]},
+  neuro:   {name:'NeuroSharp',     offer:'NeuroSharp', acct:'1105909655657509', color:'#7C3AED', tint:'var(--purple-lt)', ink:'var(--purple)', cls:'c2',
+            lander:'https://vitalroutinedaily.com',      buy:[['2 bottles','https://www.jvzoo.com/b/118457/453339/99?aid=3601021'],['3 bottles','https://www.jvzoo.com/b/118457/453343/99?aid=3601021'],['6 bottles','https://www.jvzoo.com/b/118457/453345/99?aid=3601021']]},
+  glp:     {name:'Glpatches',      offer:'GLPatches',  acct:'1148819018097191', color:'#DB2777', tint:'var(--pink-lt)',   ink:'var(--pink)',   cls:'c3',
+            lander:'https://everydaywellnesspicks.com',  buy:[['2 pack','https://www.jvzoo.com/b/117757/446537/99?aid=3601021'],['3 pack','https://www.jvzoo.com/b/117757/447307/99?aid=3601021'],['6 pack','https://www.jvzoo.com/b/117757/447309/99?aid=3601021']]},
 };
 const KEYS = ['wellness','neuro','glp'];
+const JVZOO_REPORTS='https://www.jvzoo.com/affiliatereportcenter';
+const TRACKER_URL='https://nutra-tracker.lovable.app';
 
-// ── Persistence ──────────────────────────────────────────────────────────
+// ── Dates: plain YYYY-MM-DD strings, handled in UTC so time zones can't shift a day ──
+const DATA_AS_OF=new Date(DATA.asOf), TODAY=DATA.today, FIRST=DATA.metaFrom, JVZ_SINCE=DATA.jvzSince;
+const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const MONL=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const D0=s=>new Date(s+'T00:00:00Z');
+const iso=d=>d.toISOString().slice(0,10);
+const addD=(s,n)=>{const d=D0(s);d.setUTCDate(d.getUTCDate()+n);return iso(d);};
+const diffD=(a,b)=>Math.round((D0(b)-D0(a))/864e5);
+const addM=(s,n)=>{const d=D0(s.slice(0,8)+'01');d.setUTCMonth(d.getUTCMonth()+n);return iso(d);};
+const monthEnd=s=>addD(addM(s,1),-1);
+const dow=s=>(D0(s).getUTCDay()+6)%7; // Monday = 0
+const fmtD=(s,yr)=>{const d=D0(s);return MON[d.getUTCMonth()]+' '+d.getUTCDate()+(yr?', '+d.getUTCFullYear():'');};
+function fmtRange(f,t){
+  const yr=f.slice(0,4)!==TODAY.slice(0,4)||t.slice(0,4)!==TODAY.slice(0,4);
+  if(f===t)return fmtD(f,yr);
+  if(f.slice(0,7)===t.slice(0,7))return fmtD(f)+' – '+D0(t).getUTCDate()+(yr?', '+t.slice(0,4):'');
+  return fmtD(f,yr&&f.slice(0,4)!==t.slice(0,4))+' – '+fmtD(t,yr);
+}
+const berlin=d=>d.toLocaleString('en-GB',{timeZone:'Europe/Berlin',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+
+// ── Persistence (per-browser conveniences only) ──
 function ls(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch(e){return d;}}
 function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
 
@@ -609,188 +698,490 @@ let blogEvents = ls('nutra_blog_v3',[
   {date:'2026-11-03',prod:'neuro',   event:'assigned',amount:75},
   {date:'2026-11-03',prod:'glp',     event:'assigned',amount:100},
 ]);
-// First Meta spend was Nov 3; move the old placeholder start date to it
 Object.values(budgets).forEach(b=>{if(b&&b.start==='2026-10-28')b.start='2026-11-03';});
 blogEvents.forEach(e=>{if(e.date==='2026-10-28'&&e.event==='assigned')e.date='2026-11-03';});
 let afSales = ls('nutra_afsales_v1',[]);
 
+const VIEW_DEFAULT={kpis:['spend','clicks','cpc','rev'],funnel:'counts',rev:'rev',spark:{wellness:'spend',neuro:'spend',glp:'spend'},
+  cols:['spend','impr','clicks','ctr','cpc','lpv','checkouts','budget','status'],sort:'spend',focus:null};
+let view=Object.assign({},VIEW_DEFAULT,ls('nutra_view_v1',{}));
+view.spark=Object.assign({},VIEW_DEFAULT.spark,view.spark||{});
+const saveView=()=>lsSet('nutra_view_v1',view);
+
 let activeTab='overview', bFilter='all', fProd='all';
 
-// ── Utilities ────────────────────────────────────────────────────────────
+// ── Formatting ──
 const $=id=>document.getElementById(id);
-const fmt=(n,d=2)=>n==null?'—':(+n<0?'−':'')+'$'+Math.abs(+n).toFixed(d).replace(/\B(?=(\d{3})+(?!\d))/g,',');
-const fmtN=n=>n==null?'—':(+n).toLocaleString();
+const fmt=(n,d=2)=>n==null||!isFinite(n)?'—':(+n<0?'−':'')+'$'+Math.abs(+n).toFixed(d).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+const fmtN=n=>n==null?'—':(+n).toLocaleString('en-US');
 const fmtK=n=>n==null?'—':(n>=1000?(n/1000).toFixed(1)+'k':String(n));
-function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600);}
-function afRev(k){return afSales.filter(s=>s.prod===k).reduce((a,s)=>a+s.amount,0)+((JVZ[k]&&JVZ[k].commission)||0);}
-function afTotal(){return KEYS.reduce((a,k)=>a+afRev(k),0);}
+const pct=(n,d=1)=>n==null||!isFinite(n)?'—':n.toFixed(d)+'%';
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('show'),2600);}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+// ── Aggregation over any date range ──
+function agg(ks,from,to){
+  const o={spend:0,impr:0,clicks:0,lpv:0,checkouts:0,sales:0,refunds:0,commission:0,manual:0,manualRev:0};
+  ks.forEach(k=>{
+    const m=DATA.meta[k]||{},j=DATA.jvz[k]||{};
+    for(const d in m)if(d>=from&&d<=to){const r=m[d];o.spend+=r[0];o.impr+=r[1];o.clicks+=r[2];o.lpv+=r[3];}
+    for(const d in j)if(d>=from&&d<=to){const r=j[d];o.checkouts+=r[0];o.sales+=r[1];o.refunds+=r[2];o.commission+=r[3];}
+    afSales.forEach(s=>{if(s.prod===k&&s.date>=from&&s.date<=to){o.manual++;o.manualRev+=s.amount;}});
+  });
+  o.spend=Math.round(o.spend*100)/100;
+  o.rev=Math.round((o.commission+o.manualRev)*100)/100;
+  o.allSales=o.sales+o.manual;
+  return o;
+}
+function sinceStart(k){const b=budgets[k]||{};return agg([k],b.start||FIRST,TODAY);}
+function series(k,from,to,idx){const m=DATA.meta[k]||{},out=[];for(let d=from;d<=to;d=addD(d,1)){const r=m[d];out.push({d,v:r?r[idx]:0});}return out;}
+const hasSpend=d=>KEYS.some(k=>{const r=(DATA.meta[k]||{})[d];return r&&r[0]>0;});
+
+// ── Metric catalogue (used by KPI tiles, revenue panel and the table) ──
+// good: true = higher is better, false = lower is better, null = neutral
+const METRICS={
+  spend:    {label:'Spend',              f:c=>c.spend,                                   fmt:v=>fmt(v),              good:null},
+  impr:     {label:'Impressions',        f:c=>c.impr,                                    fmt:fmtK,                   good:true},
+  clicks:   {label:'Link clicks',        f:c=>c.clicks,                                  fmt:fmtN,                   good:true},
+  ctr:      {label:'CTR (link)',         f:c=>c.impr?c.clicks/c.impr*100:null,           fmt:v=>pct(v,2),            good:true},
+  cpc:      {label:'Cost per click',     f:c=>c.clicks?c.spend/c.clicks:null,            fmt:v=>fmt(v),              good:false},
+  cpm:      {label:'CPM',                f:c=>c.impr?c.spend/c.impr*1000:null,           fmt:v=>fmt(v),              good:false},
+  lpv:      {label:'Landing page views', f:c=>c.lpv,                                     fmt:fmtN,                   good:true},
+  lpvRate:  {label:'Page-load rate',     f:c=>c.clicks?c.lpv/c.clicks*100:null,          fmt:v=>pct(v,0),            good:true, hint:'Share of link clicks that loaded your landing page'},
+  cplpv:    {label:'Cost per page view', f:c=>c.lpv?c.spend/c.lpv:null,                  fmt:v=>fmt(v),              good:false},
+  checkouts:{label:'JVZoo checkouts',    f:c=>c.checkouts,                               fmt:fmtN,                   good:true, jvz:true},
+  sales:    {label:'Sales',              f:c=>c.allSales,                                fmt:fmtN,                   good:true, jvz:true},
+  rev:      {label:'Commission',         f:c=>c.rev,                                     fmt:v=>fmt(v),              good:true, jvz:true},
+  roas:     {label:'ROAS',               f:c=>c.spend?c.rev/c.spend:null,                fmt:v=>v==null?'—':v.toFixed(2)+'×', good:true, jvz:true},
+  net:      {label:'Net profit',         f:c=>c.rev-c.spend,                             fmt:v=>fmt(v),              good:true, jvz:true},
+  cpa:      {label:'Cost per sale',      f:c=>c.allSales?c.spend/c.allSales:null,        fmt:v=>fmt(v),              good:false, jvz:true},
+};
+const TABLE_COLS={...Object.fromEntries(Object.entries(METRICS).map(([k,m])=>[k,m.label])),budget:'Budget (since start)',status:'Status'};
+
 function bStatus(k){
   const b=budgets[k];if(!b)return'on-track';
-  const pct=b.budget>0?LIVE[k].spend/b.budget*100:0;
+  const p=b.budget>0?sinceStart(k).spend/b.budget*100:0;
   if(b.paused)return'paused';
-  if(pct>=100)return'depleted';
-  if(pct>=b.warnAt)return'watch';
+  if(p>=100)return'depleted';
+  if(p>=b.warnAt)return'watch';
   return'on-track';
 }
+const STL={'on-track':'ON TRACK',watch:'WATCH',depleted:'DEPLETED',paused:'PAUSED'};
 
-// ── Tab switch ───────────────────────────────────────────────────────────
+// ── Date range: presets, stepping, picker ──
+const PRESETS=[
+  {id:'today',    label:'Today',        get:()=>[TODAY,TODAY]},
+  {id:'yesterday',label:'Yesterday',    get:()=>{const y=addD(TODAY,-1);return[y,y];}},
+  {id:'last7',    label:'Last 7 days',  get:()=>[addD(TODAY,-6),TODAY]},
+  {id:'last14',   label:'Last 14 days', get:()=>[addD(TODAY,-13),TODAY]},
+  {id:'last30',   label:'Last 30 days', get:()=>[addD(TODAY,-29),TODAY]},
+  {id:'thisweek', label:'This week',    get:()=>[addD(TODAY,-dow(TODAY)),TODAY]},
+  {id:'lastweek', label:'Last week',    get:()=>{const s=addD(TODAY,-dow(TODAY)-7);return[s,addD(s,6)];}},
+  {id:'thismonth',label:'This month',   get:()=>[TODAY.slice(0,8)+'01',TODAY]},
+  {id:'lastmonth',label:'Last month',   get:()=>{const s=addM(TODAY,-1);return[s,monthEnd(s)];}},
+  {id:'all',      label:'All time',     get:()=>[FIRST,TODAY]},
+];
+let range=ls('nutra_range_v1',{preset:'thismonth'});
+function curRange(){
+  if(range.preset&&range.preset!=='custom'){
+    const p=PRESETS.find(x=>x.id===range.preset)||PRESETS[7];const[f,t]=p.get();
+    return{from:f,to:t,label:p.label,preset:p.id};
+  }
+  if(range.from&&range.to&&range.from<=range.to&&range.to<=TODAY)return{from:range.from,to:range.to,label:'Custom range',preset:'custom'};
+  const[f,t]=PRESETS[7].get();return{from:f,to:t,label:'This month',preset:'thismonth'};
+}
+function matchPreset(f,t){return PRESETS.find(p=>{const[a,b]=p.get();return a===f&&b===t;});}
+function setRange(f,t){
+  const m=matchPreset(f,t);
+  range=m?{preset:m.id}:{preset:'custom',from:f,to:t};
+  lsSet('nutra_range_v1',range);renderOverview();
+}
+function stepRange(dir){
+  const r=curRange();let f,t;
+  const fullMonth=r.from.slice(8)==='01'&&(r.to===monthEnd(r.from)||(r.to===TODAY&&r.from.slice(0,7)===TODAY.slice(0,7)));
+  if(fullMonth){f=addM(r.from,dir);t=f.slice(0,7)===TODAY.slice(0,7)?TODAY:monthEnd(f);}
+  else{const len=diffD(r.from,r.to)+1;f=addD(r.from,dir*len);t=addD(r.to,dir*len);}
+  if(f>TODAY)return;if(t>TODAY)t=TODAY;
+  setRange(f,t);
+}
+function renderRangeButton(){
+  const r=curRange();
+  const m=matchPreset(r.from,r.to);
+  $('dpName').textContent=m?m.label:(r.from.slice(8)==='01'&&r.to===monthEnd(r.from)?MONL[D0(r.from).getUTCMonth()]+' '+r.from.slice(0,4):'Custom range');
+  $('dpDates').textContent=fmtRange(r.from,r.to)+(r.to===TODAY?' · today so far':'');
+  $('dpPrev').disabled=r.from<=FIRST;
+  $('dpNext').disabled=r.to>=TODAY;
+}
+
+const narrow=()=>window.matchMedia('(max-width:819px)').matches;
+let dp={open:false};
+function openDP(){
+  const r=curRange();
+  const endM=r.to.slice(0,8)+'01',lastM=TODAY.slice(0,8)+'01';
+  let v=narrow()?endM:addM(endM,-1);
+  if(!narrow()&&endM===lastM)v=addM(lastM,-1);
+  dp={open:true,from:r.from,to:r.to,anchor:null,hover:null,view:v};
+  renderDP();
+  $('dpPop').hidden=false;$('dpScrim').hidden=false;$('dpBtn').setAttribute('aria-expanded','true');
+  const sel=$('dpPop').querySelector('.dp-day.end')||$('dpPop').querySelector('.dp-preset.on');
+  (sel||$('dpPop').querySelector('button')).focus();
+}
+function closeDP(refocus){
+  if(!dp.open)return;dp.open=false;
+  $('dpPop').hidden=true;$('dpScrim').hidden=true;$('dpBtn').setAttribute('aria-expanded','false');
+  if(refocus)$('dpBtn').focus();
+}
+function dpBounds(){return dp.anchor&&dp.hover?(dp.anchor<dp.hover?[dp.anchor,dp.hover]:[dp.hover,dp.anchor]):[dp.from,dp.to];}
+function renderDP(){
+  const draftMatch=matchPreset(dp.from,dp.to);
+  $('dpPresets').innerHTML=PRESETS.map(p=>{const[a,b]=p.get();const on=!dp.anchor&&draftMatch&&draftMatch.id===p.id;
+    return`<button type="button" class="dp-preset${on?' on':''}" data-preset="${p.id}" aria-pressed="${!!on}"><span>${p.label}</span><small>${fmtRange(a,b)}</small></button>`;}).join('');
+  const months=narrow()?[dp.view]:[dp.view,addM(dp.view,1)];
+  const firstM=FIRST.slice(0,8)+'01',lastM=TODAY.slice(0,8)+'01';
+  $('dpCals').innerHTML=months.map((m,mi)=>{
+    const d1=D0(m),y=d1.getUTCFullYear(),mo=d1.getUTCMonth(),n=diffD(m,addM(m,1)),lead=dow(m);
+    const canPrev=m>firstM,canNext=months[months.length-1]<lastM;
+    let cells='';for(let i=0;i<lead;i++)cells+='<span class="dp-blank"></span>';
+    for(let i=0;i<n;i++){const d=addD(m,i),dis=d<FIRST||d>TODAY;
+      cells+=`<button type="button" class="dp-day${d===TODAY?' today':''}${!dis&&hasSpend(d)?' data':''}" data-d="${d}"${dis?' disabled':''} aria-label="${fmtD(d,true)}"><span>${i+1}</span></button>`;}
+    return`<div class="dp-month">
+      <div class="dp-mhead">
+        ${mi===0?`<button type="button" class="dp-nav" data-nav="-1" aria-label="Previous month"${canPrev?'':' disabled'}><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 3L5 8l5 5"/></svg></button>`:'<span class="dp-nav ghost"></span>'}
+        <div class="dp-mtitle">${MONL[mo]} ${y}</div>
+        ${mi===months.length-1?`<button type="button" class="dp-nav" data-nav="1" aria-label="Next month"${canNext?'':' disabled'}><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3l5 5-5 5"/></svg></button>`:'<span class="dp-nav ghost"></span>'}
+      </div>
+      <div class="dp-wk">${['Mo','Tu','We','Th','Fr','Sa','Su'].map(w=>`<span>${w}</span>`).join('')}</div>
+      <div class="dp-grid">${cells}</div>
+    </div>`;}).join('');
+  paintDP();
+}
+function paintDP(){
+  const[a,b]=dpBounds();
+  $('dpCals').querySelectorAll('.dp-day').forEach(el=>{const d=el.dataset.d;
+    el.classList.toggle('start',d===a);el.classList.toggle('end',d===b);el.classList.toggle('mid',d>a&&d<b);
+    el.setAttribute('aria-pressed',d>=a&&d<=b);});
+  const n=diffD(a,b)+1;
+  $('dpSel').innerHTML=dp.anchor?`<b>${fmtD(dp.anchor)}</b> → pick an end date`:`<b>${fmtRange(a,b)}</b> · ${n} day${n>1?'s':''}`;
+  $('dpApply').disabled=!!dp.anchor;
+}
+function initDP(){
+  $('dpBtn').addEventListener('click',e=>{e.stopPropagation();dp.open?closeDP(true):openDP();});
+  $('dpPrev').addEventListener('click',()=>stepRange(-1));
+  $('dpNext').addEventListener('click',()=>stepRange(1));
+  $('dpScrim').addEventListener('click',()=>closeDP(true));
+  $('dpCancel').addEventListener('click',()=>closeDP(true));
+  $('dpApply').addEventListener('click',()=>{setRange(dp.from,dp.to);closeDP(true);});
+  const pop=$('dpPop');
+  pop.addEventListener('click',e=>{
+    e.stopPropagation();
+    const p=e.target.closest('[data-preset]'),day=e.target.closest('[data-d]'),nav=e.target.closest('[data-nav]');
+    if(p){const pr=PRESETS.find(x=>x.id===p.dataset.preset);const[a,b]=pr.get();range={preset:pr.id};lsSet('nutra_range_v1',range);renderOverview();closeDP(true);return;}
+    if(nav){dp.view=addM(dp.view,+nav.dataset.nav);renderDP();return;}
+    if(day&&!day.disabled){const d=day.dataset.d;
+      if(!dp.anchor){dp.anchor=d;dp.from=d;dp.to=d;dp.hover=d;}
+      else{const[a,b]=dp.anchor<d?[dp.anchor,d]:[d,dp.anchor];dp.from=a;dp.to=b;dp.anchor=null;dp.hover=null;}
+      renderDP();const f=$('dpCals').querySelector(`[data-d="${d}"]`);if(f)f.focus();}
+  });
+  pop.addEventListener('mouseover',e=>{const day=e.target.closest('[data-d]');if(dp.anchor&&day&&!day.disabled&&dp.hover!==day.dataset.d){dp.hover=day.dataset.d;paintDP();}});
+  pop.addEventListener('keydown',e=>{
+    if(e.key==='Escape'){e.preventDefault();closeDP(true);return;}
+    const day=e.target.closest('[data-d]');if(!day)return;
+    const mv={ArrowLeft:-1,ArrowRight:1,ArrowUp:-7,ArrowDown:7}[e.key];if(!mv)return;
+    e.preventDefault();let t=addD(day.dataset.d,mv);if(t<FIRST)t=FIRST;if(t>TODAY)t=TODAY;
+    if(!$('dpCals').querySelector(`[data-d="${t}"]`)){dp.view=narrow()?t.slice(0,8)+'01':(t<dp.view?t.slice(0,8)+'01':addM(t.slice(0,8)+'01',-1));renderDP();}
+    if(dp.anchor){dp.hover=t;paintDP();}
+    const n=$('dpCals').querySelector(`[data-d="${t}"]`);if(n)n.focus();
+  });
+  document.addEventListener('click',()=>closeDP(false));
+  window.addEventListener('resize',()=>{if(dp.open)renderDP();});
+}
+
+// ── Card menus (the ··· buttons) ──
+let menu={open:false};
+function menuSpec(kind,btn){
+  const ks=view.focus?[view.focus]:KEYS;
+  if(kind==='kpi'){const i=+btn.dataset.i;return{title:'Show in this tile',groups:[
+    {type:'radio',items:Object.entries(METRICS).map(([k,m])=>({id:k,label:m.label,on:view.kpis[i]===k,disabled:view.kpis.includes(k)&&view.kpis[i]!==k,note:view.kpis.includes(k)&&view.kpis[i]!==k?'shown':''})),
+     pick:id=>{view.kpis[i]=id;}},
+    {type:'action',items:[{id:'reset',label:'Reset tiles to default',run:()=>{view.kpis=[...VIEW_DEFAULT.kpis];}}]}]};}
+  if(kind==='funnel')return{title:'Funnel',groups:[
+    {type:'radio',label:'Show',items:[{id:'counts',label:'Counts',on:view.funnel==='counts'},{id:'rates',label:'Conversion rates',on:view.funnel==='rates'}],pick:id=>{view.funnel=id;}},
+    {type:'action',items:[{id:'tracker',label:'Open sales tracker ↗',href:TRACKER_URL}]}]};
+  if(kind==='rev')return{title:'Revenue panel',groups:[
+    {type:'radio',label:'Compare products by',items:['rev','allsales','roas','net'].map(id=>{const k=id==='allsales'?'sales':id;return{id:k,label:METRICS[k].label,on:view.rev===k};}),pick:id=>{view.rev=id;}},
+    {type:'action',items:[{id:'jvz',label:'Open JVZoo reports ↗',href:JVZOO_REPORTS},{id:'tracker',label:'Open sales tracker ↗',href:TRACKER_URL}]}]};
+  if(kind==='spark'){const k=btn.dataset.k,P=PROD[k];return{title:P.name,groups:[
+    {type:'radio',label:'Daily chart',items:[['spend','Spend'],['impr','Impressions'],['clicks','Link clicks'],['lpv','Landing page views']].map(([id,l])=>({id,label:l,on:view.spark[k]===id})),pick:id=>{view.spark[k]=id;}},
+    {type:'action',label:'Dashboard',items:[{id:'focus',label:view.focus===k?'Show all products again':`Focus dashboard on ${P.name}`,run:()=>{view.focus=view.focus===k?null:k;fProd=view.focus||'all';}}]},
+    {type:'action',label:'Links',items:[{id:'lander',label:`Open landing page ↗`,href:P.lander,sub:P.lander.replace('https://','')},
+      ...P.buy.map(([l,u])=>({id:'buy',label:`Copy ${l} buy link`,copy:u,sub:'Copy only: opening it counts as a checkout visit'})),
+      {id:'ads',label:'Copy Ads Manager link',copy:`https://adsmanager.facebook.com/adsmanager/manage/campaigns?act=${P.acct}`,sub:`Account ${P.acct}`}]}]};}
+  if(kind==='table')return{title:'Ad accounts table',groups:[
+    {type:'check',label:'Columns',items:Object.entries(TABLE_COLS).map(([k,l])=>({id:k,label:l,on:view.cols.includes(k)})),
+     toggle:id=>{view.cols=view.cols.includes(id)?view.cols.filter(c=>c!==id):Object.keys(TABLE_COLS).filter(c=>c===id||view.cols.includes(c));}},
+    {type:'radio',label:'Sort by',items:['spend','clicks','ctr','cpc','lpv','checkouts','rev','roas'].map(k=>({id:k,label:METRICS[k].label,on:view.sort===k})),pick:id=>{view.sort=id;},keep:true},
+    {type:'action',items:[{id:'copy',label:'Copy table',run:()=>copyTable(),keepToast:true},{id:'reset',label:'Reset columns',run:()=>{view.cols=[...VIEW_DEFAULT.cols];view.sort='spend';}}]}]};
+  return null;
+}
+function openMenu(btn){
+  const kind=btn.dataset.menu,spec=menuSpec(kind,btn);if(!spec)return;
+  if(menu.open&&menu.btn===btn){closeMenu(true);return;}
+  closeMenu(false);
+  const m=$('cardMenu');
+  m.innerHTML=`<div class="cm-title">${esc(spec.title)}</div>`+spec.groups.map((g,gi)=>`
+    ${g.label?`<div class="cm-label">${esc(g.label)}</div>`:''}
+    <div class="cm-group" role="group">${g.items.map((it,ii)=>{
+      const role=g.type==='radio'?'menuitemradio':g.type==='check'?'menuitemcheckbox':'menuitem';
+      const chk=g.type==='action'?'':`<span class="cm-check${g.type==='check'?' box':''}" aria-hidden="true"></span>`;
+      const inner=`${chk}<span class="cm-txt">${esc(it.label)}${it.sub?`<small>${esc(it.sub)}</small>`:''}</span>${it.note?`<em>${esc(it.note)}</em>`:''}`;
+      if(it.href)return`<a role="menuitem" class="cm-item" href="${esc(it.href)}" target="_blank" rel="noopener" data-g="${gi}" data-i="${ii}">${inner}</a>`;
+      return`<button type="button" role="${role}" class="cm-item${it.on?' on':''}" ${g.type!=='action'?`aria-checked="${!!it.on}"`:''} data-g="${gi}" data-i="${ii}"${it.disabled?' disabled':''}>${inner}</button>`;
+    }).join('')}</div>`).join('');
+  m.hidden=false;menu={open:true,btn,spec,kind};
+  btn.setAttribute('aria-expanded','true');
+  placeMenu();
+  const first=m.querySelector('.cm-item.on:not([disabled])')||m.querySelector('.cm-item:not([disabled])');if(first)first.focus();
+}
+function placeMenu(){
+  const m=$('cardMenu'),r=menu.btn.getBoundingClientRect(),w=m.offsetWidth,h=m.offsetHeight;
+  let left=Math.min(Math.max(8,r.right-w),window.innerWidth-w-8),top=r.bottom+6;
+  if(top+h>window.innerHeight-8&&r.top-h-6>8)top=r.top-h-6;
+  if(top+h>window.innerHeight-8)top=Math.max(8,window.innerHeight-h-8);
+  m.style.left=left+'px';m.style.top=top+'px';
+}
+function closeMenu(refocus){
+  if(!menu.open)return;$('cardMenu').hidden=true;menu.btn.setAttribute('aria-expanded','false');
+  if(refocus)menu.btn.focus();menu={open:false};
+}
+function rerenderAll(){saveView();renderOverview();}
+function initMenus(){
+  document.addEventListener('click',e=>{
+    const b=e.target.closest('[data-menu]');
+    if(b){e.stopPropagation();openMenu(b);return;}
+    if(menu.open&&!e.target.closest('#cardMenu'))closeMenu(false);
+  });
+  const m=$('cardMenu');
+  m.addEventListener('click',e=>{
+    e.stopPropagation();
+    const it=e.target.closest('.cm-item');if(!it||it.disabled)return;
+    const g=menu.spec.groups[+it.dataset.g],item=g.items[+it.dataset.i];
+    if(item.href){closeMenu(false);return;}
+    e.preventDefault();
+    if(item.copy){copyText(item.copy,`${item.label.replace('Copy ','')} copied`);closeMenu(true);return;}
+    const btn=menu.btn,kind=menu.kind;
+    if(g.type==='radio'){g.pick(item.id);rerenderAll();closeMenu(false);reopen(kind,btn,g.keep);return;}
+    if(g.type==='check'){g.toggle(item.id);rerenderAll();reopen(kind,btn,true);return;}
+    if(item.run){item.run();if(!item.keepToast)rerenderAll();closeMenu(false);reopen(kind,btn,false);}
+  });
+  m.addEventListener('keydown',e=>{
+    const items=[...m.querySelectorAll('.cm-item:not([disabled])')],i=items.indexOf(document.activeElement);
+    if(e.key==='Escape'){e.preventDefault();closeMenu(true);}
+    else if(e.key==='ArrowDown'){e.preventDefault();items[(i+1)%items.length].focus();}
+    else if(e.key==='ArrowUp'){e.preventDefault();items[(i-1+items.length)%items.length].focus();}
+    else if(e.key==='Tab'){closeMenu(false);}
+  });
+  window.addEventListener('resize',()=>closeMenu(false));
+  window.addEventListener('scroll',()=>{if(menu.open)placeMenu();},{passive:true});
+}
+// Re-open the same menu after a re-render (the button element is rebuilt), so multi-select stays open
+function reopen(kind,oldBtn,stay){
+  if(!stay)return;
+  const sel=kind==='kpi'?`[data-menu="kpi"][data-i="${oldBtn.dataset.i}"]`:kind==='spark'?`[data-menu="spark"][data-k="${oldBtn.dataset.k}"]`:`[data-menu="${kind}"]`;
+  const nb=document.querySelector(sel);if(nb){closeMenu(false);openMenu(nb);}
+}
+function copyText(text,msg){
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(()=>toast(msg),()=>fallbackCopy(text,msg));}
+  else fallbackCopy(text,msg);
+}
+function fallbackCopy(text,msg){
+  const t=document.createElement('textarea');t.value=text;t.setAttribute('readonly','');t.style.position='fixed';t.style.opacity='0';document.body.appendChild(t);t.select();
+  let ok=false;try{ok=document.execCommand('copy');}catch(e){}
+  t.remove();toast(ok?msg:'Copy isn’t allowed here. Select the text and copy it by hand.');
+}
+
+// ── Overview ──
+function cmp(cur,prev,good,label){
+  if(prev==null||cur==null)return`<span class="cmp-vs">${label?'No earlier data to compare':''}</span>`;
+  if(prev===0&&cur===0)return`<span class="cmp">No change</span> <span class="cmp-vs">${label}</span>`;
+  if(prev===0)return`<span class="cmp${good===null?'':good?' up':' dn'}">New</span> <span class="cmp-vs">${label}</span>`;
+  const p=(cur-prev)/Math.abs(prev)*100,up=p>=0,cls=good===null||Math.abs(p)<.5?'':(up===good?' up':' dn');
+  return`<span class="cmp${cls}">${up?'▲':'▼'} ${Math.abs(p)>=999?'999+':Math.abs(p).toFixed(0)}%</span> <span class="cmp-vs">${label}</span>`;
+}
+function renderOverview(){
+  const r=curRange(),ks=view.focus?[view.focus]:KEYS,c=agg(ks,r.from,r.to);
+  const len=diffD(r.from,r.to)+1,pf=addD(r.from,-len),pt=addD(r.from,-1);
+  const p=pt>=FIRST?agg(ks,pf,pt):null,vs='vs '+fmtRange(pf,pt);
+  const jvzPartial=r.from<JVZ_SINCE;
+  renderRangeButton();
+  $('phSub').textContent=`${fmtRange(r.from,r.to)} · ${view.focus?PROD[view.focus].name:'3 ad accounts'}`;
+  $('focusChip').hidden=!view.focus;
+  if(view.focus)$('focusName').textContent=PROD[view.focus].name;
+
+  // KPI tiles
+  $('kpiGrid').innerHTML=view.kpis.map((key,i)=>{const M=METRICS[key];const v=M.f(c),pv=p?M.f(p):null;
+    const note=M.jvz&&jvzPartial?`<div class="ksub">JVZoo counted from ${fmtD(JVZ_SINCE)}</div>`:'';
+    return`<div class="card kcard">
+      <div class="kc-head"><div class="clabel"${M.hint?` title="${esc(M.hint)}"`:''}>${M.label}</div>
+        <button class="menu-btn" data-menu="kpi" data-i="${i}" aria-haspopup="menu" aria-expanded="false" aria-label="Change what this tile shows">···</button></div>
+      <div class="knum">${M.fmt(v)}</div>
+      <div class="ksub kcmp">${cmp(v,pv,M.good,vs)}</div>${note}
+    </div>`;}).join('');
+
+  renderFunnel();
+
+  // Revenue panel
+  const RM=METRICS[view.rev]||METRICS.rev;
+  $('revLabel').textContent=view.rev==='rev'?'Affiliate Revenue':RM.label;
+  $('revHero').textContent=RM.fmt(RM.f(c));
+  $('revSub').textContent=r.to<JVZ_SINCE?`JVZoo tracking starts ${fmtD(JVZ_SINCE)}`:(jvzPartial?`JVZoo counted from ${fmtD(JVZ_SINCE)} · plus manual entries`:'JVZoo postbacks + manual entries');
+  const vals=KEYS.map(k=>({k,v:RM.f(agg([k],r.from,r.to))}));
+  const mx=Math.max(...vals.map(x=>Math.abs(x.v||0)),1e-9);
+  $('revRows').innerHTML=vals.map(({k,v})=>`<div>
+    <div class="rrow-lbl">${PROD[k].name}<span>${RM.fmt(v)}</span></div>
+    <div class="rbar-track"><div class="rbar-fill ${PROD[k].cls}" style="width:${v>0?(v/mx*100).toFixed(1):0}%"></div></div>
+  </div>`).join('');
+  const note=$('jvzooNote');
+  if(c.rev===0&&c.allSales===0){note.hidden=false;
+    note.innerHTML=r.to<JVZ_SINCE?`<strong>No JVZoo data for this period</strong>JVZoo tracking started ${fmtD(JVZ_SINCE)}, after the dates you picked.`
+      :`<strong>No sales ${r.preset==='today'?'today':'in this period'}</strong>JVZoo reported ${c.checkouts} checkout visit${c.checkouts===1?'':'s'}${jvzPartial?` since ${fmtD(JVZ_SINCE)}`:''} and no sales. New sales show up here within the hour.`;}
+  else note.hidden=true;
+
+  // Product cards
+  const cap=len>31?addD(r.to,-30):r.from;
+  $('sparkGrid').innerHTML=KEYS.map(k=>{const P=PROD[k],a=agg([k],r.from,r.to),key=view.spark[k],M=METRICS[key];
+    return`<div class="card scard${view.focus===k?' focused':''}${view.focus&&view.focus!==k?' dimmed':''}">
+      <div class="ch" style="padding:0;margin-bottom:6px;">
+        <div><div class="clabel">${P.name}</div><div class="s-offer">${P.offer} · JVZoo</div></div>
+        <button class="menu-btn" data-menu="spark" data-k="${k}" aria-haspopup="menu" aria-expanded="false" aria-label="${P.name} options">···</button>
+      </div>
+      <div class="links">
+        <a class="lnk" href="${P.lander}" target="_blank" rel="noopener" title="Open ${P.lander.replace('https://','')}"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1.5" y="2.5" width="13" height="11" rx="2"/><path d="M1.5 5.5h13"/></svg>Lander</a>
+        <a class="lnk" href="${JVZOO_REPORTS}" target="_blank" rel="noopener" title="Open your JVZoo affiliate reports"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 13V7M6 13V3M10 13V8M14 13V5"/></svg>JVZoo</a>
+        <button type="button" class="lnk" data-menu="spark" data-k="${k}" aria-haspopup="menu" title="Copy buy links and Ads Manager link"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6.5 9.5l3-3M7 4.5l1.2-1.2a2.8 2.8 0 014 4L11 8.5M9 11.5l-1.2 1.2a2.8 2.8 0 01-4-4L5 7.5"/></svg>Links</button>
+      </div>
+      <div class="scard-top">
+        <div><div class="snum">${M.fmt(M.f(a))}</div><div class="ksub">${M.label}</div></div>
+        <div style="text-align:right;">
+          <div class="sdelta" style="background:${P.tint};color:${P.ink}">${METRICS.cpc.fmt(METRICS.cpc.f(a))} CPC</div>
+          <div class="ksub" style="margin-top:3px;">${METRICS.cpm.fmt(METRICS.cpm.f(a))} CPM</div>
+        </div>
+      </div>
+      <canvas id="dot-${k}" style="width:100%;display:block;height:64px;" height="64" role="img" aria-label="Daily chart"></canvas>
+      <div class="spark-days">Daily ${M.label.toLowerCase()} · ${fmtRange(cap,r.to)}${len>31?' (last 31 days)':''}</div>
+    </div>`;}).join('');
+  redrawSparks();
+
+  renderTable(r);
+  $('fNote').textContent=`Meta numbers: ${fmtRange(r.from,r.to)}, updated ${berlin(DATA_AS_OF)} (Berlin). JVZoo checkouts and sales count from ${fmtD(JVZ_SINCE)}, when the postbacks were connected. Nothing on this page is estimated.`;
+}
+
+function renderTable(r){
+  const cols=view.cols;
+  $('pthead').innerHTML=`<tr><th>Product</th>${cols.map(c=>`<th>${esc(c==='budget'?'Budget':TABLE_COLS[c])}</th>`).join('')}</tr>`;
+  const S=METRICS[view.sort]||METRICS.spend,asc=S.good===false;
+  const rows=KEYS.map(k=>({k,a:agg([k],r.from,r.to)})).sort((x,y)=>{const a=S.f(x.a),b=S.f(y.a);if(a==null)return 1;if(b==null)return -1;return asc?a-b:b-a;});
+  const cell=(c,a,k)=>{
+    if(c==='budget'){const b=budgets[k]||{},sp=sinceStart(k).spend,bu=b.budget||0,pc=bu>0?Math.min(sp/bu*100,100):0;
+      return`<td><div class="mini-track"><div class="mini-fill" style="width:${pc}%;background:${PROD[k].color};height:100%;border-radius:2px;"></div></div><div class="stat-s">${fmt(sp,0)} of ${fmt(bu,0)}</div></td>`;}
+    if(c==='status'){const st=bStatus(k);return`<td><span class="spill ${st}">${STL[st]}</span></td>`;}
+    return`<td><div class="stat">${METRICS[c].fmt(METRICS[c].f(a))}</div></td>`;};
+  const tot=agg(KEYS,r.from,r.to);
+  $('ptbody').innerHTML=rows.map(({k,a})=>`<tr${view.focus===k?' class="focused"':''}>
+      <td><div class="pname">${PROD[k].name}</div><div class="pacct">${PROD[k].offer} · <a href="${PROD[k].lander}" target="_blank" rel="noopener">${PROD[k].lander.replace('https://','')}</a></div></td>
+      ${cols.map(c=>cell(c,a,k)).join('')}</tr>`).join('')+
+    `<tr class="tot"><td><div class="pname">All products</div><div class="pacct">${fmtRange(r.from,r.to)}</div></td>${cols.map(c=>c==='budget'||c==='status'?'<td></td>':`<td><div class="stat">${METRICS[c].fmt(METRICS[c].f(tot))}</div></td>`).join('')}</tr>`;
+}
+function copyTable(){
+  const r=curRange(),cols=view.cols.filter(c=>c!=='status'&&c!=='budget');
+  const lines=[['Product',...cols.map(c=>TABLE_COLS[c])].join('\t')];
+  KEYS.forEach(k=>{const a=agg([k],r.from,r.to);lines.push([PROD[k].name,...cols.map(c=>METRICS[c].fmt(METRICS[c].f(a)))].join('\t'));});
+  copyText(lines.join('\n'),`Table copied (${fmtRange(r.from,r.to)}) · paste into Sheets or Excel`);
+}
+
+// ── Funnel ──
+function setFProd(p,btn){fProd=p;document.querySelectorAll('.ftab').forEach(b=>b.classList.toggle('active',b===btn));renderFunnel();}
+function renderFunnel(){
+  document.querySelectorAll('.ftab').forEach(b=>b.classList.toggle('active',b.dataset.p===fProd));
+  const r=curRange(),ks=fProd==='all'?KEYS:[fProd],c=agg(ks,r.from,r.to);
+  const jvzOn=r.to>=JVZ_SINCE,jvzPartial=r.from<JVZ_SINCE,since=`counted from ${fmtD(JVZ_SINCE)}`;
+  const steps=[
+    {n:'Link clicks',       src:'Meta ads',   v:c.clicks, cv:`${c.impr?(c.clicks/c.impr*100).toFixed(2):'0'}% of ${fmtK(c.impr)} impressions`},
+    {n:'Landing page views',src:'Meta Pixel', v:c.lpv},
+    {n:'JVZoo checkout',    src:'JVZoo postback', v:jvzOn?c.checkouts:null, how:`JVZoo tracking started ${fmtD(JVZ_SINCE)}`, cv:jvzPartial?since:'', noRatio:jvzPartial},
+    {n:'Sales',             src:c.manual?'JVZoo + manual':'JVZoo postback', v:jvzOn||c.manual?c.allSales:null, how:`JVZoo tracking started ${fmtD(JVZ_SINCE)}`, cv:jvzPartial?since:'', noRatio:jvzPartial},
+  ];
+  const maxV=Math.max(c.clicks,1);let prev=null;
+  $('fGrid').innerHTML=steps.map((s,i)=>{
+    const on=s.v!=null;
+    const ratio=i>0&&on&&prev&&!s.noRatio&&prev.v>0?s.v/prev.v*100:null;
+    let big=on?fmtN(s.v):'—',cv=s.cv||'';
+    if(on&&i>0&&!s.noRatio&&prev)cv=ratio!=null?`${ratio.toFixed(0)}% of ${prev.n.toLowerCase()}`:'—';
+    if(view.funnel==='rates'&&on&&i>0){big=ratio!=null?ratio.toFixed(ratio<10?1:0)+'%':'—';cv=`${fmtN(s.v)} total${s.noRatio?' · '+since:''}`;}
+    if(view.funnel==='rates'&&i===0)big=c.impr?(c.clicks/c.impr*100).toFixed(2)+'%':'—',cv=`${fmtN(c.clicks)} clicks of ${fmtK(c.impr)} impressions`;
+    const h=on&&s.v>0?Math.max(s.v/maxV*100,4):0;
+    const bar=on?`<div class="fbar ${i===0?'solid':'hatched'}" style="height:${h}%" title="${s.n}: ${fmtN(s.v)}"></div>`:`<div class="fbar empty">${s.how}</div>`;
+    if(on)prev=s;
+    return`<div class="fcol">
+      <div class="fstep-label">${s.n}</div>
+      <span class="fsrc ${on?'on':''}">${on?s.src:'Not tracked'}</span>
+      <div class="fstep-num ${on?'':'dim'}">${big}</div>
+      <div class="fstep-cv">${cv}</div>
+      <div class="fbar-area">${bar}</div>
+      <div class="fbar-floor"></div>
+    </div>`;}).join('');
+}
+
+// ── Daily dot charts ──
+const SPARK_IDX={spend:0,impr:1,clicks:2,lpv:3};
+function redrawSparks(){
+  const r=curRange(),len=diffD(r.from,r.to)+1,from=len>31?addD(r.to,-30):r.from;
+  KEYS.forEach(k=>drawDaily(`dot-${k}`,series(k,from,r.to,SPARK_IDX[view.spark[k]]),PROD[k].color,view.spark[k]));
+}
+function drawDaily(id,pts,color,key){
+  const cv=document.getElementById(id);if(!cv)return;
+  const dpr=window.devicePixelRatio||1,W=cv.offsetWidth||260,H=64;
+  cv.width=W*dpr;cv.height=H*dpr;
+  const ctx=cv.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);
+  const css=getComputedStyle(document.documentElement);
+  const track=css.getPropertyValue('--track').trim()||'#ECECEF',lbl=css.getPropertyValue('--fg3').trim()||'#A0A0AE';
+  const cols=pts.length,gap=cols>14?3:cols>7?6:10,colW=(W-gap*(cols-1))/cols;
+  const across=cols<=7?4:cols<=14?2:1,rows=6,labelH=14,area=H-labelH;
+  const px=colW/across,py=area/rows,rad=Math.max(1.2,Math.min(px,py)*.3);
+  const max=Math.max(...pts.map(p=>p.v),0.0001),money=key==='spend';
+  const vfmt=v=>money?'$'+Math.round(v):fmtK(v);
+  ctx.font='600 10px Inter, system-ui, sans-serif';ctx.textBaseline='alphabetic';
+  pts.forEach((p,i)=>{
+    const lit=p.v>0?Math.max(1,Math.round(p.v/max*rows)):0,x0=i*(colW+gap);
+    for(let row=0;row<rows;row++)for(let c=0;c<across;c++){ctx.beginPath();ctx.arc(x0+px*(c+.5),area-py*(row+.5),rad,0,Math.PI*2);ctx.fillStyle=row<lit?color:track;ctx.fill();}
+    ctx.fillStyle=lbl;const day=D0(p.d).getUTCDate();
+    if(cols<=7){ctx.textAlign='center';ctx.fillText(`${day} · ${vfmt(p.v)}`,x0+colW/2,H-2);}
+    else if(cols<=14){ctx.textAlign='center';ctx.fillText(String(day),x0+colW/2,H-2);}
+    else if(i===0){ctx.textAlign='left';ctx.fillText(fmtD(p.d),x0,H-2);}
+    else if(i===cols-1){ctx.textAlign='right';ctx.fillText(fmtD(p.d),x0+colW,H-2);}
+  });
+  cv.setAttribute('aria-label','Daily values: '+pts.map(p=>`${fmtD(p.d)} ${money?fmt(p.v):fmtN(p.v)}`).join(', '));
+}
+
+// ── Tab switch ──
 function switchTab(tab){
-  activeTab=tab;
+  activeTab=tab;closeDP(false);closeMenu(false);
   $('overviewView').hidden=tab!=='overview';
   $('budgetView').hidden=tab!=='budgets';
   ['overview','budgets'].forEach(t=>$('tab-'+t).classList.toggle('active',t===tab));
   tab==='overview'?renderOverview():renderBudgets();
 }
 
-// ── Overview ─────────────────────────────────────────────────────────────
-function renderOverview(){
-  const totSpend=KEYS.reduce((a,k)=>a+LIVE[k].spend,0);
-  const totImpr =KEYS.reduce((a,k)=>a+LIVE[k].impr,0);
-  const totClk  =KEYS.reduce((a,k)=>a+LIVE[k].clicks,0);
-  const totRev  =afTotal();
-  $('kSpend').textContent =fmt(totSpend);
-  $('kImpr').textContent  =fmtK(totImpr);
-  $('kClicks').textContent=fmtN(totClk);
-  $('kRev').textContent   =fmt(totRev);
-  $('kCpm').textContent   =fmt(totImpr>0?totSpend/totImpr*1000:0)+' CPM';
-  $('kCpc').textContent   =fmt(totClk>0?totSpend/totClk:0)+' CPC';
-  $('kRoas').textContent  =(totSpend>0?totRev/totSpend:0).toFixed(2)+'× ROAS';
-
-  renderFunnel(fProd);
-
-  // Rev panel
-  $('revHero').textContent=fmt(totRev);
-  $('jvzooNote').style.display=totRev===0?'block':'none';
-  const mx=Math.max(...KEYS.map(k=>afRev(k)),1);
-  $('revRows').innerHTML=KEYS.map(k=>`<div>
-    <div class="rrow-lbl">${PROD[k].name}<span>${fmt(afRev(k))}</span></div>
-    <div class="rbar-track"><div class="rbar-fill ${PROD[k].cls}" style="width:${(afRev(k)/mx*100).toFixed(1)}%"></div></div>
-  </div>`).join('');
-
-  // Sparklines
-  KEYS.forEach(k=>{
-    const d=LIVE[k];
-    const id=k==='wellness'?'W':k==='neuro'?'N':'G';
-    $(`sp${id}Spend`).textContent=fmt(d.spend);
-    $(`sp${id}Cpc`).textContent  =fmt(d.cpc)+' CPC';
-    $(`sp${id}Cpm`).textContent  =fmt(d.cpm)+' CPM';
-  });
-  redrawSparks();
-
-  // Table
-  $('ptbody').innerHTML=KEYS.map(k=>{
-    const d=LIVE[k],b=budgets[k]||{},sp=d.spend,bu=b.budget||0;
-    const pct=bu>0?Math.min(sp/bu*100,100):0;
-    const st=bStatus(k);
-    const stl={'on-track':'ON TRACK',watch:'WATCH',depleted:'DEPLETED',paused:'PAUSED'}[st];
-    return`<tr>
-      <td><div class="pname">${PROD[k].name}</div><div class="pacct">${PROD[k].acct}</div></td>
-      <td><div class="stat">${fmt(sp)}</div></td>
-      <td><div class="stat">${fmtK(d.impr)}</div></td>
-      <td><div class="stat">${fmtN(d.clicks)}</div></td>
-      <td><div class="stat">${fmt(d.cpc)}</div></td>
-      <td><div class="stat">${fmt(d.cpm)}</div></td>
-      <td>
-        <div class="mini-track"><div class="mini-fill" style="width:${pct}%;background:${PROD[k].color};height:100%;border-radius:2px;"></div></div>
-        <div class="stat-s">${pct.toFixed(0)}% of $${bu}</div>
-      </td>
-      <td><span class="spill ${st}">${stl}</span></td>
-    </tr>`;
-  }).join('');
-
-  updateSyncTime();
-}
-
-// ── Funnel ────────────────────────────────────────────────────────────────
-function setFProd(p,btn){
-  fProd=p;
-  document.querySelectorAll('.ftab').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  renderFunnel(p);
-}
-
-function renderFunnel(prod){
-  const ks=prod==='all'?KEYS:[prod];
-  const sum=f=>ks.reduce((a,k)=>a+(LIVE[k][f]||0),0);
-  const impr=sum('impr'),clicks=sum('clicks'),lpv=sum('lpv');
-  const manual=afSales.filter(s=>ks.includes(s.prod)).length;
-  const jvzSum=f=>ks.reduce((a,k)=>a+((JVZ[k]&&JVZ[k][f])||0),0);
-  const checkouts=jvzSum('checkouts'),sales=jvzSum('sales')+manual;
-  // v:null = no data source connected; shown empty, never estimated
-  const steps=[
-    {n:'Link clicks',       src:'Meta ads',   v:clicks, cv:`${impr?(clicks/impr*100).toFixed(2):'0'}% of ${fmtK(impr)} impressions`},
-    {n:'Landing page views',src:'Meta Pixel', v:lpv},
-    {n:'JVZoo checkout',    src:'JVZoo postback', v:checkouts, cv:`counted since ${JVZ_SINCE}`, noRatio:true},
-    {n:'Sales',             src:manual?'JVZoo + manual':'JVZoo postback', v:sales, cv:`counted since ${JVZ_SINCE}`, noRatio:true},
-  ];
-  const maxV=Math.max(clicks,1);
-  let prev=null;
-  $('fGrid').innerHTML=steps.map((s,i)=>{
-    const on=s.v!=null;
-    let cv=s.cv||'';
-    if(i>0&&on&&prev&&!s.noRatio)cv=prev.v>0?`${(s.v/prev.v*100).toFixed(0)}% of ${prev.n.toLowerCase()}`:'—';
-    if(!on)cv='';
-    const h=on&&s.v>0?Math.max(s.v/maxV*100,4):0;
-    const bar=on
-      ?`<div class="fbar ${i===0?'solid':'hatched'}" style="height:${h}%" title="${s.n}: ${fmtN(s.v)}"></div>`
-      :`<div class="fbar empty">${s.how}</div>`;
-    if(on)prev=s;
-    return`<div class="fcol">
-      <div class="fstep-label">${s.n}</div>
-      <span class="fsrc ${on?'on':''}">${on?s.src:'Not tracked'}</span>
-      <div class="fstep-num ${on?'':'dim'}">${on?fmtN(s.v):'—'}</div>
-      <div class="fstep-cv">${cv}</div>
-      <div class="fbar-area">${bar}</div>
-      <div class="fbar-floor"></div>
-    </div>`;
-  }).join('');
-}
-
-// ── Daily-spend dot chart (one column per day, real Meta daily spend) ─────
-function redrawSparks(){
-  KEYS.forEach(k=>{const id=k==='wellness'?'W':k==='neuro'?'N':'G';drawDaily(`dot${id}`,LIVE[k].daily,PROD[k].color);});
-}
-function drawDaily(id,vals,color){
-  const cv=document.getElementById(id);
-  if(!cv)return;
-  const dpr=window.devicePixelRatio||1,W=cv.offsetWidth||260,H=64;
-  cv.width=W*dpr;cv.height=H*dpr;
-  const ctx=cv.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);
-  const css=getComputedStyle(document.documentElement);
-  const track=css.getPropertyValue('--track').trim()||'#ECECEF';
-  const lbl=css.getPropertyValue('--fg3').trim()||'#A0A0AE';
-  const cols=vals.length,gap=10,colW=(W-gap*(cols-1))/cols;
-  const rows=6,across=4,labelH=14,area=H-labelH;
-  const px=colW/across,py=area/rows,r=Math.max(1.5,Math.min(px,py)*.3);
-  const max=Math.max(...vals,0.01);
-  ctx.font='600 10px Inter, system-ui, sans-serif';ctx.textAlign='center';ctx.textBaseline='alphabetic';
-  vals.forEach((v,i)=>{
-    const lit=v>0?Math.max(1,Math.round(v/max*rows)):0;
-    const x0=i*(colW+gap);
-    for(let row=0;row<rows;row++){
-      for(let c=0;c<across;c++){
-        ctx.beginPath();
-        ctx.arc(x0+px*(c+.5),area-py*(row+.5),r,0,Math.PI*2);
-        ctx.fillStyle=row<lit?color:track;
-        ctx.fill();
-      }
-    }
-    ctx.fillStyle=lbl;
-    ctx.fillText(`${DAY_LABELS[i].replace('Nov ','')} · ${v>0?'$'+Math.round(v):'$0'}`,x0+colW/2,H-2);
-  });
-  cv.setAttribute('aria-label','Daily spend: '+vals.map((v,i)=>`${DAY_LABELS[i]} $${v.toFixed(2)}`).join(', '));
-}
-
 // ── Budgets ───────────────────────────────────────────────────────────────
 function renderBudgets(){
   const totBu=KEYS.reduce((a,k)=>a+(budgets[k]?.budget||0),0);
-  const totSp=KEYS.reduce((a,k)=>a+LIVE[k].spend,0);
-  const totRev=afTotal();
+  const ss=Object.fromEntries(KEYS.map(k=>[k,sinceStart(k)]));
+  const totSp=KEYS.reduce((a,k)=>a+ss[k].spend,0);
+  const totRev=KEYS.reduce((a,k)=>a+ss[k].rev,0);
   const net=totRev-totSp;
   const roas=totSp>0?totRev/totSp:0;
   $('bkSpent').textContent=fmt(totSp);$('bkSpentOf').textContent=`of ${fmt(totBu)} assigned`;
   $('bkLeft').textContent=fmt(Math.max(totBu-totSp,0));
-  $('bkRev').textContent=fmt(totRev);$('bkRevSub').textContent=totRev===0?'Waiting on JVZoo':'JVZoo + manual MTD';
+  $('bkRev').textContent=fmt(totRev);$('bkRevSub').textContent=totRev===0?'Waiting on JVZoo':'Since each test started';
   $('bkNet').textContent=fmt(net);$('bkRoas').textContent=roas.toFixed(2)+'× ROAS';
 
   // Stacked
@@ -810,7 +1201,7 @@ function renderBudgets(){
   // Alerts
   const dep=KEYS.filter(k=>bStatus(k)==='depleted'&&!budgets[k]?.paused);
   $('alertEl').innerHTML=dep.map(k=>{
-    const ov=Math.max(LIVE[k].spend-(budgets[k]?.budget||0),0);
+    const ov=Math.max(ss[k].spend-(budgets[k]?.budget||0),0);
     return`<div class="alert-dep">
       <p><strong>${PROD[k].name}</strong> has used its full test budget.${ov>0?` Spend is ${fmt(ov)} over the ${fmt(budgets[k].budget)} assigned.`:''}</p>
       <div style="display:flex;gap:6px;">
@@ -823,12 +1214,12 @@ function renderBudgets(){
   // Cards
   const filtered=bFilter==='all'?KEYS:bFilter==='active'?KEYS.filter(k=>['on-track','watch'].includes(bStatus(k))):bFilter==='depleted'?KEYS.filter(k=>bStatus(k)==='depleted'):KEYS.filter(k=>bStatus(k)==='paused');
   $('bcards').innerHTML=filtered.map(k=>{
-    const b=budgets[k]||{},sp=LIVE[k].spend,bu=b.budget||0;
+    const b=budgets[k]||{},sp=ss[k].spend,bu=b.budget||0;
     const pct=bu>0?Math.min(sp/bu*100,100):0;
     const st=bStatus(k);
     const stl={'on-track':'ON TRACK',watch:'WATCH',depleted:'DEPLETED',paused:'PAUSED'}[st];
-    const rev=afRev(k),roas=sp>0?rev/sp:0;
-    const days=Math.max(1,Math.round((DATA_AS_OF.getTime()-new Date((b.start||'2026-11-03')+'T00:00:00+01:00').getTime())/(864e5)));
+    const rev=ss[k].rev,roas=sp>0?rev/sp:0;
+    const days=Math.max(1,diffD(b.start||FIRST,TODAY)+1);
     const avg=sp/days;const rem=Math.max(bu-sp,0);const dl=avg>0?rem/avg:999;
     const pace=sp>=bu?`<span style="color:var(--red);font-weight:600;">Budget depleted</span>`:dl>14?`≈ ${Math.round(dl/7)} weeks at this pace`:`≈ ${Math.round(dl)} days at this pace`;
     return`<div class="card bcard" id="bc-${k}">
@@ -843,7 +1234,7 @@ function renderBudgets(){
       <div class="bmetrics">
         <div><div class="bml">Rev</div><div class="bmv">${fmt(rev)}</div></div>
         <div><div class="bml">ROAS</div><div class="bmv">${roas.toFixed(2)}×</div></div>
-        <div><div class="bml">Clicks</div><div class="bmv">${fmtN(LIVE[k].clicks)}</div></div>
+        <div><div class="bml">Clicks</div><div class="bmv">${fmtN(ss[k].clicks)}</div></div>
       </div>
       <div class="bactions">
         <button class="btn btn-g" onclick="editBudget('${k}')">Edit</button>
@@ -892,7 +1283,7 @@ function updatePreview(){
   const p=$('fProd')?.value,a=parseFloat($('fAmt')?.value),pb=$('prevBox');
   if(!pb)return;
   if(!p||!a||isNaN(a)){pb.style.display='none';return;}
-  const sp=LIVE[p].spend,bu=a,pct=(sp/bu*100).toFixed(0);
+  const sp=sinceStart(p).spend,bu=a,pct=(sp/bu*100).toFixed(0);
   pb.style.display='block';pb.textContent=`With ${fmt(a)}, ${PROD[p].name} will be at ${pct}% used (${fmt(Math.max(bu-sp,0))} left).`;
 }
 function pauseProd(k){
@@ -956,12 +1347,19 @@ document.addEventListener('click',()=>setAppearOpen(false));
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('appearPop').hidden){setAppearOpen(false);$('appearBtn').focus();}});
 applyAppear();
 
-// ── Init ──────────────────────────────────────────────────────────────────
+// ── Init ──
+function initBadge(){
+  const b=$('dataBadge'),hrs=(Date.now()-DATA_AS_OF)/36e5,warn=DATA.warn||[];
+  b.innerHTML=`Meta data · <b>${berlin(DATA_AS_OF)}</b>${hrs>3?` · ${Math.round(hrs)}h old`:''}${warn.length?' · ⚠':''}`;
+  b.classList.toggle('stale',hrs>3||warn.length>0);
+  b.title=warn.length?warn.join('\n'):(hrs>3?'The hourly sync hasn’t updated this page for a while':'Meta and JVZoo numbers, refreshed hourly');
+}
 document.addEventListener('DOMContentLoaded',()=>{
   $('fStart').value=new Date().toISOString().slice(0,10);
+  initDP();initMenus();initBadge();
+  $('focusChip').addEventListener('click',()=>{view.focus=null;fProd='all';rerenderAll();});
   renderOverview();
-  // Redraw dots on resize
-  let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{if(activeTab==='overview')renderOverview();},150);});
+  let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{if(activeTab==='overview')redrawSparks();},150);});
 });
 </script>
 
