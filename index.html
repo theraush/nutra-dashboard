@@ -1,0 +1,961 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>NUTRA Dashboard</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
+
+<style>
+:root {
+  --bg:        #FFFFFF;
+  --surface:   #FFFFFF;
+  --surface2:  #F7F7F8;
+  --border:    #E4E4E7;
+  --fg:        #111118;
+  --fg2:       #6B6B7B;
+  --fg3:       #A0A0AE;
+  --accent:    #2563EB;
+  --accent-lt: #EEF3FF;
+  --green:     #16A34A;
+  --green-lt:  #DCFCE7;
+  --amber:     #D97706;
+  --amber-lt:  #FEF3C7;
+  --red:       #DC2626;
+  --red-lt:    #FEE2E2;
+  --purple:    #7C3AED;
+  --purple-lt: #EDE9FE;
+  --pink:      #DB2777;
+  --pink-lt:   #FCE7F3;
+  --r:         12px;
+  --sh:        0 1px 3px rgba(0,0,0,.07),0 1px 2px rgba(0,0,0,.04);
+  --track:     #ECECEF;
+}
+:root[data-bg="warm"]{--bg:#F5F4F0;--surface2:#F8F7F4;}
+:root[data-bg="cool"]{--bg:#F2F2F7;}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0F0F14;--surface:#1A1A24;--surface2:#22222E;--border:#2A2A38;--track:#2A2A38;
+  --fg:#F0F0F8;--fg2:#9090A8;--fg3:#55556A;
+  --accent-lt:#1E2D54;--green-lt:#0D2A18;--amber-lt:#2A1F08;
+  --red-lt:#2A0E0E;--purple-lt:#1E1538;--pink-lt:#2D1225;
+  --sh:0 1px 3px rgba(0,0,0,.3),0 1px 2px rgba(0,0,0,.2);color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0F0F14;--surface:#1A1A24;--surface2:#22222E;--border:#2A2A38;--track:#2A2A38;
+  --fg:#F0F0F8;--fg2:#9090A8;--fg3:#55556A;
+  --accent-lt:#1E2D54;--green-lt:#0D2A18;--amber-lt:#2A1F08;
+  --red-lt:#2A0E0E;--purple-lt:#1E1538;--pink-lt:#2D1225;
+  --sh:0 1px 3px rgba(0,0,0,.3);color-scheme:dark;
+}
+
+*,*::before,*::after{box-sizing:border-box;}
+body{margin:0;font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--fg);font-size:14px;line-height:1.5;min-height:100vh;
+  padding-left:max(0px,env(safe-area-inset-left,0px));
+  padding-right:max(0px,env(safe-area-inset-right,0px));}
+button{cursor:pointer;font-family:inherit;}
+input,select{font-family:inherit;}
+
+/* ── Topbar ── */
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:100;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;height:52px;padding:0;}
+.brand{display:flex;align-items:center;gap:8px;padding:0 20px;border-right:1px solid var(--border);height:100%;}
+.brand-mark{width:22px;height:22px;background:var(--fg);border-radius:5px;display:flex;align-items:center;justify-content:center;}
+.brand-mark svg{width:12px;height:12px;fill:var(--surface);}
+.brand-name{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--fg);}
+.nav-pills{display:flex;align-items:center;gap:2px;padding:0 12px;height:100%;}
+.nav-pill{display:flex;align-items:center;gap:5px;padding:5px 12px;border-radius:7px;font-size:12px;font-weight:500;color:var(--fg2);background:transparent;border:none;height:32px;transition:all .15s;}
+.nav-pill:hover{background:var(--surface2);color:var(--fg);}
+.nav-pill.active{background:var(--fg);color:var(--surface);}
+.nav-pill svg{width:14px;height:14px;}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:8px;padding:0 16px;}
+.live-badge{display:flex;align-items:center;gap:5px;background:var(--green-lt);color:var(--green);padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;}
+.live-dot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:blink 2s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
+.sync-lbl{font-size:11px;color:var(--fg3);}
+.icon-btn{width:30px;height:30px;border-radius:7px;border:1px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:center;color:var(--fg2);transition:background .15s;}
+.icon-btn:hover,.icon-btn[aria-expanded="true"]{background:var(--surface2);color:var(--fg);}
+.appear-wrap{position:relative;}
+.appear-pop{position:absolute;right:0;top:calc(100% + 8px);width:248px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:0 8px 24px rgba(0,0,0,.12),0 2px 6px rgba(0,0,0,.06);padding:14px;z-index:200;display:flex;flex-direction:column;gap:8px;}
+.appear-pop[hidden]{display:none;}
+.ap-lbl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--fg3);}
+.ap-seg{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:2px;margin-bottom:6px;}
+.ap-seg button{height:36px;border:none;border-radius:6px;background:transparent;color:var(--fg2);font-size:12px;font-weight:500;}
+.ap-seg button.on{background:var(--fg);color:var(--surface);}
+.ap-sw{display:flex;flex-direction:column;gap:4px;}
+.ap-sw button{display:flex;align-items:center;gap:10px;height:40px;padding:0 10px;border:1px solid transparent;border-radius:8px;background:transparent;color:var(--fg);font-size:12px;font-weight:500;text-align:left;}
+.ap-sw button:hover{background:var(--surface2);}
+.ap-sw button.on{border-color:var(--fg);}
+.ap-sw .sw{width:20px;height:20px;border-radius:50%;border:1px solid var(--border);flex:none;}
+.ap-sw .hex{margin-left:auto;font-size:10px;color:var(--fg3);font-variant-numeric:tabular-nums;}
+.ap-note{font-size:11px;color:var(--fg3);}
+
+/* ── Page ── */
+.page{padding:20px;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px));max-width:1360px;margin:0 auto;}
+.ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;}
+.ph-title{font-size:18px;font-weight:800;color:var(--fg);}
+.ph-sub{font-size:11px;color:var(--fg3);margin-top:1px;}
+.ph-actions{display:flex;gap:7px;}
+
+/* ── Card ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);}
+.ch{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 0;}
+.clabel{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--fg3);}
+.menu-btn{width:26px;height:26px;border-radius:50%;border:1px solid var(--border);background:transparent;color:var(--fg3);display:flex;align-items:center;justify-content:center;font-size:12px;line-height:1;letter-spacing:1px;transition:background .15s;}
+.menu-btn:hover{background:var(--surface2);color:var(--fg);}
+
+/* ── KPI grid ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px;}
+@media(max-width:900px){.kpi-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:480px){.kpi-grid{grid-template-columns:1fr;}}
+.kcard{padding:16px 18px 14px;}
+.knum{font-size:26px;font-weight:800;letter-spacing:-.025em;font-variant-numeric:tabular-nums;color:var(--fg);margin:5px 0 3px;line-height:1.1;}
+.kdelta{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;}
+.kdelta.up{background:var(--green-lt);color:var(--green);}
+.kdelta.dn{background:var(--red-lt);color:var(--red);}
+.kdelta.neu{background:var(--surface2);color:var(--fg2);}
+.ksub{font-size:11px;color:var(--fg3);margin-top:3px;}
+
+/* ── Main 2-col ── */
+.main-cols{display:grid;grid-template-columns:1fr 300px;gap:14px;margin-bottom:14px;}
+@media(max-width:1080px){.main-cols{grid-template-columns:1fr;}}
+
+/* ── Funnel ── */
+.funnel-card{overflow:hidden;}
+.funnel-head{padding:14px 16px 10px;border-bottom:1px solid var(--border);}
+.funnel-tabs{display:flex;gap:4px;margin-top:8px;}
+.ftab{font-size:11px;font-weight:500;padding:3px 9px;border-radius:5px;border:1px solid var(--border);background:transparent;color:var(--fg2);transition:all .15s;}
+.ftab.active{background:var(--fg);color:var(--surface);border-color:var(--fg);}
+.funnel-body{padding:14px 16px;}
+.fwrap{overflow-x:auto;}
+.fgrid{display:grid;grid-template-columns:repeat(5,minmax(92px,1fr));gap:10px;min-width:520px;}
+.fcol{display:flex;flex-direction:column;align-items:center;min-width:0;}
+.fstep-label{font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--fg3);margin-bottom:5px;text-align:center;min-height:22px;display:flex;align-items:flex-end;}
+.fsrc{font-size:9px;font-weight:600;padding:1px 7px;border-radius:10px;background:var(--surface2);color:var(--fg3);border:1px solid var(--border);margin-bottom:7px;white-space:nowrap;}
+.fsrc.on{background:var(--green-lt);color:var(--green);border-color:transparent;}
+.fstep-num{font-size:20px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:var(--fg);text-align:center;line-height:1;}
+.fstep-num.dim{color:var(--fg3);font-weight:500;}
+.fstep-cv{font-size:10px;color:var(--fg3);text-align:center;margin-top:4px;min-height:28px;line-height:1.35;}
+.fbar-area{height:110px;width:100%;display:flex;flex-direction:column;justify-content:flex-end;margin-top:6px;}
+.fbar{width:100%;border-radius:5px 5px 0 0;}
+.fbar.solid{background:linear-gradient(180deg,#60A5FA,#2563EB);}
+.fbar.hatched{background-color:var(--accent-lt);background-image:repeating-linear-gradient(45deg,var(--accent) 0,var(--accent) 1.5px,transparent 1.5px,transparent 7px);}
+.fbar.empty{height:100%;border:1.5px dashed var(--border);border-bottom:none;background:transparent;display:flex;align-items:center;justify-content:center;padding:8px;text-align:center;font-size:10px;line-height:1.4;color:var(--fg3);}
+.fbar-floor{height:2px;width:100%;background:var(--border);}
+.fnote{font-size:11px;color:var(--fg3);margin-top:12px;line-height:1.5;}
+.data-badge{display:flex;align-items:center;gap:6px;background:var(--surface2);border:1px solid var(--border);color:var(--fg2);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500;white-space:nowrap;}
+.data-badge b{font-weight:700;color:var(--fg);}
+.spark-days{font-size:10px;color:var(--fg3);margin-top:6px;}
+@media(max-width:640px){.data-badge{display:none;}}
+@media(max-width:480px){.brand{padding:0 12px;}.brand-name{display:none;}.nav-pills{padding:0 6px;}.nav-pill{padding:5px 10px;}.nav-pill svg{display:none;}.topbar-right{padding:0 10px;gap:6px;}}
+
+/* ── Rev panel ── */
+.rev-panel{padding:18px;}
+.rev-hero{font-size:32px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;color:var(--fg);margin:6px 0 2px;line-height:1;}
+.rev-sub{font-size:11px;color:var(--fg3);}
+.rev-rows{margin-top:14px;display:flex;flex-direction:column;gap:10px;}
+.rrow-lbl{font-size:11px;font-weight:500;color:var(--fg2);margin-bottom:4px;display:flex;justify-content:space-between;}
+.rrow-lbl span{font-weight:700;color:var(--fg);font-variant-numeric:tabular-nums;}
+.rbar-track{height:5px;border-radius:3px;background:var(--track);overflow:hidden;}
+.rbar-fill{height:100%;border-radius:3px;background-image:repeating-linear-gradient(90deg,transparent 0,transparent 4px,rgba(255,255,255,.22) 4px,rgba(255,255,255,.22) 5px);}
+.rbar-fill.c1{background-color:#2563EB;}
+.rbar-fill.c2{background-color:#7C3AED;}
+.rbar-fill.c3{background-color:#DB2777;}
+.jvzoo-note{margin-top:14px;padding:9px 11px;background:var(--amber-lt);border-radius:7px;border:1px solid var(--amber);font-size:11px;color:var(--amber);font-weight:500;line-height:1.5;}
+.jvzoo-note strong{display:block;font-size:12px;margin-bottom:1px;}
+
+/* ── Sparklines ── */
+.spark-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px;}
+@media(max-width:680px){.spark-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:420px){.spark-grid{grid-template-columns:1fr;}}
+.scard{padding:14px 16px 12px;}
+.scard-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}
+.snum{font-size:20px;font-weight:800;letter-spacing:-.025em;font-variant-numeric:tabular-nums;}
+.sdelta{font-size:10px;font-weight:700;padding:2px 6px;border-radius:10px;margin-top:2px;}
+
+/* ── Products table ── */
+.prod-card{margin-bottom:14px;}
+.tbl-wrap{overflow-x:auto;}
+.ptbl{width:100%;border-collapse:collapse;}
+.ptbl th{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--fg3);padding:9px 16px;text-align:left;border-bottom:1px solid var(--border);}
+.ptbl td{padding:11px 16px;border-bottom:1px solid var(--border);vertical-align:middle;font-variant-numeric:tabular-nums;}
+.ptbl tr:last-child td{border-bottom:none;}
+.pname{font-weight:700;font-size:13px;}
+.pacct{font-size:10px;color:var(--fg3);}
+.stat{font-size:13px;font-weight:600;}
+.stat-s{font-size:10px;color:var(--fg3);}
+.mini-track{width:88px;height:4px;background:var(--track);border-radius:2px;overflow:hidden;}
+.mini-fill{height:100%;border-radius:2px;}
+.spill{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:2px 7px;border-radius:20px;}
+.spill.on-track{background:var(--green-lt);color:var(--green);}
+.spill.watch{background:var(--amber-lt);color:var(--amber);}
+.spill.depleted{background:var(--red-lt);color:var(--red);}
+.spill.paused{background:var(--surface2);color:var(--fg2);}
+
+/* ── Budget tab ── */
+.bsum{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px;}
+@media(max-width:780px){.bsum{grid-template-columns:repeat(2,1fr);}}
+.bcards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px;}
+@media(max-width:880px){.bcards{grid-template-columns:1fr;}}
+.bcard{padding:18px;}
+.bcard-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;}
+.bcard-name{font-size:14px;font-weight:700;}
+.bcard-sub{font-size:10px;color:var(--fg3);margin-top:1px;}
+.bspent{font-size:28px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1;}
+.bof{font-size:11px;color:var(--fg3);}
+.prog-track{height:7px;border-radius:4px;background:var(--track);overflow:visible;position:relative;margin:10px 0 5px;}
+.prog-fill{height:100%;border-radius:4px;transition:width .5s;}
+.prog-fill.on-track{background:linear-gradient(90deg,#16A34A,#22C55E);}
+.prog-fill.watch{background:linear-gradient(90deg,#D97706,#F59E0B);}
+.prog-fill.depleted{background:repeating-linear-gradient(45deg,#DC2626,#DC2626 4px,#EF4444 4px,#EF4444 8px);}
+.prog-fill.paused{background:var(--fg3);}
+.prog-tick{position:absolute;top:-3px;width:2px;height:13px;background:var(--fg);border-radius:1px;z-index:2;}
+.bpct{font-size:11px;color:var(--fg3);display:flex;justify-content:space-between;}
+.bpace{font-size:11px;color:var(--fg2);margin-top:7px;}
+.bmetrics{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
+.bml{font-size:9px;color:var(--fg3);text-transform:uppercase;letter-spacing:.05em;}
+.bmv{font-size:12px;font-weight:700;color:var(--fg);font-variant-numeric:tabular-nums;}
+.bactions{display:flex;gap:5px;margin-top:10px;}
+.btn{padding:6px 12px;border-radius:7px;font-size:11px;font-weight:600;border:none;transition:all .15s;}
+.btn-g{background:var(--surface2);color:var(--fg);border:1px solid var(--border);}
+.btn-g:hover{background:var(--border);}
+.btn-p{background:var(--fg);color:var(--surface);}
+.btn-p:hover{opacity:.82;}
+.btn-r{background:var(--red-lt);color:var(--red);}
+.btn-r:hover{background:var(--red);color:#fff;}
+
+/* stacked bar */
+.strack{height:9px;border-radius:5px;background:var(--track);display:flex;overflow:hidden;margin:8px 0 5px;}
+.sseg{height:100%;transition:width .5s;}
+
+/* filter pills */
+.fpills{display:flex;gap:5px;flex-wrap:wrap;}
+.fpill{padding:4px 11px;border-radius:20px;font-size:11px;font-weight:500;border:1px solid var(--border);background:transparent;color:var(--fg2);transition:all .15s;}
+.fpill.active{background:var(--fg);color:var(--surface);border-color:var(--fg);}
+.fcnt{opacity:.6;margin-left:3px;font-size:10px;}
+
+/* alert */
+.alert-dep{background:var(--red-lt);border:1px solid var(--red);border-radius:9px;padding:11px 14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+.alert-dep p{margin:0;font-size:12px;color:var(--red);font-weight:500;}
+
+/* form */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:620px){.form-grid{grid-template-columns:1fr;}}
+.fg-label{font-size:11px;font-weight:600;color:var(--fg2);margin-bottom:4px;}
+.fg-input,.fg-select{width:100%;padding:7px 11px;border-radius:7px;border:1px solid var(--border);background:var(--surface2);color:var(--fg);font-size:12px;transition:border-color .15s;-webkit-appearance:none;appearance:none;}
+.fg-input:focus,.fg-select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,.12);}
+.preview-box{background:var(--accent-lt);border:1px solid var(--accent);border-radius:7px;padding:8px 11px;font-size:11px;color:var(--accent);margin-top:4px;}
+.cbrow{display:flex;gap:7px;align-items:center;font-size:12px;color:var(--fg2);margin-top:4px;}
+
+/* log */
+.ltbl{width:100%;border-collapse:collapse;font-size:12px;}
+.ltbl th{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--fg3);padding:7px 12px;border-bottom:1px solid var(--border);text-align:left;}
+.ltbl td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.ltbl tr:last-child td{border-bottom:none;}
+.levt{display:inline-block;padding:2px 6px;border-radius:9px;font-size:10px;font-weight:700;}
+.levt.assigned{background:var(--accent-lt);color:var(--accent);}
+.levt.warning{background:var(--amber-lt);color:var(--amber);}
+.levt.depleted{background:var(--red-lt);color:var(--red);}
+.levt.sale{background:var(--green-lt);color:var(--green);}
+.levt.extended,.levt.resumed{background:var(--purple-lt);color:var(--purple);}
+.levt.paused{background:var(--surface2);color:var(--fg2);}
+
+/* section label */
+.slabel{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--fg3);margin:0 0 9px;display:flex;align-items:center;gap:7px;}
+.slabel::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* toast */
+#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(70px);background:var(--fg);color:var(--surface);padding:9px 18px;border-radius:9px;font-size:12px;font-weight:500;z-index:9999;transition:transform .22s ease,opacity .22s;opacity:0;pointer-events:none;white-space:nowrap;}
+#toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+
+/* sale-form */
+.sale-form{margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
+</style>
+</head>
+<body>
+
+
+<div id="toast"></div>
+
+<!-- TOPBAR -->
+<nav class="topbar">
+  <div class="brand">
+    <div class="brand-mark"><svg viewBox="0 0 12 12"><path d="M6 0L12 3.5V8.5L6 12L0 8.5V3.5L6 0Z"/></svg></div>
+    <span class="brand-name">NUTRA</span>
+  </div>
+  <div class="nav-pills">
+    <button class="nav-pill active" id="tab-overview" onclick="switchTab('overview')">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1" y="1" width="6" height="6" rx="1.5"/><rect x="9" y="1" width="6" height="6" rx="1.5"/><rect x="1" y="9" width="6" height="6" rx="1.5"/><rect x="9" y="9" width="6" height="6" rx="1.5"/></svg>
+      Overview
+    </button>
+    <button class="nav-pill" id="tab-budgets" onclick="switchTab('budgets')">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1" y="4" width="14" height="10" rx="1.5"/><path d="M5 4V3a2 2 0 0 1 4 0v1"/><circle cx="8" cy="9" r="1.5"/></svg>
+      Test Budgets
+    </button>
+  </div>
+  <div class="topbar-right">
+    <div class="data-badge" title="Meta numbers are a snapshot pulled on this date, not a live feed">Meta data · <b>6 Nov, 01:25</b></div>
+    <button class="icon-btn" onclick="refresh()" title="Recalculate with your latest manual entries" aria-label="Recalculate">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 8A6 6 0 1 1 8 2a6 6 0 0 0 5 2.6"/><path d="M14 2v3h-3"/></svg>
+    </button>
+    <div class="appear-wrap">
+      <button class="icon-btn" id="appearBtn" title="Appearance" aria-label="Appearance" aria-haspopup="dialog" aria-expanded="false" aria-controls="appearPop">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="6.2"/><path d="M8 1.8v12.4A6.2 6.2 0 0 0 8 1.8z" fill="currentColor" stroke="none"/></svg>
+      </button>
+      <div class="appear-pop" id="appearPop" role="dialog" aria-label="Appearance" hidden>
+        <div class="ap-lbl" id="apModeLbl">Mode</div>
+        <div class="ap-seg" role="radiogroup" aria-labelledby="apModeLbl">
+          <button role="radio" data-mode="auto">Auto</button>
+          <button role="radio" data-mode="light">Light</button>
+          <button role="radio" data-mode="dark">Dark</button>
+        </div>
+        <div class="ap-lbl" id="apBgLbl">Background</div>
+        <div class="ap-sw" role="radiogroup" aria-labelledby="apBgLbl">
+          <button role="radio" data-bgopt="white"><span class="sw" style="background:#FFFFFF"></span>White<span class="hex">#FFFFFF</span></button>
+          <button role="radio" data-bgopt="warm"><span class="sw" style="background:#F5F4F0"></span>Warm gray<span class="hex">#F5F4F0</span></button>
+          <button role="radio" data-bgopt="cool"><span class="sw" style="background:#F2F2F7"></span>Cool gray<span class="hex">#F2F2F7</span></button>
+        </div>
+        <div class="ap-note">Background applies in light mode. Saved in this browser.</div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ══ OVERVIEW ══ -->
+<div id="overviewView">
+<div class="page">
+  <div class="ph">
+    <div>
+      <div class="ph-title">Performance Overview</div>
+      <div class="ph-sub">Nov 1–5, 2026 · 3 ad accounts · ads started spending Nov 3</div>
+    </div>
+    <div class="ph-actions">
+      <button class="btn btn-g" onclick="switchTab('budgets')">+ Test Budget</button>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpi-grid">
+    <div class="card kcard">
+      <div class="clabel">Total Spend</div>
+      <div class="knum" id="kSpend">$0.00</div>
+      <span class="kdelta neu">3 accounts</span>
+      <div class="ksub">MTD Nov 2026</div>
+    </div>
+    <div class="card kcard">
+      <div class="clabel">Impressions</div>
+      <div class="knum" id="kImpr">0</div>
+      <span class="kdelta neu" id="kCpm">$0 CPM</span>
+      <div class="ksub">All accounts</div>
+    </div>
+    <div class="card kcard">
+      <div class="clabel">Clicks</div>
+      <div class="knum" id="kClicks">0</div>
+      <span class="kdelta neu" id="kCpc">$0 CPC</span>
+      <div class="ksub">Link clicks MTD</div>
+    </div>
+    <div class="card kcard">
+      <div class="clabel">Affiliate Rev</div>
+      <div class="knum" id="kRev">$0.00</div>
+      <span class="kdelta neu" id="kRoas">0.00× ROAS</span>
+      <div class="ksub">Manual entries · postback not connected</div>
+    </div>
+  </div>
+
+  <!-- Funnel + Rev -->
+  <div class="main-cols">
+    <div class="card funnel-card">
+      <div class="funnel-head">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+          <div>
+            <div class="clabel">Conversion Funnel</div>
+            <div style="font-size:11px;color:var(--fg3);margin-top:1px;">Ad click → your landing page → JVZoo checkout → sale</div>
+          </div>
+          <button class="menu-btn">···</button>
+        </div>
+        <div class="funnel-tabs">
+          <button class="ftab active" onclick="setFProd('all',this)">All</button>
+          <button class="ftab" onclick="setFProd('wellness',this)">Wellness Notes</button>
+          <button class="ftab" onclick="setFProd('neuro',this)">NeuroSharp</button>
+          <button class="ftab" onclick="setFProd('glp',this)">Glpatches</button>
+        </div>
+      </div>
+      <div class="funnel-body">
+        <div class="fwrap"><div class="fgrid" id="fGrid"></div></div>
+        <div class="fnote">Meta numbers cover Nov 1–5, pulled 6 Nov at 01:25 (Berlin). Steps marked “Not tracked” have no data source yet, so they stay empty. Nothing on this chart is estimated.</div>
+      </div>
+    </div>
+
+    <div class="card rev-panel">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div class="clabel">Affiliate Revenue</div>
+        <button class="menu-btn">···</button>
+      </div>
+      <div class="rev-hero" id="revHero">$0.00</div>
+      <div class="rev-sub">Manual entries · JVZoo postback not connected</div>
+      <div class="rev-rows" id="revRows"></div>
+      <div class="jvzoo-note" id="jvzooNote">
+        <strong>JVZoo not connected yet</strong>
+        JVZoo can send every sale to a postback URL (My Account → Affiliate Settings → Manage S2S Postbacks). Until that’s set up, add sales by hand in Test Budgets → + Sale.
+      </div>
+    </div>
+  </div>
+
+  <!-- Dot sparklines -->
+  <div class="spark-grid">
+    <div class="card scard">
+      <div class="ch" style="padding:0;margin-bottom:6px;">
+        <div class="clabel">Wellness Notes</div>
+        <button class="menu-btn">···</button>
+      </div>
+      <div class="scard-top">
+        <div><div class="snum" id="spWSpend">$0</div><div class="ksub">Spend MTD</div></div>
+        <div style="text-align:right;">
+          <div class="sdelta" style="background:var(--accent-lt);color:var(--accent)" id="spWCpc">$0 CPC</div>
+          <div class="ksub" style="margin-top:3px;" id="spWCpm">$0 CPM</div>
+        </div>
+      </div>
+      <canvas id="dotW" style="width:100%;display:block;height:64px;" height="64" role="img" aria-label="Daily spend chart"></canvas>
+      <div class="spark-days">Daily spend · each column is one day · taller = more spend</div>
+    </div>
+    <div class="card scard">
+      <div class="ch" style="padding:0;margin-bottom:6px;">
+        <div class="clabel">NeuroSharp</div>
+        <button class="menu-btn">···</button>
+      </div>
+      <div class="scard-top">
+        <div><div class="snum" id="spNSpend">$0</div><div class="ksub">Spend MTD</div></div>
+        <div style="text-align:right;">
+          <div class="sdelta" style="background:var(--purple-lt);color:var(--purple)" id="spNCpc">$0 CPC</div>
+          <div class="ksub" style="margin-top:3px;" id="spNCpm">$0 CPM</div>
+        </div>
+      </div>
+      <canvas id="dotN" style="width:100%;display:block;height:64px;" height="64" role="img" aria-label="Daily spend chart"></canvas>
+      <div class="spark-days">Daily spend · each column is one day · taller = more spend</div>
+    </div>
+    <div class="card scard">
+      <div class="ch" style="padding:0;margin-bottom:6px;">
+        <div class="clabel">Glpatches</div>
+        <button class="menu-btn">···</button>
+      </div>
+      <div class="scard-top">
+        <div><div class="snum" id="spGSpend">$0</div><div class="ksub">Spend MTD</div></div>
+        <div style="text-align:right;">
+          <div class="sdelta" style="background:var(--pink-lt);color:var(--pink)" id="spGCpc">$0 CPC</div>
+          <div class="ksub" style="margin-top:3px;" id="spGCpm">$0 CPM</div>
+        </div>
+      </div>
+      <canvas id="dotG" style="width:100%;display:block;height:64px;" height="64" role="img" aria-label="Daily spend chart"></canvas>
+      <div class="spark-days">Daily spend · each column is one day · taller = more spend</div>
+    </div>
+  </div>
+
+  <!-- Products table -->
+  <div class="card prod-card">
+    <div class="ch" style="padding:12px 16px;">
+      <div class="clabel">Ad Accounts</div>
+      <button class="menu-btn">···</button>
+    </div>
+    <div class="tbl-wrap">
+      <table class="ptbl">
+        <thead>
+          <tr>
+            <th>Product</th><th>Spend MTD</th><th>Impressions</th>
+            <th>Clicks</th><th>CPC</th><th>CPM</th><th>Budget Use</th><th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="ptbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══ BUDGETS ══ -->
+<div id="budgetView" hidden>
+<div class="page">
+  <div class="ph">
+    <div>
+      <div class="ph-title">Test Budgets</div>
+      <div class="ph-sub">Track spend against test allocations per product</div>
+    </div>
+    <div class="ph-actions">
+      <div class="fpills">
+        <button class="fpill active" onclick="setFilter('all',this)">All <span class="fcnt" id="cntAll">3</span></button>
+        <button class="fpill" onclick="setFilter('active',this)">Active <span class="fcnt" id="cntActive">0</span></button>
+        <button class="fpill" onclick="setFilter('depleted',this)">Depleted <span class="fcnt" id="cntDepleted">0</span></button>
+        <button class="fpill" onclick="setFilter('paused',this)">Paused <span class="fcnt" id="cntPaused">0</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <div class="bsum">
+    <div class="card kcard"><div class="clabel">Total Spent</div><div class="knum" id="bkSpent">$0</div><div class="ksub" id="bkSpentOf">of $0 assigned</div></div>
+    <div class="card kcard"><div class="clabel">Remaining</div><div class="knum" id="bkLeft">$0</div><div class="ksub">active tests</div></div>
+    <div class="card kcard"><div class="clabel">Affiliate Rev</div><div class="knum" id="bkRev">$0</div><div class="ksub" id="bkRevSub">Waiting on JVZoo</div></div>
+    <div class="card kcard"><div class="clabel">Net / ROAS</div><div class="knum" id="bkNet">$0</div><div class="ksub" id="bkRoas">0.00× ROAS</div></div>
+  </div>
+
+  <!-- Stacked bar -->
+  <div class="card" style="padding:12px 16px;margin-bottom:14px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;">
+      <div class="clabel">Budget allocation</div>
+    </div>
+    <div class="strack" id="stackBar"></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;" id="stackLeg"></div>
+  </div>
+
+  <!-- Alert -->
+  <div id="alertEl"></div>
+
+  <!-- Budget cards -->
+  <div class="bcards" id="bcards"></div>
+
+  <!-- Form + Log -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px;">
+    <div class="card" style="padding:18px;" id="formCard">
+      <div class="slabel" id="formTitle">Assign a Test Budget</div>
+      <div class="form-grid">
+        <div>
+          <div class="fg-label">Product</div>
+          <select class="fg-select" id="fProd" onchange="updatePreview()">
+            <option value="wellness">Wellness Notes</option>
+            <option value="neuro">NeuroSharp</option>
+            <option value="glp">Glpatches</option>
+          </select>
+        </div>
+        <div>
+          <div class="fg-label">Test Budget (USD)</div>
+          <input class="fg-input" type="number" id="fAmt" placeholder="100" min="1" oninput="updatePreview()">
+          <div class="preview-box" id="prevBox" style="display:none;"></div>
+        </div>
+        <div>
+          <div class="fg-label">Warn me at</div>
+          <select class="fg-select" id="fWarn">
+            <option value="50">50%</option>
+            <option value="70" selected>70%</option>
+            <option value="80">80%</option>
+            <option value="90">90%</option>
+          </select>
+        </div>
+        <div>
+          <div class="fg-label">Start Date</div>
+          <input class="fg-input" type="date" id="fStart">
+        </div>
+      </div>
+      <div class="cbrow" style="margin:10px 0;">
+        <input type="checkbox" id="fAuto" checked>
+        <label for="fAuto">Pause ads automatically at 100%</label>
+      </div>
+      <div style="display:flex;gap:6px;">
+        <button class="btn btn-p" onclick="saveBudget()">Save Budget</button>
+        <button class="btn btn-g" onclick="resetForm()">Reset</button>
+      </div>
+    </div>
+    <div class="card" style="padding:18px;">
+      <div class="slabel">Budget Log</div>
+      <div class="tbl-wrap" style="max-height:270px;overflow-y:auto;">
+        <table class="ltbl">
+          <thead><tr><th>Date</th><th>Product</th><th>Event</th><th>Amount</th></tr></thead>
+          <tbody id="logBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+// ── Meta data snapshot ──────────────────────────────────────────────────
+// Pulled from the Meta Ads API on 6 Nov 2026, 01:25 Berlin. Range: this month (Nov 1–5).
+// clicks = link clicks, lpv = landing page views (fired by the Meta Pixel on the lander).
+// daily = amount spent per day, Nov 1–5. Nothing here is estimated.
+const DATA_AS_OF = new Date('2026-11-06T01:25:00+01:00');
+const DAY_LABELS = ['Nov 1','Nov 2','Nov 3','Nov 4','Nov 5'];
+const LIVE = {
+  wellness: {spend:92.82, impr:6429,  reach:5501, clicks:52, lpv:24, daily:[0,0,1.25,35.20,56.37]},
+  neuro:    {spend:39.13, impr:7049,  reach:5590, clicks:37, lpv:8,  daily:[0,0,2.96,21.50,14.67]},
+  glp:      {spend:105.15,impr:10694, reach:8833, clicks:41, lpv:13, daily:[0,0,3.31,34.75,67.09]},
+};
+Object.values(LIVE).forEach(d=>{d.cpc=d.clicks?d.spend/d.clicks:null;d.cpm=d.impr?d.spend/d.impr*1000:null;});
+const PROD = {
+  wellness:{name:'Wellness Notes', acct:'1614901483744859', color:'#2563EB', cls:'c1'},
+  neuro:   {name:'NeuroSharp',      acct:'1105909655657509', color:'#7C3AED', cls:'c2'},
+  glp:     {name:'Glpatches',       acct:'1148819018097191', color:'#DB2777', cls:'c3'},
+};
+const KEYS = ['wellness','neuro','glp'];
+
+// ── Persistence ──────────────────────────────────────────────────────────
+function ls(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch(e){return d;}}
+function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+
+let budgets  = ls('nutra_budgets_v3',{
+  wellness:{budget:50, warnAt:70, autoPause:true, paused:false, start:'2026-11-03'},
+  neuro:   {budget:75, warnAt:70, autoPause:true, paused:false, start:'2026-11-03'},
+  glp:     {budget:100,warnAt:70, autoPause:true, paused:false, start:'2026-11-03'},
+});
+let blogEvents = ls('nutra_blog_v3',[
+  {date:'2026-11-03',prod:'wellness',event:'assigned',amount:50},
+  {date:'2026-11-03',prod:'neuro',   event:'assigned',amount:75},
+  {date:'2026-11-03',prod:'glp',     event:'assigned',amount:100},
+]);
+// First Meta spend was Nov 3; move the old placeholder start date to it
+Object.values(budgets).forEach(b=>{if(b&&b.start==='2026-10-28')b.start='2026-11-03';});
+blogEvents.forEach(e=>{if(e.date==='2026-10-28'&&e.event==='assigned')e.date='2026-11-03';});
+let afSales = ls('nutra_afsales_v1',[]);
+
+let activeTab='overview', bFilter='all', fProd='all';
+
+// ── Utilities ────────────────────────────────────────────────────────────
+const $=id=>document.getElementById(id);
+const fmt=(n,d=2)=>n==null?'—':(+n<0?'−':'')+'$'+Math.abs(+n).toFixed(d).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+const fmtN=n=>n==null?'—':(+n).toLocaleString();
+const fmtK=n=>n==null?'—':(n>=1000?(n/1000).toFixed(1)+'k':String(n));
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600);}
+function afRev(k){return afSales.filter(s=>s.prod===k).reduce((a,s)=>a+s.amount,0);}
+function afTotal(){return afSales.reduce((a,s)=>a+s.amount,0);}
+function bStatus(k){
+  const b=budgets[k];if(!b)return'on-track';
+  const pct=b.budget>0?LIVE[k].spend/b.budget*100:0;
+  if(b.paused)return'paused';
+  if(pct>=100)return'depleted';
+  if(pct>=b.warnAt)return'watch';
+  return'on-track';
+}
+
+// ── Tab switch ───────────────────────────────────────────────────────────
+function switchTab(tab){
+  activeTab=tab;
+  $('overviewView').hidden=tab!=='overview';
+  $('budgetView').hidden=tab!=='budgets';
+  ['overview','budgets'].forEach(t=>$('tab-'+t).classList.toggle('active',t===tab));
+  tab==='overview'?renderOverview():renderBudgets();
+}
+
+// ── Overview ─────────────────────────────────────────────────────────────
+function renderOverview(){
+  const totSpend=KEYS.reduce((a,k)=>a+LIVE[k].spend,0);
+  const totImpr =KEYS.reduce((a,k)=>a+LIVE[k].impr,0);
+  const totClk  =KEYS.reduce((a,k)=>a+LIVE[k].clicks,0);
+  const totRev  =afTotal();
+  $('kSpend').textContent =fmt(totSpend);
+  $('kImpr').textContent  =fmtK(totImpr);
+  $('kClicks').textContent=fmtN(totClk);
+  $('kRev').textContent   =fmt(totRev);
+  $('kCpm').textContent   =fmt(totImpr>0?totSpend/totImpr*1000:0)+' CPM';
+  $('kCpc').textContent   =fmt(totClk>0?totSpend/totClk:0)+' CPC';
+  $('kRoas').textContent  =(totSpend>0?totRev/totSpend:0).toFixed(2)+'× ROAS';
+
+  renderFunnel(fProd);
+
+  // Rev panel
+  $('revHero').textContent=fmt(totRev);
+  $('jvzooNote').style.display=totRev===0?'block':'none';
+  const mx=Math.max(...KEYS.map(k=>afRev(k)),1);
+  $('revRows').innerHTML=KEYS.map(k=>`<div>
+    <div class="rrow-lbl">${PROD[k].name}<span>${fmt(afRev(k))}</span></div>
+    <div class="rbar-track"><div class="rbar-fill ${PROD[k].cls}" style="width:${(afRev(k)/mx*100).toFixed(1)}%"></div></div>
+  </div>`).join('');
+
+  // Sparklines
+  KEYS.forEach(k=>{
+    const d=LIVE[k];
+    const id=k==='wellness'?'W':k==='neuro'?'N':'G';
+    $(`sp${id}Spend`).textContent=fmt(d.spend);
+    $(`sp${id}Cpc`).textContent  =fmt(d.cpc)+' CPC';
+    $(`sp${id}Cpm`).textContent  =fmt(d.cpm)+' CPM';
+  });
+  redrawSparks();
+
+  // Table
+  $('ptbody').innerHTML=KEYS.map(k=>{
+    const d=LIVE[k],b=budgets[k]||{},sp=d.spend,bu=b.budget||0;
+    const pct=bu>0?Math.min(sp/bu*100,100):0;
+    const st=bStatus(k);
+    const stl={'on-track':'ON TRACK',watch:'WATCH',depleted:'DEPLETED',paused:'PAUSED'}[st];
+    return`<tr>
+      <td><div class="pname">${PROD[k].name}</div><div class="pacct">${PROD[k].acct}</div></td>
+      <td><div class="stat">${fmt(sp)}</div></td>
+      <td><div class="stat">${fmtK(d.impr)}</div></td>
+      <td><div class="stat">${fmtN(d.clicks)}</div></td>
+      <td><div class="stat">${fmt(d.cpc)}</div></td>
+      <td><div class="stat">${fmt(d.cpm)}</div></td>
+      <td>
+        <div class="mini-track"><div class="mini-fill" style="width:${pct}%;background:${PROD[k].color};height:100%;border-radius:2px;"></div></div>
+        <div class="stat-s">${pct.toFixed(0)}% of $${bu}</div>
+      </td>
+      <td><span class="spill ${st}">${stl}</span></td>
+    </tr>`;
+  }).join('');
+
+  updateSyncTime();
+}
+
+// ── Funnel ────────────────────────────────────────────────────────────────
+function setFProd(p,btn){
+  fProd=p;
+  document.querySelectorAll('.ftab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderFunnel(p);
+}
+
+function renderFunnel(prod){
+  const ks=prod==='all'?KEYS:[prod];
+  const sum=f=>ks.reduce((a,k)=>a+(LIVE[k][f]||0),0);
+  const impr=sum('impr'),clicks=sum('clicks'),lpv=sum('lpv');
+  const sales=afSales.filter(s=>ks.includes(s.prod)).length;
+  // v:null = no data source connected; shown empty, never estimated
+  const steps=[
+    {n:'Link clicks',       src:'Meta ads',   v:clicks, cv:`${impr?(clicks/impr*100).toFixed(2):'0'}% of ${fmtK(impr)} impressions`},
+    {n:'Landing page views',src:'Meta Pixel', v:lpv},
+    {n:'Offer clicks',      src:null,         v:null, how:'Needs a Pixel event on your landing page’s buy button'},
+    {n:'JVZoo checkout',    src:null,         v:null, how:'Needs JVZoo “Initiated” postback'},
+    {n:'Sales',             src:sales?'Manual entries':null, v:sales||null, how:'Needs JVZoo “Purchase” postback, or add sales by hand'},
+  ];
+  const maxV=Math.max(clicks,1);
+  let prev=null;
+  $('fGrid').innerHTML=steps.map((s,i)=>{
+    const on=s.v!=null;
+    let cv=s.cv||'';
+    if(i>0&&on&&prev)cv=prev.v>0?`${(s.v/prev.v*100).toFixed(0)}% of ${prev.n.toLowerCase()}`:'—';
+    if(!on)cv='';
+    const h=on?Math.max(s.v/maxV*100,4):0;
+    const bar=on
+      ?`<div class="fbar ${i===0?'solid':'hatched'}" style="height:${h}%" title="${s.n}: ${fmtN(s.v)}"></div>`
+      :`<div class="fbar empty">${s.how}</div>`;
+    if(on)prev=s;
+    return`<div class="fcol">
+      <div class="fstep-label">${s.n}</div>
+      <span class="fsrc ${on?'on':''}">${on?s.src:'Not tracked'}</span>
+      <div class="fstep-num ${on?'':'dim'}">${on?fmtN(s.v):'—'}</div>
+      <div class="fstep-cv">${cv}</div>
+      <div class="fbar-area">${bar}</div>
+      <div class="fbar-floor"></div>
+    </div>`;
+  }).join('');
+}
+
+// ── Daily-spend dot chart (one column per day, real Meta daily spend) ─────
+function redrawSparks(){
+  KEYS.forEach(k=>{const id=k==='wellness'?'W':k==='neuro'?'N':'G';drawDaily(`dot${id}`,LIVE[k].daily,PROD[k].color);});
+}
+function drawDaily(id,vals,color){
+  const cv=document.getElementById(id);
+  if(!cv)return;
+  const dpr=window.devicePixelRatio||1,W=cv.offsetWidth||260,H=64;
+  cv.width=W*dpr;cv.height=H*dpr;
+  const ctx=cv.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);
+  const css=getComputedStyle(document.documentElement);
+  const track=css.getPropertyValue('--track').trim()||'#ECECEF';
+  const lbl=css.getPropertyValue('--fg3').trim()||'#A0A0AE';
+  const cols=vals.length,gap=10,colW=(W-gap*(cols-1))/cols;
+  const rows=6,across=4,labelH=14,area=H-labelH;
+  const px=colW/across,py=area/rows,r=Math.max(1.5,Math.min(px,py)*.3);
+  const max=Math.max(...vals,0.01);
+  ctx.font='600 10px Inter, system-ui, sans-serif';ctx.textAlign='center';ctx.textBaseline='alphabetic';
+  vals.forEach((v,i)=>{
+    const lit=v>0?Math.max(1,Math.round(v/max*rows)):0;
+    const x0=i*(colW+gap);
+    for(let row=0;row<rows;row++){
+      for(let c=0;c<across;c++){
+        ctx.beginPath();
+        ctx.arc(x0+px*(c+.5),area-py*(row+.5),r,0,Math.PI*2);
+        ctx.fillStyle=row<lit?color:track;
+        ctx.fill();
+      }
+    }
+    ctx.fillStyle=lbl;
+    ctx.fillText(`${DAY_LABELS[i].replace('Nov ','')} · ${v>0?'$'+Math.round(v):'$0'}`,x0+colW/2,H-2);
+  });
+  cv.setAttribute('aria-label','Daily spend: '+vals.map((v,i)=>`${DAY_LABELS[i]} $${v.toFixed(2)}`).join(', '));
+}
+
+// ── Budgets ───────────────────────────────────────────────────────────────
+function renderBudgets(){
+  const totBu=KEYS.reduce((a,k)=>a+(budgets[k]?.budget||0),0);
+  const totSp=KEYS.reduce((a,k)=>a+LIVE[k].spend,0);
+  const totRev=afTotal();
+  const net=totRev-totSp;
+  const roas=totSp>0?totRev/totSp:0;
+  $('bkSpent').textContent=fmt(totSp);$('bkSpentOf').textContent=`of ${fmt(totBu)} assigned`;
+  $('bkLeft').textContent=fmt(Math.max(totBu-totSp,0));
+  $('bkRev').textContent=fmt(totRev);$('bkRevSub').textContent=totRev===0?'Waiting on JVZoo':'JVZoo + manual MTD';
+  $('bkNet').textContent=fmt(net);$('bkRoas').textContent=roas.toFixed(2)+'× ROAS';
+
+  // Stacked
+  $('stackBar').innerHTML=KEYS.map(k=>`<div class="sseg" style="width:${totBu>0?(budgets[k]?.budget||0)/totBu*100:0}%;background:${PROD[k].color};"></div>`).join('');
+  $('stackLeg').innerHTML=KEYS.map(k=>`<div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--fg2);">
+    <span style="width:9px;height:9px;border-radius:50%;background:${PROD[k].color};display:inline-block;"></span>
+    ${PROD[k].name} · ${fmt(budgets[k]?.budget||0)}
+  </div>`).join('');
+
+  // Filter counts
+  const sts=KEYS.map(k=>bStatus(k));
+  $('cntAll').textContent=KEYS.length;
+  $('cntActive').textContent=sts.filter(s=>s==='on-track'||s==='watch').length;
+  $('cntDepleted').textContent=sts.filter(s=>s==='depleted').length;
+  $('cntPaused').textContent=sts.filter(s=>s==='paused').length;
+
+  // Alerts
+  const dep=KEYS.filter(k=>bStatus(k)==='depleted'&&!budgets[k]?.paused);
+  $('alertEl').innerHTML=dep.map(k=>{
+    const ov=Math.max(LIVE[k].spend-(budgets[k]?.budget||0),0);
+    return`<div class="alert-dep">
+      <p><strong>${PROD[k].name}</strong> has used its full test budget.${ov>0?` Spend is ${fmt(ov)} over the ${fmt(budgets[k].budget)} assigned.`:''}</p>
+      <div style="display:flex;gap:6px;">
+        <button class="btn btn-r" onclick="pauseProd('${k}')">Pause ${PROD[k].name}</button>
+        <button class="btn btn-g" onclick="extendBudget('${k}')">Extend</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Cards
+  const filtered=bFilter==='all'?KEYS:bFilter==='active'?KEYS.filter(k=>['on-track','watch'].includes(bStatus(k))):bFilter==='depleted'?KEYS.filter(k=>bStatus(k)==='depleted'):KEYS.filter(k=>bStatus(k)==='paused');
+  $('bcards').innerHTML=filtered.map(k=>{
+    const b=budgets[k]||{},sp=LIVE[k].spend,bu=b.budget||0;
+    const pct=bu>0?Math.min(sp/bu*100,100):0;
+    const st=bStatus(k);
+    const stl={'on-track':'ON TRACK',watch:'WATCH',depleted:'DEPLETED',paused:'PAUSED'}[st];
+    const rev=afRev(k),roas=sp>0?rev/sp:0;
+    const days=Math.max(1,Math.round((DATA_AS_OF.getTime()-new Date((b.start||'2026-11-03')+'T00:00:00+01:00').getTime())/(864e5)));
+    const avg=sp/days;const rem=Math.max(bu-sp,0);const dl=avg>0?rem/avg:999;
+    const pace=sp>=bu?`<span style="color:var(--red);font-weight:600;">Budget depleted</span>`:dl>14?`≈ ${Math.round(dl/7)} weeks at this pace`:`≈ ${Math.round(dl)} days at this pace`;
+    return`<div class="card bcard" id="bc-${k}">
+      <div class="bcard-top"><div><div class="bcard-name">${PROD[k].name}</div><div class="bcard-sub">Started ${b.start||'—'}</div></div><span class="spill ${st}">${stl}</span></div>
+      <div class="bspent">${fmt(sp)}</div><div class="bof">of ${fmt(bu)} budget</div>
+      <div class="prog-track">
+        <div class="prog-fill ${st}" style="width:${pct}%;"></div>
+        <div class="prog-tick" style="left:${Math.min(b.warnAt||70,100)}%;"></div>
+      </div>
+      <div class="bpct"><span>${pct.toFixed(0)}% used</span><span>${fmt(Math.max(bu-sp,0))} left</span></div>
+      <div class="bpace">${pace}</div>
+      <div class="bmetrics">
+        <div><div class="bml">Rev</div><div class="bmv">${fmt(rev)}</div></div>
+        <div><div class="bml">ROAS</div><div class="bmv">${roas.toFixed(2)}×</div></div>
+        <div><div class="bml">Clicks</div><div class="bmv">${fmtN(LIVE[k].clicks)}</div></div>
+      </div>
+      <div class="bactions">
+        <button class="btn btn-g" onclick="editBudget('${k}')">Edit</button>
+        <button class="btn btn-g" onclick="recordSale('${k}')">+ Sale</button>
+        ${b.paused?`<button class="btn btn-g" onclick="resumeProd('${k}')">Resume</button>`:`<button class="btn btn-r" onclick="pauseProd('${k}')">Pause</button>`}
+      </div>
+    </div>`;
+  }).join('');
+
+  renderLog();updatePreview();
+}
+
+function renderLog(){
+  const rows=[...blogEvents,...afSales.map(s=>({...s,event:'sale'}))].sort((a,b)=>new Date(b.date)-new Date(a.date));
+  $('logBody').innerHTML=rows.slice(0,30).map(r=>`<tr>
+    <td style="color:var(--fg3);">${r.date}</td>
+    <td>${PROD[r.prod]?.name||r.prod}</td>
+    <td><span class="levt ${r.event}">${r.event}</span></td>
+    <td style="font-variant-numeric:tabular-nums;">${r.amount!=null?fmt(r.amount):''}</td>
+  </tr>`).join('');
+}
+
+// ── Budget actions ─────────────────────────────────────────────────────────
+function saveBudget(){
+  const prod=$('fProd').value,amount=parseFloat($('fAmt').value),warn=parseInt($('fWarn').value);
+  const start=$('fStart').value||new Date().toISOString().slice(0,10);
+  if(!amount||amount<=0){toast('Enter a valid budget amount');return;}
+  const existed=!!budgets[prod];
+  budgets[prod]={budget:amount,warnAt:warn,autoPause:$('fAuto').checked,paused:false,start};
+  lsSet('nutra_budgets_v3',budgets);
+  blogEvents.unshift({date:new Date().toISOString().slice(0,10),prod,event:existed?'extended':'assigned',amount});
+  lsSet('nutra_blog_v3',blogEvents);
+  toast(`${PROD[prod].name} budget ${existed?'updated':'assigned'}: ${fmt(amount)}`);
+  resetForm();renderBudgets();
+}
+function editBudget(k){
+  $('fProd').value=k;$('fAmt').value=budgets[k]?.budget||'';
+  $('fWarn').value=budgets[k]?.warnAt||70;$('fAuto').checked=budgets[k]?.autoPause!==false;
+  $('formTitle').textContent=`Edit ${PROD[k].name} Budget`;
+  $('formCard').scrollIntoView({behavior:'smooth',block:'nearest'});
+  updatePreview();
+}
+function extendBudget(k){editBudget(k);$('fAmt').value=((budgets[k]?.budget||0)+25).toFixed(2);updatePreview();}
+function resetForm(){$('fAmt').value='';$('formTitle').textContent='Assign a Test Budget';$('prevBox').style.display='none';}
+function updatePreview(){
+  const p=$('fProd')?.value,a=parseFloat($('fAmt')?.value),pb=$('prevBox');
+  if(!pb)return;
+  if(!p||!a||isNaN(a)){pb.style.display='none';return;}
+  const sp=LIVE[p].spend,bu=a,pct=(sp/bu*100).toFixed(0);
+  pb.style.display='block';pb.textContent=`With ${fmt(a)}, ${PROD[p].name} will be at ${pct}% used (${fmt(Math.max(bu-sp,0))} left).`;
+}
+function pauseProd(k){
+  budgets[k].paused=true;lsSet('nutra_budgets_v3',budgets);
+  blogEvents.unshift({date:new Date().toISOString().slice(0,10),prod:k,event:'paused',amount:null});
+  lsSet('nutra_blog_v3',blogEvents);toast(`${PROD[k].name} paused`);renderBudgets();
+}
+function resumeProd(k){
+  budgets[k].paused=false;lsSet('nutra_budgets_v3',budgets);
+  blogEvents.unshift({date:new Date().toISOString().slice(0,10),prod:k,event:'resumed',amount:null});
+  lsSet('nutra_blog_v3',blogEvents);toast(`${PROD[k].name} resumed`);renderBudgets();
+}
+function recordSale(k){
+  const card=$(`bc-${k}`);if(!card||card.querySelector('.sale-form'))return;
+  const f=document.createElement('div');f.className='sale-form';
+  f.innerHTML=`<div class="fg-label" style="margin-bottom:5px;">Record Sale</div><div style="display:flex;gap:6px;">
+    <input class="fg-input" type="number" id="sa-${k}" placeholder="$0.00" min="0.01" step="0.01" style="flex:1;">
+    <button class="btn btn-p" onclick="addSale('${k}')">Add</button>
+    <button class="btn btn-g" onclick="this.closest('.sale-form').remove()">✕</button>
+  </div>`;
+  card.appendChild(f);
+}
+function addSale(k){
+  const inp=$(`sa-${k}`),amt=parseFloat(inp?.value);
+  if(!amt||amt<=0){toast('Enter sale amount');return;}
+  const today=new Date().toISOString().slice(0,10);
+  afSales.push({date:today,prod:k,amount:amt,source:'manual'});lsSet('nutra_afsales_v1',afSales);
+  blogEvents.unshift({date:today,prod:k,event:'sale',amount:amt});lsSet('nutra_blog_v3',blogEvents);
+  toast(`Sale recorded: ${fmt(amt)} for ${PROD[k].name}`);
+  document.querySelectorAll('.sale-form').forEach(f=>f.remove());renderBudgets();
+}
+
+function setFilter(f,btn){
+  bFilter=f;document.querySelectorAll('.fpill').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderBudgets();
+}
+
+function updateSyncTime(){/* Meta data is a dated snapshot; see DATA_AS_OF */}
+function refresh(){activeTab==='overview'?renderOverview():renderBudgets();toast('Recalculated with your latest manual entries');}
+
+// ── Appearance ───────────────────────────────────────────────────────────
+const hostTheme=document.documentElement.getAttribute('data-theme');
+let appear=ls('nutra_appearance_v1',{mode:'auto',bg:'white'});
+function applyAppear(){
+  const r=document.documentElement;
+  if(appear.mode==='auto'){hostTheme?r.setAttribute('data-theme',hostTheme):r.removeAttribute('data-theme');}
+  else r.setAttribute('data-theme',appear.mode);
+  if(appear.bg==='white')r.removeAttribute('data-bg');else r.setAttribute('data-bg',appear.bg);
+  document.querySelectorAll('#appearPop [data-mode]').forEach(b=>{const on=b.dataset.mode===appear.mode;b.classList.toggle('on',on);b.setAttribute('aria-checked',on);});
+  document.querySelectorAll('#appearPop [data-bgopt]').forEach(b=>{const on=b.dataset.bgopt===appear.bg;b.classList.toggle('on',on);b.setAttribute('aria-checked',on);});
+}
+function setAppearOpen(open){$('appearPop').hidden=!open;$('appearBtn').setAttribute('aria-expanded',open);}
+$('appearBtn').addEventListener('click',e=>{e.stopPropagation();setAppearOpen($('appearPop').hidden);});
+$('appearPop').addEventListener('click',e=>{
+  e.stopPropagation();
+  const m=e.target.closest('[data-mode]'),b=e.target.closest('[data-bgopt]');
+  if(m)appear.mode=m.dataset.mode;
+  if(b)appear.bg=b.dataset.bgopt;
+  if(m||b){lsSet('nutra_appearance_v1',appear);applyAppear();if(activeTab==='overview')redrawSparks();}
+});
+document.addEventListener('click',()=>setAppearOpen(false));
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('appearPop').hidden){setAppearOpen(false);$('appearBtn').focus();}});
+applyAppear();
+
+// ── Init ──────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded',()=>{
+  $('fStart').value=new Date().toISOString().slice(0,10);
+  renderOverview();
+  // Redraw dots on resize
+  let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{if(activeTab==='overview')renderOverview();},150);});
+});
+</script>
+
+</body>
+</html>
