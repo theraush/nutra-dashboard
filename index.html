@@ -130,7 +130,7 @@ input,select{font-family:inherit;}
 .ftab.active{background:var(--fg);color:var(--surface);border-color:var(--fg);}
 .funnel-body{padding:14px 16px;}
 .fwrap{overflow-x:auto;}
-.fgrid{display:grid;grid-template-columns:repeat(5,minmax(92px,1fr));gap:10px;min-width:520px;}
+.fgrid{display:grid;grid-template-columns:repeat(4,minmax(100px,1fr));gap:10px;min-width:440px;}
 .fcol{display:flex;flex-direction:column;align-items:center;min-width:0;}
 .fstep-label{font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--fg3);margin-bottom:5px;text-align:center;min-height:22px;display:flex;align-items:flex-end;}
 .fsrc{font-size:9px;font-weight:600;padding:1px 7px;border-radius:10px;background:var(--surface2);color:var(--fg3);border:1px solid var(--border);margin-bottom:7px;white-space:nowrap;}
@@ -296,7 +296,7 @@ input,select{font-family:inherit;}
     </button>
   </div>
   <div class="topbar-right">
-    <div class="data-badge" title="Meta numbers are a snapshot pulled on this date, not a live feed">Meta data · <b>6 Nov, 01:25</b></div>
+    <div class="data-badge" title="Meta numbers are a snapshot pulled on this date, not a live feed">Meta data · <b>6 Nov, 23:15</b></div>
     <button class="icon-btn" onclick="refresh()" title="Recalculate with your latest manual entries" aria-label="Recalculate">
       <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 8A6 6 0 1 1 8 2a6 6 0 0 0 5 2.6"/><path d="M14 2v3h-3"/></svg>
     </button>
@@ -329,7 +329,7 @@ input,select{font-family:inherit;}
   <div class="ph">
     <div>
       <div class="ph-title">Performance Overview</div>
-      <div class="ph-sub">Nov 1–5, 2026 · 3 ad accounts · ads started spending Nov 3</div>
+      <div class="ph-sub">Nov 1–6, 2026 · 3 ad accounts · ads started spending Nov 3</div>
     </div>
     <div class="ph-actions">
       <button class="btn btn-g" onclick="switchTab('budgets')">+ Test Budget</button>
@@ -360,7 +360,7 @@ input,select{font-family:inherit;}
       <div class="clabel">Affiliate Rev</div>
       <div class="knum" id="kRev">$0.00</div>
       <span class="kdelta neu" id="kRoas">0.00× ROAS</span>
-      <div class="ksub">Manual entries · postback not connected</div>
+      <div class="ksub">JVZoo postbacks + manual entries</div>
     </div>
   </div>
 
@@ -384,7 +384,7 @@ input,select{font-family:inherit;}
       </div>
       <div class="funnel-body">
         <div class="fwrap"><div class="fgrid" id="fGrid"></div></div>
-        <div class="fnote">Meta numbers cover Nov 1–5, pulled 6 Nov at 01:25 (Berlin). Steps marked “Not tracked” have no data source yet, so they stay empty. Nothing on this chart is estimated.</div>
+        <div class="fnote">Meta numbers cover Nov 1–6, pulled 6 Nov at 23:15 (Berlin). JVZoo steps count from Nov 6, when the postbacks were connected, so they aren’t compared against the full month of clicks. Nothing on this chart is estimated.</div>
       </div>
     </div>
 
@@ -394,11 +394,11 @@ input,select{font-family:inherit;}
         <button class="menu-btn">···</button>
       </div>
       <div class="rev-hero" id="revHero">$0.00</div>
-      <div class="rev-sub">Manual entries · JVZoo postback not connected</div>
+      <div class="rev-sub">JVZoo postbacks (since Nov 6) + manual entries</div>
       <div class="rev-rows" id="revRows"></div>
       <div class="jvzoo-note" id="jvzooNote">
-        <strong>JVZoo not connected yet</strong>
-        JVZoo can send every sale to a postback URL (My Account → Affiliate Settings → Manage S2S Postbacks). Until that’s set up, add sales by hand in Test Budgets → + Sale.
+        <strong>No sales yet</strong>
+        JVZoo is connected and has reported 2 checkout visits since Nov 6. Commissions show here on the next dashboard refresh after a sale.
       </div>
     </div>
   </div>
@@ -570,15 +570,22 @@ input,select{font-family:inherit;}
 
 <script>
 // ── Meta data snapshot ──────────────────────────────────────────────────
-// Pulled from the Meta Ads API on 6 Nov 2026, 01:25 Berlin. Range: this month (Nov 1–5).
+// Pulled from the Meta Ads API on 6 Nov 2026, 23:15 Berlin. Range: this month (Nov 1–6; Nov 6 still in progress).
 // clicks = link clicks, lpv = landing page views (fired by the Meta Pixel on the lander).
-// daily = amount spent per day, Nov 1–5. Nothing here is estimated.
-const DATA_AS_OF = new Date('2026-11-06T01:25:00+01:00');
-const DAY_LABELS = ['Nov 1','Nov 2','Nov 3','Nov 4','Nov 5'];
+// daily = amount spent per day, Nov 1–6. Nothing here is estimated.
+const DATA_AS_OF = new Date('2026-11-06T23:15:00+01:00');
+const DAY_LABELS = ['Nov 1','Nov 2','Nov 3','Nov 4','Nov 5','Nov 6'];
 const LIVE = {
-  wellness: {spend:92.82, impr:6429,  reach:5501, clicks:52, lpv:24, daily:[0,0,1.25,35.20,56.37]},
-  neuro:    {spend:39.13, impr:7049,  reach:5590, clicks:37, lpv:8,  daily:[0,0,2.96,21.50,14.67]},
-  glp:      {spend:105.15,impr:10694, reach:8833, clicks:41, lpv:13, daily:[0,0,3.31,34.75,67.09]},
+  wellness: {spend:278.96, impr:8115, clicks:90, lpv:53, daily:[0.00,0.00,1.25,35.23,59.90,182.58]},
+  neuro:    {spend:47.32, impr:8953, clicks:43, lpv:12, daily:[0.00,0.00,2.96,21.50,20.12,2.74]},
+  glp:      {spend:184.7, impr:13616, clicks:61, lpv:29, daily:[0.00,0.00,3.31,34.75,73.86,72.78]},
+};
+// JVZoo S2S postbacks received by NUTRA Tracker (connected 6 Nov 2026, ~02:00 Berlin). wellness = Synaptril.
+const JVZ_SINCE = 'Nov 6';
+const JVZ = {
+  wellness: {checkouts:1, sales:0, refunds:0, commission:0},
+  neuro:    {checkouts:0, sales:0, refunds:0, commission:0},
+  glp:      {checkouts:1, sales:0, refunds:0, commission:0},
 };
 Object.values(LIVE).forEach(d=>{d.cpc=d.clicks?d.spend/d.clicks:null;d.cpm=d.impr?d.spend/d.impr*1000:null;});
 const PROD = {
@@ -615,8 +622,8 @@ const fmt=(n,d=2)=>n==null?'—':(+n<0?'−':'')+'$'+Math.abs(+n).toFixed(d).rep
 const fmtN=n=>n==null?'—':(+n).toLocaleString();
 const fmtK=n=>n==null?'—':(n>=1000?(n/1000).toFixed(1)+'k':String(n));
 function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600);}
-function afRev(k){return afSales.filter(s=>s.prod===k).reduce((a,s)=>a+s.amount,0);}
-function afTotal(){return afSales.reduce((a,s)=>a+s.amount,0);}
+function afRev(k){return afSales.filter(s=>s.prod===k).reduce((a,s)=>a+s.amount,0)+((JVZ[k]&&JVZ[k].commission)||0);}
+function afTotal(){return KEYS.reduce((a,k)=>a+afRev(k),0);}
 function bStatus(k){
   const b=budgets[k];if(!b)return'on-track';
   const pct=b.budget>0?LIVE[k].spend/b.budget*100:0;
@@ -706,23 +713,24 @@ function renderFunnel(prod){
   const ks=prod==='all'?KEYS:[prod];
   const sum=f=>ks.reduce((a,k)=>a+(LIVE[k][f]||0),0);
   const impr=sum('impr'),clicks=sum('clicks'),lpv=sum('lpv');
-  const sales=afSales.filter(s=>ks.includes(s.prod)).length;
+  const manual=afSales.filter(s=>ks.includes(s.prod)).length;
+  const jvzSum=f=>ks.reduce((a,k)=>a+((JVZ[k]&&JVZ[k][f])||0),0);
+  const checkouts=jvzSum('checkouts'),sales=jvzSum('sales')+manual;
   // v:null = no data source connected; shown empty, never estimated
   const steps=[
     {n:'Link clicks',       src:'Meta ads',   v:clicks, cv:`${impr?(clicks/impr*100).toFixed(2):'0'}% of ${fmtK(impr)} impressions`},
     {n:'Landing page views',src:'Meta Pixel', v:lpv},
-    {n:'Offer clicks',      src:null,         v:null, how:'Needs a Pixel event on your landing page’s buy button'},
-    {n:'JVZoo checkout',    src:null,         v:null, how:'Needs JVZoo “Initiated” postback'},
-    {n:'Sales',             src:sales?'Manual entries':null, v:sales||null, how:'Needs JVZoo “Purchase” postback, or add sales by hand'},
+    {n:'JVZoo checkout',    src:'JVZoo postback', v:checkouts, cv:`counted since ${JVZ_SINCE}`, noRatio:true},
+    {n:'Sales',             src:manual?'JVZoo + manual':'JVZoo postback', v:sales, cv:`counted since ${JVZ_SINCE}`, noRatio:true},
   ];
   const maxV=Math.max(clicks,1);
   let prev=null;
   $('fGrid').innerHTML=steps.map((s,i)=>{
     const on=s.v!=null;
     let cv=s.cv||'';
-    if(i>0&&on&&prev)cv=prev.v>0?`${(s.v/prev.v*100).toFixed(0)}% of ${prev.n.toLowerCase()}`:'—';
+    if(i>0&&on&&prev&&!s.noRatio)cv=prev.v>0?`${(s.v/prev.v*100).toFixed(0)}% of ${prev.n.toLowerCase()}`:'—';
     if(!on)cv='';
-    const h=on?Math.max(s.v/maxV*100,4):0;
+    const h=on&&s.v>0?Math.max(s.v/maxV*100,4):0;
     const bar=on
       ?`<div class="fbar ${i===0?'solid':'hatched'}" style="height:${h}%" title="${s.n}: ${fmtN(s.v)}"></div>`
       :`<div class="fbar empty">${s.how}</div>`;
