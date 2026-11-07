@@ -1,0 +1,15 @@
+name: Hourly NUTRA sync
+# Opens the dashboard's sync URL once an hour. The app runs a sync at most once every 25 minutes,
+# so this needs no secret. Vercel's free plan only allows a daily cron, hence this.
+on:
+  schedule:
+    - cron: "11 * * * *"
+  workflow_dispatch:
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Run sync
+        run: |
+          curl -sS --max-time 300 --retry 2 --retry-delay 20 https://nutra-dashboard-taupe.vercel.app/api/cron
