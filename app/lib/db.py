@@ -33,7 +33,7 @@ _conn = None
 
 
 def url():
-    u = os.environ.get('DATABASE_URL') or os.environ.get('POSTGRES_URL')
+    u = os.environ.get('DATABASE_URL_UNPOOLED') or os.environ.get('DATABASE_URL') or os.environ.get('POSTGRES_URL')  # direct: advisory locks need a session
     if not u:
         raise RuntimeError('No database connected (DATABASE_URL is not set)')
     return u
