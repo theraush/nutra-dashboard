@@ -572,7 +572,7 @@ body.noscroll{overflow:hidden;}
 .st-dot.ok{background:var(--green);} .st-dot.bad{background:var(--red);} .st-dot.warn{background:var(--amber);}
 #settingsView .ptbl td{vertical-align:top;}
 .vd{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;background:var(--surface2);color:var(--fg2);white-space:nowrap;cursor:help;}
-.vd-keep{background:var(--green-lt);color:var(--green);} .vd-wait{background:var(--surface2);color:var(--fg2);}
+.vd-keep{background:var(--green-lt);color:var(--green);} .vd-wait,.vd-nosales{background:var(--surface2);color:var(--fg2);}
 .vd-ad,.vd-adv,.vd-stop{background:var(--red-lt);color:var(--red);} .vd-checkout{background:var(--amber-lt);color:var(--amber);}
 .vd-row{margin:2px 0 8px;}
 .tb-vd{min-width:220px;max-width:320px;} .tb-vd .stat-s{margin-top:4px;white-space:normal;line-height:1.4;}
@@ -982,6 +982,7 @@ function verdict(k){const b=budgets[k]||{},a=sinceStart(k),t=TH,sc=salesCtr(k,b.
   if(sales>0&&a.rev>=a.spend)return V('keep','🟢','Keep going',`Profitable: ${fmt(a.rev)} commission on ${fmt(a.spend)} spend.`);
   if(b.budget>0&&a.spend>=b.budget&&sales===0)return V('stop','⛔','Stop',`Test budget spent (${fmt(a.spend,0)}) with no sales.`);
   if(sales>0){const be=b.cps?Math.ceil(a.spend/b.cps-1e-9):null;return V('keep','🟢','Selling',`${fmtN(sales)} sale${sales===1?'':'s'}${be?` · break-even at ${fmtN(be)}`:''}. Watch cost per sale.`);}
+  if(!sc&&Object.keys((DATA.ads||{})[k]||{}).length)return V('nosales','🟡','No sales campaign yet',`Only awareness/engagement campaigns have run (link CTR ${pct(ctr,2)} across them). Those aren't built to get clicks, so this isn't a fair test of the ad. Judged once a sales campaign runs.`);
   if(a.impr<2000)return V('wait','🟡','Collecting data',`${fmtK(a.impr)} impressions so far; judging the ad after 2K.`);
   if(ctr<t.minCtr)return V('ad','🔴','Ad problem',`Link CTR ${pct(ctr,2)}${sc?' in your sales campaigns':''} is under ${t.minCtr}%. Fix the creative or hook.`);
   if(a.through<t.coClicks&&a.lpvT<t.minLpv)return V('wait','🟡','Collecting data',`${fmtN(t.minLpv-a.lpvT)} more landing page views before the advertorial can be judged.`);
