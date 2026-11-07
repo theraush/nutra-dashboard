@@ -227,6 +227,11 @@ def cron_ok(env, p):
 # ── router ──
 def route(env):
     method, path = env['REQUEST_METHOD'], env.get('PATH_INFO') or '/'
+    # vercel.json rewrites every URL to /api/index?__p=/<original path>
+    qs = urllib.parse.parse_qs(env.get('QUERY_STRING', ''), keep_blank_values=True)
+    if path.startswith('/api/index') and qs.get('__p'):
+        path = qs['__p'][0] or '/'
+        env['QUERY_STRING'] = urllib.parse.urlencode([(k, v) for k, vs in qs.items() if k != '__p' for v in vs])
     try:
         n = int(env.get('CONTENT_LENGTH') or 0)
     except ValueError:

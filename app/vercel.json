@@ -2,6 +2,6 @@
   "functions": {
     "api/index.py": { "includeFiles": "{lib,static}/**", "maxDuration": 300 }
   },
-  "rewrites": [{ "source": "/(.*)", "destination": "/api/index" }],
+  "rewrites": [{ "source": "/(.*)", "destination": "/api/index?__p=/$1" }],
   "crons": [{ "path": "/api/cron", "schedule": "17 6 * * *" }]
 }
