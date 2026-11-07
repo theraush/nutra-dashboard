@@ -401,6 +401,34 @@ input,select{font-family:inherit;}
 .data-badge.stale{background:var(--amber-lt);color:var(--amber);border-color:transparent;}
 .data-badge.stale b{color:inherit;}
 
+/* ── Insights carousel ── */
+.ins{position:relative;overflow:hidden;border-radius:18px;margin-bottom:14px;padding:20px 24px 18px;color:#fff;min-height:210px;display:flex;flex-direction:column;
+  background:linear-gradient(135deg,#0B1B4D 0%,#1E3A8A 45%,var(--ins-c,#F59E0B) 130%);box-shadow:var(--sh);transition:background .6s;}
+.ins.t-bad{--ins-c:#F97316;background:linear-gradient(130deg,#140F3A 0%,#1E3A8A 40%,#C2410C 100%);}
+.ins.t-warn{--ins-c:#FBBF24;background:linear-gradient(130deg,#0B1B4D 0%,#1D4ED8 45%,#F59E0B 115%);}
+.ins.t-good{--ins-c:#34D399;background:linear-gradient(130deg,#062A2A 0%,#0F766E 50%,#A7F3D0 130%);}
+.ins-glow{position:absolute;inset:0;pointer-events:none;opacity:.35;mix-blend-mode:overlay;
+  background:radial-gradient(60% 80% at 85% 10%,rgba(255,255,255,.55),transparent 60%),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.6'/%3E%3C/svg%3E");}
+.ins-top{position:relative;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.ins-pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:6px 12px;border-radius:10px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(6px);}
+.ins-offer{font-size:12px;font-weight:600;opacity:.85;}
+.ins-body{position:relative;flex:1;display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 28px;align-items:end;margin:14px 0 16px;animation:insIn .45s ease-out;}
+@keyframes insIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.ins-big{font-size:clamp(44px,7vw,72px);font-weight:300;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums;}
+.ins-big small{display:block;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;opacity:.75;margin-top:6px;}
+.ins-h{font-size:clamp(16px,2vw,21px);font-weight:700;line-height:1.3;text-wrap:balance;margin:0 0 6px;max-width:60ch;}
+.ins-p{font-size:13.5px;line-height:1.5;opacity:.88;margin:0;max-width:72ch;}
+.ins-bars{position:relative;display:flex;gap:6px;}
+.ins-bars button{flex:1;height:14px;padding:5px 0;border:none;background:transparent;cursor:pointer;}
+.ins-bars button i{display:block;height:3px;border-radius:2px;background:rgba(255,255,255,.3);overflow:hidden;}
+.ins-bars button i b{display:block;height:100%;width:0;background:#fff;border-radius:2px;}
+.ins-bars button.done i b{width:100%;}
+.ins-bars button.on i b{animation:insFill var(--ins-ms,8000ms) linear forwards;}
+.ins:hover .ins-bars button.on i b{animation-play-state:paused;}
+@keyframes insFill{from{width:0}to{width:100%}}
+@media (prefers-reduced-motion:reduce){.ins-body{animation:none}.ins-bars button.on i b{animation:none;width:100%}}
+@media(max-width:640px){.ins{padding:16px 16px 14px;}.ins-body{grid-template-columns:minmax(0,1fr);}}
+
 /* ── Offer cards extras ── */
 .s-be{font-size:11px;color:var(--fg2);margin-top:8px;padding-top:8px;border-top:1px solid var(--border);}
 .s-be b{color:var(--fg);}
@@ -500,6 +528,8 @@ body.noscroll{overflow:hidden;}
 .st-affix input{border:0!important;min-width:0;}
 .st-btn{height:34px;padding:0 13px;font-size:12px;display:inline-flex;align-items:center;}
 .st-btn.sm{height:30px;padding:0 10px;}
+.st-btn[hidden]{display:none;}
+#settingsView [hidden]{display:none!important;}
 .st-btn.armed{background:var(--red);color:#fff;border-color:var(--red);}
 .st-sw{position:relative;display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-size:12.5px;}
 .st-sw input{position:absolute;opacity:0;width:1px;height:1px;}
@@ -520,7 +550,7 @@ body.noscroll{overflow:hidden;}
 .st-editor{border:1px solid var(--fg);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:12px;}
 .st-preview{font-size:13px;background:var(--surface2);border-radius:8px;padding:10px 12px;}
 .st-empty{padding:20px 0;text-align:center;color:var(--fg3);font-size:12.5px;}
-.st-act-checkout{color:var(--amber);font-weight:700;} .st-act-paused{color:var(--red);font-weight:700;} .st-act-alert{color:var(--amber);font-weight:700;} .st-act-blocked,.st-act-waiting{color:var(--fg2);font-weight:700;} .st-act-failed{color:var(--red);font-weight:700;}
+.st-tag.auto{background:var(--accent-lt);color:var(--accent);} .st-act-refresh{color:var(--accent);font-weight:700;} .st-act-checkout{color:var(--amber);font-weight:700;} .st-act-paused{color:var(--red);font-weight:700;} .st-act-alert{color:var(--amber);font-weight:700;} .st-act-blocked,.st-act-waiting{color:var(--fg2);font-weight:700;} .st-act-failed{color:var(--red);font-weight:700;}
 .st-kv{display:grid;grid-template-columns:150px minmax(0,1fr);gap:4px 12px;font-size:12.5px;margin:0;}
 .st-kv dt{color:var(--fg3);} .st-kv dd{margin:0;min-width:0;overflow-wrap:anywhere;}
 .st-kv a{color:var(--accent);}
@@ -635,6 +665,12 @@ body.noscroll{overflow:hidden;}
   </div>
 
   <!-- KPIs -->
+  <section class="ins" id="ins" aria-roledescription="carousel" aria-label="Insights">
+    <div class="ins-glow" aria-hidden="true"></div>
+    <div class="ins-top"><span class="ins-pill"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 13h4M6.5 15h3M8 1.5a4.5 4.5 0 0 0-2.6 8.2c.5.4.8.9.8 1.5V12h3.6v-.8c0-.6.3-1.1.8-1.5A4.5 4.5 0 0 0 8 1.5z"/></svg>Insights</span><span class="ins-offer" id="insOffer"></span></div>
+    <div class="ins-body" id="insBody" aria-live="polite"></div>
+    <div class="ins-bars" id="insBars" role="tablist"></div>
+  </section>
   <div class="kpi-grid" id="kpiGrid"></div>
 
   <!-- Funnel + Rev -->
@@ -746,6 +782,14 @@ body.noscroll{overflow:hidden;}
             <div class="st-muted">If the rules would switch off every live ad of an offer, nothing is paused and you get an alert. That usually means tracking broke.</div>
           </div>
         </div>
+      </div>
+      <div class="card st-card" id="stAutoCard">
+        <div class="st-spread">
+          <div><h2 class="st-h">Do it for me</h2><div class="st-muted">Enter what each sale pays you and the most you'll pay for a sale. You get a set of pause rules built from that, with the reasoning, before anything is saved.</div></div>
+          <button type="button" class="btn btn-p st-btn" id="stAutoGo">Do it for me</button>
+        </div>
+        <div class="tbl-wrap"><table class="ptbl"><thead><tr><th>Offer</th><th>You earn per sale</th><th>Target cost per sale</th><th>Plan</th></tr></thead><tbody id="stAutoBody"></tbody></table></div>
+        <div id="stAutoPreview" hidden></div>
       </div>
       <div class="card st-card">
         <div><h2 class="st-h">Offer check limits</h2><div class="st-muted">Used for the verdict on each offer (Test Budgets and offer cards) and the one-time checkout warning on your phone.</div></div>
@@ -918,6 +962,43 @@ function verdict(k){const b=budgets[k]||{},a=sinceStart(k),t=TH,sc=salesCtr(k,b.
   if(a.through>=t.coClicks)return V('checkout','⚠️','Checkout problem',`${fmtN(a.through)} people reached the order form, ${fmtN(a.checkouts)} started checkout, 0 sales (≈${Math.round(a.through*t.coBench/100)} expected at ${t.coBench}%). Your ad and page are getting people there; the vendor's checkout isn't closing. Stop or talk to the vendor.`);
   return V('wait','🟡','Waiting on checkout',`Ad and page pass. ${fmtN(t.coClicks-a.through)} more click-throughs before the checkout can be judged.`);}
 const vBadge=v=>`<span class="vd vd-${v.key}" title="${esc(v.detail)}">${v.icon} ${esc(v.label)}</span>`;
+// ── Insights: where each offer is vs where it needs to be ──
+function salesStats(k,from,to){let sp=0,i=0,c=0;const ads=(DATA.ads||{})[k]||{};
+  for(const ad of Object.values(ads)){if(!SALES_RE.test(ad.c||''))continue;for(const d in ad.d)if(d>=from&&d<=to){sp+=ad.d[d][0];i+=ad.d[d][1];c+=ad.d[d][2];}}
+  return {spend:sp,impr:i,clicks:c};}
+function buildInsights(){const out=[],NET=window.NETSTATS||{};
+  for(const k of KEYS){const b=budgets[k]||{},a=sinceStart(k),C=b.cps,n=PROD[k].name,v=verdict(k);if(!a.spend)continue;
+    const ss=salesStats(k,b.start||FIRST,TODAY),cpc=ss.clicks?ss.spend/ss.clicks:(a.clicks?a.spend/a.clicks:null),sales=a.allSales,net=NET[k];
+    const sev={bad:0,warn:1,good:2};
+    if(C&&cpc){const req=cpc/C*100;
+      if(net&&net.conv){const be=C*net.conv/100,ratio=req/net.conv,tone=ratio>2?'bad':ratio>1?'warn':'good';
+        out.push({k,tone,big:fmt(be),cap:'break-even CPC',h:tone==='good'?`${n} can pay up to ${fmt(be)} a click and still break even.`:`${n} needs a ${fmt(be)} CPC to break even. You're paying ${fmt(cpc)}.`,
+          p:`JVZoo's average for this offer is 1 sale in ${Math.round(100/net.conv)} clicks (${net.conv}%). At your CPC, ${pct(req,1)} of clicks would have to buy, ${ratio.toFixed(1)}× the network average${tone==='bad'?': a no-go unless your clicks are far better than other affiliates’':tone==='warn'?': tight, but a better hook or cheaper clicks can close it':''}.`});}
+      else out.push({k,tone:req>2?'bad':req>1?'warn':'good',big:'1 in '+Math.max(1,Math.round(100/req)),cap:'clicks must buy',h:`${n}: 1 in ${Math.max(1,Math.round(100/req))} clicks must buy to break even.`,
+          p:`At ${fmt(cpc)} per click and ${fmt(C)} per sale. Health offers typically convert 0.5–2% of clicks.`});}
+    const ck=a.through?sales/a.through*100:null;
+    const vctr=ss.impr?ss.clicks/ss.impr*100:(a.impr?a.clicks/a.impr*100:null);
+    out.push({k,tone:v.key==='keep'?'good':['checkout','stop','ad','adv'].includes(v.key)?'bad':'warn',
+      big:v.key==='ad'&&vctr!=null?pct(vctr,2):v.key==='adv'&&a.lpvT?pct(a.through/a.lpvT*100,1):ck!=null?pct(ck,1):v.icon,
+      cap:v.key==='ad'?'link CTR':v.key==='adv'?'page click-through':ck!=null?'checkout conversion':'offer check',
+      h:`${n}: ${v.label.toLowerCase()}.`,p:v.detail});
+    if(C){const need=Math.max(1,Math.ceil(a.spend/C-1e-9)),left=b.budget?Math.max(b.budget-a.spend,0):null,net$=a.rev-a.spend;
+      out.push({k,tone:net$>=0?'good':b.budget&&a.spend>=b.budget*.7?'bad':'warn',big:(net$<0?'−':'')+fmt(Math.abs(net$)),cap:'net since test start',
+        h:sales>=need?`${n} is in profit: ${fmtN(sales)} sale${sales===1?'':'s'} covered ${fmt(a.spend,0)} spend.`:`${n} needs ${fmtN(need-sales)} more sale${need-sales===1?'':'s'} to break even.`,
+        p:`${fmt(a.spend,0)} spent, ${fmt(a.rev,0)} earned at ${fmt(C)} per sale.${left!=null?` ${fmt(left,0)} of the ${fmt(b.budget,0)} test budget left.`:''}`});}
+    out.forEach(x=>x.sev=sev[x.tone]);}
+  return out.sort((x,y)=>x.sev-y.sev).slice(0,6);}
+let insIdx=0,insTimer=null,insList=[];
+function renderInsights(){const box=$('ins');if(!box)return;insList=buildInsights();
+  if(!insList.length){box.hidden=true;return;}box.hidden=false;if(insIdx>=insList.length)insIdx=0;showInsight(insIdx);}
+function showInsight(i){insIdx=i;const x=insList[i];if(!x)return;const box=$('ins');
+  box.className='ins t-'+x.tone;$('insOffer').textContent=PROD[x.k].name+' · '+(i+1)+' of '+insList.length;
+  $('insBody').innerHTML=`<div class="ins-big">${esc(x.big)}<small>${esc(x.cap)}</small></div><div><p class="ins-h">${esc(x.h)}</p><p class="ins-p">${esc(x.p)}</p></div>`;
+  $('insBody').style.animation='none';void $('insBody').offsetWidth;$('insBody').style.animation='';
+  $('insBars').innerHTML=insList.map((_,j)=>`<button type="button" role="tab" aria-label="Insight ${j+1}" aria-selected="${j===i}" class="${j<i?'done':j===i?'on':''}" data-ins="${j}"><i><b></b></i></button>`).join('');
+  const bar=$('insBars').querySelector('.on b');
+  if(bar&&!matchMedia('(prefers-reduced-motion: reduce)').matches&&insList.length>1)bar.addEventListener('animationend',()=>showInsight((insIdx+1)%insList.length),{once:true});}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-ins]');if(b)showInsight(+b.dataset.ins);});
 function sinceStart(k){const b=budgets[k]||{};return agg([k],b.start||FIRST,TODAY);}
 function series(k,from,to,idx){const m=DATA.meta[k]||{},out=[];for(let d=from;d<=to;d=addD(d,1)){const r=m[d];out.push({d,v:r?r[idx]:0});}return out;}
 const hasSpend=d=>KEYS.some(k=>{const r=(DATA.meta[k]||{})[d];return r&&r[0]>0;});
@@ -1198,6 +1279,7 @@ function cmp(cur,prev,good,label){
   return`<span class="cmp${cls}">${up?'▲':'▼'} ${Math.abs(p)>=999?'999+':Math.abs(p).toFixed(0)}%</span> <span class="cmp-vs">${label}</span>`;
 }
 function renderOverview(){
+  renderInsights();
   const r=curRange(),ks=view.focus?[view.focus]:KEYS,c=agg(ks,r.from,r.to);
   const len=diffD(r.from,r.to)+1,pf=addD(r.from,-len),pt=addD(r.from,-1);
   const p=pt>=FIRST?agg(ks,pf,pt):null,vs='vs '+fmtRange(pf,pt);
@@ -1536,7 +1618,7 @@ const slug=s=>(s||'').toLowerCase().replace(/[^a-z0-9]+/g,'').slice(0,30)||'netw
 const offerList=()=>(typeof OFFERS!=='undefined'?OFFERS:[]);
 const offerName=k=>k==='all'||!k?'All offers':((offerList().find(o=>o.key===k)||{}).name||k);
 
-const S={rules:[],networks:[],team:[],auto:null,sync:null,log:[],pb:null};
+const S={rules:[],networks:[],team:[],auto:null,sync:null,log:[],pb:null,autoplan:null};
 let db=null,canWrite=false,booted=false,sub='rules',editingNet=null;
 
 function note(msg,html){const n=g('stNote');n.textContent='';if(html)n.append(...html);else n.textContent=msg;n.hidden=false;}
@@ -1560,7 +1642,7 @@ async function saveAuto(patch){const a={enabled:true,maxPerRun:10,protectLast:tr
 
 function sentence(r){const M=ST_METRICS[r.metric]||{label:r.metric,dir:'above',unit:'$'};const thr=M.unit==='%'?`${r.threshold}%`:money(r.threshold);
   return [r.mode==='alert'?'Alert me':'Pause ad',' if ',el('b',{text:M.label}),` is ${M.dir} `,el('b',{text:thr})];}
-const meta=r=>`${ST_WIN[r.window]||r.window} · after ${money(r.minSpend||0)} spend${r.minImpr?` and ${Number(r.minImpr).toLocaleString()} impressions`:''} · ${offerName(r.offer)}`;
+const meta=r=>`${ST_WIN[r.window]||r.window} · after ${money(r.minSpend||0)} spend${r.minImpr?` and ${Number(r.minImpr).toLocaleString()} impressions`:''} · ${offerName(r.offer)}${r.protectBelowCpa?` · winners under ${money(r.protectBelowCpa)}/sale protected`:''}`;
 function renderRules(){const list=g('stRuleList');list.textContent='';g('stAddRule').disabled=!canWrite;
   if(!S.rules.length){list.append(el('div',{class:'st-empty',text:'No rules yet. Add one: for example, pause an ad when its link CTR stays under 0.8% after $20 of spend.'}));return;}
   for(const r of [...S.rules].sort((a,b)=>(a.createdAt||'').localeCompare(b.createdAt||''))){
@@ -1570,7 +1652,7 @@ function renderRules(){const list=g('stRuleList');list.textContent='';g('stAddRu
     del.addEventListener('click',()=>armDelete(del,()=>write(()=>db.doc('rules/'+r.id).delete())));
     const ed=el('button',{class:'btn btn-g st-btn sm',type:'button',text:'Edit',onclick:()=>openRule(r)});ed.disabled=!canWrite;
     list.append(el('div',{class:'st-rule'+(r.enabled?'':' off')},el('label',{class:'st-sw'},tog,el('i')),
-      el('div',{style:'min-width:0'},el('div',{class:'s'},...sentence(r),' ',el('span',{class:'st-tag '+(r.mode==='alert'?'alert':'pause'),text:r.mode==='alert'?'alert only':'pauses'})),el('div',{class:'m',text:meta(r)+(r.enabled?'':' · off')})),
+      el('div',{style:'min-width:0'},el('div',{class:'s'},...sentence(r),' ',el('span',{class:'st-tag '+(r.mode==='alert'?'alert':'pause'),text:r.mode==='alert'?'alert only':'pauses'}),r.auto?' ':null,r.auto?el('span',{class:'st-tag auto',text:'Do it for me'}):null),el('div',{class:'m',text:meta(r)+(r.enabled?'':' · off')})),
       el('div',{class:'st-row',style:'gap:6px'},ed,del)));}}
 function openRule(r){const R=r?{...r}:{enabled:true,offer:'all',metric:'ctr',threshold:0.8,minSpend:20,minImpr:1000,window:'3d',mode:'pause'};
   const box=g('stRuleEditor');box.hidden=false;box.textContent='';
@@ -1600,7 +1682,7 @@ function openRule(r){const R=r?{...r}:{enabled:true,offer:'all',metric:'ctr',thr
 
 function renderLog(){const tb=g('stLog');tb.textContent='';
   if(!S.log.length){tb.append(el('tr',{},el('td',{colspan:'6',class:'st-empty',text:'No automatic actions yet.'})));return;}
-  const lbl={checkout:'Checkout warning',paused:'Paused',alert:'Alert sent',blocked:'Not paused (safety)',failed:'Pause failed',waiting:'Waiting for data'};
+  const lbl={refresh:'New ads needed',checkout:'Checkout warning',paused:'Paused',alert:'Alert sent',blocked:'Not paused (safety)',failed:'Pause failed',waiting:'Waiting for data'};
   for(const x of S.log.slice(0,100))tb.append(el('tr',{},el('td',{style:'white-space:nowrap',text:when(x.at)}),el('td',{text:offerName(x.offer)}),
     el('td',{style:'min-width:170px'},el('div',{text:x.adName||x.adId||'–'}),x.detail?el('div',{class:'st-muted',text:x.detail}):null),el('td',{text:x.rule||''}),
     el('td',{style:'text-align:right',text:x.action==='waiting'?'–':fmtVal(x.metric,x.value)}),el('td',{class:'st-act-'+(x.action||''),style:'white-space:nowrap',text:lbl[x.action]||x.action||''})));}
@@ -1653,7 +1735,53 @@ function renderTh(){const f=[['stThCtr','minCtr'],['stThCt','minCt'],['stThLpv',
   const b=g('stThForm')&&g('stThForm').querySelector('button');if(b)b.disabled=!canWrite;}
 function applyTh(v){TH={...TH_DEFAULT,...(DATA.th||{}),...(v||{})};renderTh();
   if(typeof activeTab!=='undefined'){if(activeTab==='overview')renderOverview();else if(activeTab==='budgets')renderBudgets();}}
-function renderAll(){renderSync();renderAuto();renderTh();renderRules();renderLog();renderNets();renderTeam();}
+// ── Do it for me: rules generated from commission and target cost per sale ──
+const r5=v=>Math.max(5,Math.round(v/5)*5);
+function planFor(k,C,T){const n=PROD[k]?PROD[k].name:k;return[
+  {why:`Weak hook: health ads average about 1.7% link CTR, so under 0.8% is bottom tier. Judged after 2,000 impressions and ${money(r5(T*.25))} spend (¼ of your target) so new ads get a fair chance.`,
+   r:{metric:'ctr',threshold:0.8,minSpend:r5(T*.25),minImpr:2000,window:'3d'}},
+  {why:`Too expensive: at a typical 2% of clicks turning into a sale, a ${money(T)} target can pay about ${money(+(T*.02).toFixed(2))} per click. Judged after ${money(r5(T*.5))} spend.`,
+   r:{metric:'cpc',threshold:+(T*.02).toFixed(2),minSpend:r5(T*.5),minImpr:0,window:'3d'}},
+  {why:`No sale: an ad that spends 1.5× your target (${money(r5(T*1.5))}) without a sale is unlikely to come good. Needs sales matched to ads.`,
+   r:{metric:'cost_per_sale',threshold:r5(T*1.5),minSpend:r5(T*1.5),minImpr:0,window:'since_start'}},
+].map(x=>({...x,r:{...x.r,offer:k,mode:'pause',enabled:true,auto:true,protectBelowCpa:T}}));}
+function renderAutoPlan(){const tb=g('stAutoBody');if(!tb)return;tb.textContent='';const plan=(S.autoplan&&S.autoplan.offers)||{};
+  g('stAutoGo').disabled=!canWrite;
+  for(const o of offerList()){const k=o.key,cfg=plan[k]||{},cps=cfg.commission??((budgets[k]||{}).cps)??'';
+    const c=el('input',{type:'number',min:'1',step:'1',inputmode:'decimal',id:'stAC-'+k,value:cps,'aria-label':'You earn per sale for '+o.name});
+    const t=el('input',{type:'number',min:'1',step:'1',inputmode:'decimal',id:'stAT-'+k,value:cfg.target??'',placeholder:cps?String(Math.round(cps*.7)):'70% of earnings','aria-label':'Target cost per sale for '+o.name});
+    [c,t].forEach(i=>i.disabled=!canWrite);
+    const nAuto=S.rules.filter(r=>r.auto&&r.offer===k).length;
+    const st=cfg.enabled&&nAuto?el('span',{},el('span',{class:'st-tag pause',text:'On'}),` ${nAuto} rules · new-ads alert`):el('span',{class:'st-muted',text:'Not set up'});
+    const off=el('button',{class:'btn btn-g st-btn sm',type:'button',text:'Turn off'});off.hidden=!(cfg.enabled&&nAuto);off.disabled=!canWrite;
+    off.addEventListener('click',()=>armDelete(off,async()=>{for(const r of S.rules.filter(r=>r.auto&&r.offer===k))await write(()=>db.doc('rules/'+r.id).delete());
+      await saveAutoPlan({[k]:{...cfg,enabled:false}});}));
+    tb.append(el('tr',{},el('td',{},el('div',{class:'pname',text:o.name})),
+      el('td',{},el('div',{class:'st-affix'},el('span',{text:'$'}),c)),el('td',{},el('div',{class:'st-affix'},el('span',{text:'$'}),t)),
+      el('td',{},el('div',{class:'st-row'},st,off))));}}
+async function saveAutoPlan(patch){const cur=(S.autoplan&&S.autoplan.offers)||{};
+  return write(()=>db.doc('config/autoplan').set({offers:{...cur,...patch},updatedAt:new Date().toISOString()}));}
+function previewAutoPlan(){const box=g('stAutoPreview');box.textContent='';const plans=[];
+  for(const o of offerList()){const C=parseFloat(g('stAC-'+o.key).value),T0=parseFloat(g('stAT-'+o.key).value);
+    if(!(C>0))continue;const T=T0>0?T0:Math.round(C*.7);plans.push({k:o.key,name:o.name,C,T,rules:planFor(o.key,C,T)});}
+  if(!plans.length){note('Enter what each sale pays you for at least one offer.');return;}
+  box.hidden=false;
+  const list=el('div',{class:'st-body'});
+  for(const p of plans){const ul=el('div',{class:'st-body',style:'gap:8px'});
+    p.rules.forEach(x=>ul.append(el('div',{},el('div',{class:'s'},...sentence(x.r),' ',el('span',{class:'st-muted',text:'· '+meta(x.r)})),el('div',{class:'st-muted',text:x.why}))));
+    ul.append(el('div',{},el('div',{class:'s'},el('b',{text:'Never pause a winner'}),': an ad selling at or under ',el('b',{text:money(p.T)}),' per sale is skipped by every rule above.')));
+    ul.append(el('div',{},el('div',{class:'s'},el('b',{text:'Time for new ads'}),' (alert only): fewer than 3 sales ads still spending, or their CTR down 30%+ from their first days.')));
+    list.append(el('div',{class:'st-editor'},el('div',{class:'st-spread'},el('h2',{class:'st-h',text:p.name}),el('span',{class:'st-muted',text:`earns ${money(p.C)} · target ${money(p.T)} · break-even 1 sale per ${money(p.C)} spent`})),ul));}
+  const apply=el('button',{class:'btn btn-p st-btn',type:'button',text:'Apply these rules'});
+  apply.addEventListener('click',async()=>{apply.disabled=true;
+    for(const p of plans){for(const r of S.rules.filter(r=>r.auto&&r.offer===p.k))await write(()=>db.doc('rules/'+r.id).delete());
+      const now=new Date().toISOString();
+      for(const x of p.rules)await write(()=>db.collection('rules').add({...x.r,createdAt:now,updatedAt:now}));}
+    const patch={};plans.forEach(p=>patch[p.k]={commission:p.C,target:p.T,enabled:true,minLive:3,decay:30,appliedAt:new Date().toISOString()});
+    if(await saveAutoPlan(patch)){box.hidden=true;if(typeof toast==='function')toast('Rules applied');}apply.disabled=false;});
+  box.append(list,el('div',{class:'st-row',style:'margin-top:10px'},apply,el('button',{class:'btn btn-g st-btn',type:'button',text:'Cancel',onclick:()=>{box.hidden=true;}}),
+    el('span',{class:'st-muted',text:'Replaces earlier Do-it-for-me rules for these offers. Your own rules stay as they are.'})));}
+function renderAll(){renderSync();renderAuto();renderTh();renderAutoPlan();renderRules();renderLog();renderNets();renderTeam();}
 
 async function boot(){booted=true;renderAll();
   const C=window.claude;
@@ -1669,7 +1797,7 @@ async function boot(){booted=true;renderAll();
   const err=e=>{done();note('Settings stopped updating ('+((e&&e.code)||'error')+'). Reload the page.');};
   const col=(path,key,fn)=>db.collection(path).onSnapshot(s=>{if(!s.metadata.fromCache)done();S[key]=s.docs.map(d=>({id:d.id,...d.data()}));fn();},err);
   const doc=(path,set,fn)=>db.doc(path).onSnapshot(s=>{if(!s.metadata.fromCache)done();set(s.exists?s.data():null);fn();},err);
-  col('rules','rules',renderRules);col('networks','networks',renderNets);col('team','team',renderTeam);
+  col('rules','rules',()=>{renderRules();renderAutoPlan();});doc('config/autoplan',v=>S.autoplan=v,renderAutoPlan);doc('config/network_stats',v=>{window.NETSTATS=v||{};},()=>{if(typeof activeTab!=='undefined'&&activeTab==='overview')renderInsights();});col('networks','networks',renderNets);col('team','team',renderTeam);
   doc('config/automation',v=>S.auto=v,renderAuto);doc('config/thresholds',v=>applyTh(v),()=>{});doc('config/sync',v=>S.sync=v,renderSync);
   doc('log/recent',v=>S.log=(v&&v.items)||[],renderLog);doc('private/postback',v=>S.pb=v,renderNets);
   renderAll();}
@@ -1680,6 +1808,7 @@ function init(){
   g('stAutoProtect').addEventListener('change',e=>saveAuto({protectLast:e.target.checked}));
   g('stAutoMax').addEventListener('change',e=>{const v=Math.max(1,Math.min(50,parseInt(e.target.value,10)||10));e.target.value=v;saveAuto({maxPerRun:v});});
   g('stAddRule').addEventListener('click',()=>openRule(null));
+  g('stAutoGo').addEventListener('click',previewAutoPlan);
   g('stThForm').addEventListener('submit',async e=>{e.preventDefault();const n=id=>parseFloat(g(id).value);
     const v={minCtr:n('stThCtr'),minCt:n('stThCt'),minLpv:Math.round(n('stThLpv')),coClicks:Math.round(n('stThCo')),coBench:n('stThBench')};
     if(Object.values(v).some(x=>!(x>0))){note('Every limit needs a number above zero.');return;}

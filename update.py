@@ -149,7 +149,8 @@ def rule_actions(p, data, today):
             continue
         ads = data['ads'].get(k, {})
         tag = str(r.get('utm_content') or '').strip()
-        aid = tag if tag in ads else next((a for a, ad in ads.items() if tag and ad['n'].strip().lower() == tag.lower()), None)
+        norm = lambda x: re.sub(r'[^a-z0-9]', '', str(x).lower())  # "C1 | Hand Callouts" == "c1_hand_callouts"
+        aid = tag if tag in ads else next((a for a, ad in ads.items() if tag and norm(ad['n']) == norm(tag)), None)
         if aid:
             ad_conv.setdefault((k, aid), []).append((d, idx, n))
         else:
@@ -188,6 +189,9 @@ def rule_actions(p, data, today):
                     if frm <= d <= today:
                         t[i] += n
                 spend = round(t[0], 2)
+                pb = float(r.get('protectBelowCpa') or 0)  # winner protection: never pause an ad selling at or under target
+                if pb and t[5] > 0 and spend / t[5] <= pb:
+                    continue
                 if spend < float(r.get('minSpend') or 0) or t[1] < int(r.get('minImpr') or 0) or spend <= 0:
                     continue
                 if r['metric'] == 'ctr':
@@ -252,6 +256,50 @@ def offer_funnel(data, k, frm, to):
         if frm <= d <= to and d < btn_since:
             t['through'] += n
     return t
+
+
+def refresh_alerts(p, data, today):
+    """'Time for new ads': an offer on the Do-it-for-me plan has too few live sales ads, or its live ads' CTR has decayed."""
+    plan = (p.get('autoplan') or {}).get('offers') or {}
+    out = []
+    import datetime
+    now = datetime.datetime.now(datetime.timezone.utc)
+    for o in data['offers']:
+        k, cfg = o['key'], plan.get(o['key'])
+        if o['status'] != 'active' or not cfg or not cfg.get('enabled', True):
+            continue
+        recent = False
+        for x in p.get('ruleLog') or []:
+            if x.get('action') == 'refresh' and x.get('offer') == k:
+                try:
+                    recent = recent or (now - datetime.datetime.fromisoformat(str(x['at']).replace('Z', '+00:00'))).total_seconds() < 72 * 3600
+                except (KeyError, ValueError):
+                    pass
+        if recent:
+            continue
+        frm3 = add_days(today, -2)
+        live = [ad for ad in data['ads'].get(k, {}).values()
+                if ad['s'] == 'ACTIVE' and re.search(r'sales|conver|purchase|\bconv\b', ad.get('c') or '', re.I)
+                and any(frm3 <= d <= today and v[0] > 0 for d, v in ad['d'].items())]
+        min_live = int(cfg.get('minLive') or 3)
+        why = None
+        if len(live) < min_live:
+            why = f'only {len(live)} sales ad{"s" if len(live) != 1 else ""} still spending (target {min_live}+)'
+        else:
+            fi = fc = ri = rc = 0
+            for ad in live:
+                days = sorted(ad['d'])
+                for d in days[:3]:
+                    fi += ad['d'][d][1]; fc += ad['d'][d][2]
+                for d in days[-3:]:
+                    ri += ad['d'][d][1]; rc += ad['d'][d][2]
+            decay = float(cfg.get('decay') or 30)
+            if fi >= 2000 and ri >= 2000 and fc and (rc / ri) < (fc / fi) * (1 - decay / 100):
+                why = f'live ads\' CTR fell from {fc / fi * 100:.2f}% to {rc / ri * 100:.2f}% (more than {decay:.0f}% down)'
+        if why:
+            out.append({'action': 'refresh_alert', 'key': k, 'name': o['name'], 'acct': o['acct'],
+                        'detail': f'Time to upload new ads for {o["name"]}: {why}.'})
+    return out
 
 
 def checkout_warnings(p, data, today):
@@ -436,6 +484,7 @@ def apply(p):
             actions.append({**base, 'action': 'alert_warning', 'warnAt': st['warnAt']})
     actions += rule_actions(p, data, today)
     actions += checkout_warnings(p, data, today)
+    actions += refresh_alerts(p, data, today)
     for st in data['settings'].values():
         st.pop('_warned', None), st.pop('_depleted', None)
     write_page(s, a, b, data)
