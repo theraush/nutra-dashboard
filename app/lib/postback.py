@@ -1,5 +1,5 @@
 """Network postbacks (JVZoo sales, checkout starts) and lander buy-button clicks -> events table."""
-import re, hmac
+import os, re, hmac
 from . import db
 
 PACKS = {'446243': '2 Bottles', '446537': '2 Pack', '447307': '3 Pack', '447309': '6 Pack', '451967': '2 Bottles',
@@ -29,9 +29,13 @@ def money(v):
 
 
 def key_ok(given):
+    """The key from Settings, or any key listed in the POSTBACK_KEYS env var (comma-separated; e.g. the key
+    the landing pages and JVZoo already use from the old tracker)."""
+    if not given:
+        return False
     pb = db.kv_data('private/postback') or {}
-    want = pb.get('key')
-    return bool(want and given and hmac.compare_digest(str(given), str(want)))
+    keys = [pb.get('key')] + [k.strip() for k in os.environ.get('POSTBACK_KEYS', '').split(',')]
+    return any(k and hmac.compare_digest(str(given), k) for k in keys)
 
 
 def handle(params, forced_network=None):
