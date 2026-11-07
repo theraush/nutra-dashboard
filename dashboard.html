@@ -473,6 +473,63 @@ body.noscroll{overflow:hidden;}
 .spill.depleted{background:var(--red-lt);color:var(--red);}
 .tb-note{font-size:11px;color:var(--fg3);padding:10px 16px 14px;}
 .settings-btn{text-decoration:none;}
+
+/* ── Settings tab ── */
+.st-wrap{max-width:920px;}
+.st-sub{display:flex;gap:5px;flex-wrap:wrap;}
+.st-body{display:flex;flex-direction:column;gap:14px;}
+.st-card{padding:16px 18px;display:flex;flex-direction:column;gap:12px;}
+.st-h{font-size:13px;font-weight:700;margin:0;}
+.st-muted{font-size:11.5px;color:var(--fg3);}
+.st-note{font-size:12px;color:var(--fg2);background:var(--surface2);border-radius:8px;padding:10px 12px;line-height:1.5;}
+.st-note a{color:var(--accent);}
+.st-note.bad{background:var(--red-lt);color:var(--red);}
+.st-spread{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+.st-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.st-g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}
+.st-g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;}
+@media(max-width:640px){.st-g2,.st-g3{grid-template-columns:minmax(0,1fr);}}
+.st-f{display:flex;flex-direction:column;gap:4px;font-size:11px;font-weight:600;color:var(--fg2);min-width:0;}
+.st-f input,.st-f select,.st-f textarea,.st-sel{font:inherit;font-size:13px;font-weight:400;color:var(--fg);background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:7px 10px;min-height:36px;width:100%;}
+.st-f textarea{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;min-height:70px;resize:vertical;}
+.st-affix{display:flex;align-items:center;border:1px solid var(--border);border-radius:8px;background:var(--surface);}
+.st-affix span{font-size:12px;color:var(--fg3);padding:0 8px;}
+.st-affix input{border:0!important;min-width:0;}
+.st-btn{height:34px;padding:0 13px;font-size:12px;display:inline-flex;align-items:center;}
+.st-btn.sm{height:30px;padding:0 10px;}
+.st-btn.armed{background:var(--red);color:#fff;border-color:var(--red);}
+.st-sw{position:relative;display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-size:12.5px;}
+.st-sw input{position:absolute;opacity:0;width:1px;height:1px;}
+.st-sw i{width:34px;height:20px;border-radius:999px;background:var(--track);position:relative;flex:none;transition:background .15s;}
+.st-sw i::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:var(--surface);box-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform .15s;}
+.st-sw input:checked+i{background:var(--green);}
+.st-sw input:checked+i::after{transform:translateX(14px);}
+.st-sw input:focus-visible+i{outline:2px solid var(--accent);outline-offset:2px;}
+.st-sw input:disabled+i{opacity:.5;}
+.st-rule{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:11px 0;border-top:1px solid var(--border);}
+.st-rule:first-child{border-top:0;}
+.st-rule .s{font-size:13px;}
+.st-rule .m{font-size:11.5px;color:var(--fg3);margin-top:2px;}
+.st-rule.off .s{color:var(--fg3);}
+.st-tag{display:inline-block;font-size:10px;font-weight:700;padding:1px 7px;border-radius:999px;vertical-align:1px;}
+.st-tag.pause{background:var(--green-lt);color:var(--green);}
+.st-tag.alert{background:var(--amber-lt);color:var(--amber);}
+.st-editor{border:1px solid var(--fg);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:12px;}
+.st-preview{font-size:13px;background:var(--surface2);border-radius:8px;padding:10px 12px;}
+.st-empty{padding:20px 0;text-align:center;color:var(--fg3);font-size:12.5px;}
+.st-act-paused{color:var(--red);font-weight:700;} .st-act-alert{color:var(--amber);font-weight:700;} .st-act-blocked,.st-act-waiting{color:var(--fg2);font-weight:700;} .st-act-failed{color:var(--red);font-weight:700;}
+.st-kv{display:grid;grid-template-columns:150px minmax(0,1fr);gap:4px 12px;font-size:12.5px;margin:0;}
+.st-kv dt{color:var(--fg3);} .st-kv dd{margin:0;min-width:0;overflow-wrap:anywhere;}
+.st-kv a{color:var(--accent);}
+@media(max-width:520px){.st-kv{grid-template-columns:minmax(0,1fr);}.st-kv dd{margin-bottom:6px;}}
+.st-url{display:flex;flex-direction:column;gap:4px;}
+.st-url code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;background:var(--surface2);border-radius:6px;padding:8px 10px;overflow-wrap:anywhere;display:block;}
+.st-status{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--fg2);flex-wrap:wrap;}
+.st-dot{width:8px;height:8px;border-radius:50%;background:var(--fg3);flex:none;}
+.st-dot.ok{background:var(--green);} .st-dot.bad{background:var(--red);} .st-dot.warn{background:var(--amber);}
+#settingsView .ptbl td{vertical-align:top;}
+@media(max-width:560px){#tab-settings{display:none;}}
+.settings-btn.on{background:var(--fg);color:var(--surface);}
 </style>
 
 <div id="toast" role="status" aria-live="polite"></div>
@@ -499,10 +556,14 @@ body.noscroll{overflow:hidden;}
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1" y="4" width="14" height="10" rx="1.5"/><path d="M5 4V3a2 2 0 0 1 4 0v1"/><circle cx="8" cy="9" r="1.5"/></svg>
       Test Budgets
     </button>
+    <button class="nav-pill" id="tab-settings" onclick="switchTab('settings')">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="2.2"/><path d="M8 1.5v1.8M8 12.7v1.8M14.5 8h-1.8M3.3 8H1.5M12.6 3.4l-1.3 1.3M4.7 11.3l-1.3 1.3M12.6 12.6l-1.3-1.3M4.7 4.7L3.4 3.4"/></svg>
+      Settings
+    </button>
   </div>
   <div class="topbar-right">
     <div class="data-badge" id="dataBadge" title="When the Meta and JVZoo numbers were last pulled">Meta data · <b>—</b></div>
-    <a class="icon-btn settings-btn" href="https://nutra-tracker.lovable.app/offers" target="_blank" rel="noopener" title="Settings: offers, budgets, auto-pause, networks (opens NUTRA Tracker)" aria-label="Settings"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="2.2"/><path d="M8 1.5v1.8M8 12.7v1.8M14.5 8h-1.8M3.3 8H1.5M12.6 3.4l-1.3 1.3M4.7 11.3l-1.3 1.3M12.6 12.6l-1.3-1.3M4.7 4.7L3.4 3.4"/></svg></a>
+    <button type="button" class="icon-btn settings-btn" onclick="switchTab('settings')" title="Settings: pause rules, networks, team" aria-label="Settings"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="2.2"/><path d="M8 1.5v1.8M8 12.7v1.8M14.5 8h-1.8M3.3 8H1.5M12.6 3.4l-1.3 1.3M4.7 11.3l-1.3 1.3M12.6 12.6l-1.3-1.3M4.7 4.7L3.4 3.4"/></svg></button>
     <button class="icon-btn" onclick="refresh()" title="Recalculate with your latest manual entries" aria-label="Recalculate">
       <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 8A6 6 0 1 1 8 2a6 6 0 0 0 5 2.6"/><path d="M14 2v3h-3"/></svg>
     </button>
@@ -646,9 +707,80 @@ body.noscroll{overflow:hidden;}
 </div>
 </div>
 
+
+<!-- ══ SETTINGS ══ -->
+<div id="settingsView" hidden>
+<div class="page st-wrap">
+  <div class="ph">
+    <div><div class="ph-title">Settings</div><div class="ph-sub" id="stWho">Pause rules, affiliate networks and your team</div></div>
+    <div class="st-sub" role="tablist" aria-label="Settings sections">
+      <button type="button" class="fpill active" data-st="rules" role="tab" aria-selected="true">Pause rules</button>
+      <button type="button" class="fpill" data-st="networks" role="tab" aria-selected="false">Affiliate networks</button>
+      <button type="button" class="fpill" data-st="users" role="tab" aria-selected="false">Users</button>
+    </div>
+  </div>
+  <div class="st-body">
+    <div class="st-note bad" id="stNote" hidden></div>
+    <div class="st-status" id="stSync"><span class="st-dot"></span><span>Waiting for the next hourly sync to report here.</span></div>
+
+    <!-- Pause rules -->
+    <div class="st-body" data-stv="rules">
+      <div class="card st-card">
+        <div class="st-spread">
+          <div><h2 class="st-h">Automatic pausing</h2><div class="st-muted">Checked every hour by the sync. Rules only ever pause ads. Nothing is ever switched back on.</div></div>
+          <label class="st-sw"><input type="checkbox" id="stAutoOn"><i></i><span id="stAutoLbl">On</span></label>
+        </div>
+        <div class="st-g2">
+          <label class="st-f">Most ads paused in one hour<input type="number" id="stAutoMax" min="1" max="50" step="1" inputmode="numeric"></label>
+          <div style="display:flex;flex-direction:column;gap:4px;justify-content:flex-end">
+            <label class="st-sw"><input type="checkbox" id="stAutoProtect"><i></i><span>Never pause all of an offer's live ads at once</span></label>
+            <div class="st-muted">If the rules would switch off every live ad of an offer, nothing is paused and you get an alert. That usually means tracking broke.</div>
+          </div>
+        </div>
+      </div>
+      <div class="card st-card">
+        <div class="st-spread"><h2 class="st-h">Rules</h2><button type="button" class="btn btn-p st-btn" id="stAddRule">+ Add rule</button></div>
+        <div id="stRuleEditor" hidden></div>
+        <div id="stRuleList"><div class="st-empty">Loading rules…</div></div>
+      </div>
+      <div class="card">
+        <div class="ch" style="padding-bottom:4px"><div><div class="clabel">Recent automatic actions</div><div class="st-muted" style="margin-top:2px">Last 100 pauses and alerts made by the rules.</div></div></div>
+        <div class="tbl-wrap"><table class="ptbl"><thead><tr><th>When</th><th>Offer</th><th>Ad</th><th>Rule</th><th style="text-align:right">Value</th><th>Result</th></tr></thead>
+        <tbody id="stLog"><tr><td colspan="6" class="st-empty">No automatic actions yet.</td></tr></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- Networks -->
+    <div class="st-body" data-stv="networks" hidden>
+      <div class="st-note">Each offer picks its network in <a href="https://nutra-tracker.lovable.app/offers" target="_blank" rel="noopener">Offers &amp; budgets ↗</a>. Paste a network's two postback links into that network's postback settings so sales and checkout visits show up here.</div>
+      <div id="stNetList" class="st-body"><div class="card st-card st-empty">Loading networks…</div></div>
+      <div><button type="button" class="btn btn-p st-btn" id="stAddNet">+ Add network</button></div>
+      <div id="stNetNew" hidden></div>
+    </div>
+
+    <!-- Users -->
+    <div class="st-body" data-stv="users" hidden>
+      <div class="card st-card">
+        <h2 class="st-h">Team</h2>
+        <div class="st-note">Adding someone here records who's on the team and what they should be able to do. To give them access, press <b>Share</b> at the top of this dashboard in Claude and invite the same email: <b>Editor</b> can change settings, <b>Viewer</b> can only look. The nutra.palmtreemedia.co link is view-only for anyone who has it.</div>
+        <div class="tbl-wrap"><table class="ptbl"><thead><tr><th>Name</th><th>Email</th><th>Access</th><th>Note</th><th></th></tr></thead>
+        <tbody id="stTeam"><tr><td colspan="5" class="st-empty">Loading…</td></tr></tbody></table></div>
+        <form id="stTeamForm" class="st-g3" autocomplete="off">
+          <label class="st-f">Name<input id="stTmName" required maxlength="80"></label>
+          <label class="st-f">Email<input id="stTmEmail" type="email" required maxlength="120"></label>
+          <label class="st-f">Access<select id="stTmRole"><option value="editor">Editor: can change settings</option><option value="viewer">Viewer: can only look</option></select></label>
+          <label class="st-f" style="grid-column:1/-1">Note (optional)<input id="stTmNote" maxlength="160" placeholder="e.g. media buyer for GLP"></label>
+          <div><button class="btn btn-p st-btn" type="submit">Add user</button></div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
 <script>
 // @@DATA_START (numbers only; refreshed hourly by the "NUTRA Dashboard Meta Sync" scheduled task via update.py, see README.md)
-const DATA = {"ads":{"glp":{"120249955958100407":{"a":"ads-1-wide-fp","c":"Awareness","d":{"2026-11-03":[0.26,117,0,0],"2026-11-04":[0.21,84,0,0],"2026-11-05":[0.03,10,0,0],"2026-11-06":[0.0,2,0,0]},"n":"fp-1","s":"ACTIVE"},"120249956044460407":{"a":"ads-1-wide-fp","c":"Awareness","d":{"2026-11-03":[0.02,15,0,0],"2026-11-04":[0.13,53,0,0],"2026-11-05":[0.01,9,0,0]},"n":"fp-2","s":"ACTIVE"},"120249956047190407":{"a":"ads-1-wide-fp","c":"Awareness","d":{"2026-11-03":[0.3,94,0,0],"2026-11-04":[2.13,621,0,0],"2026-11-05":[5.33,1527,0,0],"2026-11-06":[0.95,240,0,0]},"n":"fp-3","s":"ACTIVE"},"120249956052170407":{"a":"ads-1-wide-fp","c":"Awareness","d":{"2026-11-03":[0.55,170,0,0],"2026-11-04":[1.47,417,0,0],"2026-11-05":[0.01,22,0,0]},"n":"fp-4","s":"ACTIVE"},"120249956198360407":{"a":"ads-1-wide-fp","c":"Awareness-=GLP","d":{"2026-11-03":[0.87,257,1,0],"2026-11-04":[5.8,1658,2,2],"2026-11-05":[7.86,2202,7,6],"2026-11-06":[1.13,270,0,0]},"n":"1","s":"ACTIVE"},"120249956218070407":{"a":"ads-1-wide-fp","c":"Awareness-=GLP","d":{"2026-11-03":[0.01,8,0,0],"2026-11-04":[0.0,3,0,0],"2026-11-05":[0.46,134,0,0],"2026-11-06":[0.04,9,0,0]},"n":"3","s":"ACTIVE"},"120249956218080407":{"a":"ads-1-wide-fp","c":"Awareness-=GLP","d":{"2026-11-03":[0.06,34,0,0],"2026-11-05":[2.19,538,0,0],"2026-11-06":[0.0,1,0,0]},"n":"4","s":"ACTIVE"},"120249956218090407":{"a":"ads-1-wide-fp","c":"Awareness-=GLP","d":{"2026-11-03":[1.24,373,0,0],"2026-11-04":[1.86,544,1,0],"2026-11-05":[0.58,156,0,0],"2026-11-06":[0.06,33,0,0]},"n":"2","s":"ACTIVE"},"120249969595090407":{"a":"Adset_wide_FP","c":"Engagement","d":{"2026-11-04":[9.19,123,16,0],"2026-11-05":[11.33,199,8,0],"2026-11-06":[2.1,55,1,0]},"n":"1","s":"ACTIVE"},"120249975910540407":{"a":"ads1","c":"Sales. Prosp.","d":{"2026-11-04":[13.27,651,5,4],"2026-11-05":[10.65,535,1,1]},"n":"1","s":"CAMPAIGN_PAUSED"},"120249975953880407":{"a":"ads1","c":"Sales. Prosp.","d":{"2026-11-05":[23.99,1086,1,1]},"n":"2","s":"CAMPAIGN_PAUSED"},"120249975953890407":{"a":"ads1","c":"Sales. Prosp.","d":{"2026-11-05":[0.57,32,0,0]},"n":"3","s":"CAMPAIGN_PAUSED"},"120249975953900407":{"a":"ads1","c":"Sales. Prosp.","d":{"2026-11-04":[0.44,23,1,1],"2026-11-05":[3.27,120,1,0]},"n":"4","s":"CAMPAIGN_PAUSED"},"120249975953910407":{"a":"ads1","c":"Sales. Prosp.","d":{"2026-11-05":[2.02,88,0,0]},"n":"5","s":"CAMPAIGN_PAUSED"},"120249975953920407":{"a":"ads1","c":"Sales. Prosp.","d":{"2026-11-04":[0.25,20,0,0],"2026-11-05":[5.56,209,1,1]},"n":"6","s":"CAMPAIGN_PAUSED"},"120250012846960407":{"a":"GLP | S1 Clean Concepts | US W40+ | FB | Purchase - Copy","c":"GLP | Sales | Statics v1 | 2026-11-06","d":{"2026-11-06":[16.38,111,1,1]},"n":"C1 | Hand Callouts","s":"ACTIVE"},"120250012846970407":{"a":"GLP | S1 Clean Concepts | US W40+ | FB | Purchase - Copy","c":"GLP | Sales | Statics v1 | 2026-11-06","d":{},"n":"C4 | 3 PM Moment","s":"ACTIVE"},"120250012846980407":{"a":"GLP | S1 Clean Concepts | US W40+ | FB | Purchase - Copy","c":"GLP | Sales | Statics v1 | 2026-11-06","d":{"2026-11-06":[1.7,38,0,0]},"n":"C6 | Bundle Value","s":"ACTIVE"},"120250012846990407":{"a":"GLP | S1 Clean Concepts | US W40+ | FB | Purchase - Copy","c":"GLP | Sales | Statics v1 | 2026-11-06","d":{"2026-11-06":[27.25,230,3,3]},"n":"C3 | Us vs Them","s":"ACTIVE"},"120250012847000407":{"a":"GLP | S1 Clean Concepts | US W40+ | FB | Purchase - Copy","c":"GLP | Sales | Statics v1 | 2026-11-06","d":{"2026-11-06":[0.15,3,0,0]},"n":"C2 | Pouch Headline","s":"ACTIVE"},"120250012847010407":{"a":"GLP | S1 Clean Concepts | US W40+ | FB | Purchase - Copy","c":"GLP | Sales | Statics v1 | 2026-11-06","d":{"2026-11-06":[0.62,36,1,1]},"n":"C5 | Native Story","s":"ACTIVE"},"120250012850190407":{"a":"GLP | S2 Scroll-Stoppers | US W40+ | FB | Purchase - Copy","c":"GLP | Sales | Statics v1 | 2026-11-06","d":{"2026-11-06":[14.69,440,8,7]},"n":"C7 | Powder Explosion","s":"ACTIVE"},"120250012850200407":{"a":"GLP | S2 Scroll-Stoppers | US W40+ | FB | Purchase - Copy","c":"GLP | Sales | Statics v1 | 2026-11-06","d":{"2026-11-06":[0.63,4,1,1]},"n":"C8 | Trash Can","s":"ACTIVE"},"120250012850210407":{"a":"GLP | S2 Scroll-Stoppers | US W40+ | FB | Purchase - Copy","c":"GLP | Sales | Statics v1 | 2026-11-06","d":{"2026-11-06":[19.84,86,0,0]},"n":"C9 | Cookie Jar","s":"ACTIVE"},"120250012850220407":{"a":"GLP | S2 Scroll-Stoppers | US W40+ | FB | Purchase - Copy","c":"GLP | Sales | Statics v1 | 2026-11-06","d":{"2026-11-06":[3.14,135,2,1]},"n":"C10 | Fridge Note","s":"ACTIVE"}},"neuro":{"120249202057450701":{"a":"ads-1-wide-FP","c":"Awareness","d":{"2026-11-03":[0.23,106,0,0],"2026-11-04":[6.24,2057,4,2],"2026-11-05":[8.72,2908,9,9],"2026-11-06":[1.44,522,1,1]},"n":"1","s":"ACTIVE"},"120249202122140701":{"a":"ads-1-wide-FP","c":"Awareness","d":{"2026-11-03":[1.08,471,0,0],"2026-11-04":[0.48,187,0,0],"2026-11-05":[0.1,36,0,0],"2026-11-06":[0.04,26,0,0]},"n":"3","s":"ACTIVE"},"120249202122150701":{"a":"ads-1-wide-FP","c":"Awareness","d":{"2026-11-03":[0.11,59,0,0],"2026-11-04":[0.37,141,0,0],"2026-11-05":[0.06,41,0,0],"2026-11-06":[0.01,2,0,0]},"n":"4","s":"ACTIVE"},"120249202122160701":{"a":"ads-1-wide-FP","c":"Awareness","d":{"2026-11-03":[0.39,178,0,0],"2026-11-04":[1.42,526,0,0],"2026-11-05":[0.13,78,0,0],"2026-11-06":[0.0,6,0,0]},"n":"5","s":"ACTIVE"},"120249202122170701":{"a":"ads-1-wide-FP","c":"Awareness","d":{"2026-11-03":[1.15,404,0,0],"2026-11-04":[2.33,751,0,0],"2026-11-05":[0.09,54,0,0],"2026-11-06":[0.01,5,0,0]},"n":"2","s":"ACTIVE"},"120249216501740701":{"a":"adset-wide-fp","c":"Engagement","d":{"2026-11-04":[10.66,140,20,0],"2026-11-05":[11.02,216,8,0],"2026-11-06":[1.32,41,1,0]},"n":"1","s":"ACTIVE"}},"wellness":{"120251114982180118":{"a":"ads1_wide_FP","c":"Awareness","d":{"2026-11-03":[0.02,22,0,0],"2026-11-04":[0.19,73,0,0],"2026-11-05":[0.01,4,0,0],"2026-11-06":[0.01,3,0,0]},"n":"1","s":"ACTIVE"},"120251114991870118":{"a":"ads1_wide_FP","c":"Awareness","d":{"2026-11-03":[0.16,54,0,0],"2026-11-04":[2.53,692,0,0],"2026-11-05":[4.98,1335,0,0],"2026-11-06":[0.79,209,0,0]},"n":"2","s":"ACTIVE"},"120251114991880118":{"a":"ads1_wide_FP","c":"Awareness","d":{"2026-11-03":[0.0,5,0,0],"2026-11-04":[0.09,49,0,0],"2026-11-05":[0.0,4,0,0]},"n":"3","s":"ACTIVE"},"120251114991890118":{"a":"ads1_wide_FP","c":"Awareness","d":{"2026-11-03":[0.04,28,0,0],"2026-11-04":[0.12,52,0,0],"2026-11-05":[0.05,22,0,0]},"n":"4","s":"ACTIVE"},"120251114991900118":{"a":"ads1_wide_FP","c":"Awareness","d":{"2026-11-03":[1.03,285,0,0],"2026-11-04":[1.1,349,0,0],"2026-11-05":[0.07,45,0,0],"2026-11-06":[0.01,9,0,0]},"n":"5","s":"ACTIVE"},"120251128269520118":{"a":"ads-wide-FP","c":"Engagement","d":{"2026-11-04":[9.15,117,19,0],"2026-11-05":[9.99,213,4,0],"2026-11-06":[2.4,53,0,0]},"n":"1","s":"ACTIVE"},"120251131824380118":{"a":"ads_wide_advert","c":"Sales. Prospecting.","d":{"2026-11-04":[1.89,124,0,0],"2026-11-05":[1.62,104,0,0]},"n":"1","s":"CAMPAIGN_PAUSED"},"120251131874340118":{"a":"ads_wide_advert","c":"Sales. Prospecting.","d":{"2026-11-04":[1.26,67,2,2],"2026-11-05":[0.73,42,0,0]},"n":"3","s":"CAMPAIGN_PAUSED"},"120251131874350118":{"a":"ads_wide_advert","c":"Sales. Prospecting.","d":{"2026-11-04":[3.91,243,5,5],"2026-11-05":[7.21,525,2,1]},"n":"6","s":"CAMPAIGN_PAUSED"},"120251131874360118":{"a":"ads_wide_advert","c":"Sales. Prospecting.","d":{"2026-11-04":[3.67,177,2,2],"2026-11-05":[6.7,486,1,1]},"n":"2","s":"CAMPAIGN_PAUSED"},"120251131874370118":{"a":"ads_wide_advert","c":"Sales. Prospecting.","d":{"2026-11-04":[7.64,125,10,9],"2026-11-05":[0.58,22,2,1],"2026-11-06":[0.09,3,0,0]},"n":"4","s":"CAMPAIGN_PAUSED"},"120251131874380118":{"a":"ads_wide_advert","c":"Sales. Prospecting.","d":{"2026-11-04":[3.68,144,2,1],"2026-11-05":[27.96,1439,3,2]},"n":"5","s":"CAMPAIGN_PAUSED"},"120251166746230118":{"a":"AS1-PainCallout_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[24.65,109,3,3]},"n":"C19_Over55Checklist_Static45_v1","s":"ACTIVE"},"120251166748170118":{"a":"AS1-PainCallout_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[11.34,38,3,1]},"n":"C22_ThisIsForYouIf_Static45_v1","s":"ACTIVE"},"120251166750180118":{"a":"AS2-EasyNoRisk_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[18.3,55,5,5]},"n":"C20_2SecScorecard_Static45_v1","s":"ACTIVE"},"120251166752370118":{"a":"AS2-EasyNoRisk_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[10.28,60,4,2]},"n":"C21_OfferStack_Static45_v1","s":"ACTIVE"},"120251166753810118":{"a":"AS2-EasyNoRisk_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[15.48,45,6,4]},"n":"C24_NotAMiracle_Static45_v1","s":"ACTIVE"},"120251166754720118":{"a":"AS2-EasyNoRisk_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[4.16,14,2,2]},"n":"C25_3QuestionsFAQ_Static45_v1","s":"ACTIVE"},"120251166755650118":{"a":"AS3-Outcome_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[0.18,3,0,0]},"n":"C23_MorningNowVsWith_Static45_v1","s":"ACTIVE"},"120251166756480118":{"a":"AS3-Outcome_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[7.86,50,3,5]},"n":"C26_BeTheOneWhoRemembers_Static45_v1","s":"ACTIVE"},"120251167391700118":{"a":"AS1-PainCallout_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[2.22,13,0,0]},"n":"C13_HerNameAgain_Static45_v1","s":"ACTIVE"},"120251167392130118":{"a":"AS1-PainCallout_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[0.11,4,0,0]},"n":"C15_Error404Word_Static45_v1","s":"ACTIVE"},"120251167392720118":{"a":"AS3-Outcome_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[6.59,29,0,0]},"n":"C27_BrainWatercolor_Static45_v1","s":"ACTIVE"},"120251167393780118":{"a":"AS3-Outcome_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[15.66,60,4,2]},"n":"C28_BrainFlatBold_Static45_v1","s":"ACTIVE"},"120251167394190118":{"a":"AS4-PatternInterrupt_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[1.26,22,1,0]},"n":"C16_StickyOverload_Static45_v1","s":"ACTIVE"},"120251167394560118":{"a":"AS4-PatternInterrupt_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[4.03,22,0,0]},"n":"C11_TabloidKeysFreezer_Static45_v1","s":"ACTIVE"},"120251167395300118":{"a":"AS4-PatternInterrupt_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[20.07,160,2,2]},"n":"C12_EvidenceBag_Static45_v1","s":"ACTIVE"},"120251167396320118":{"a":"AS4-PatternInterrupt_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[0.02,2,0,0]},"n":"C14_MissingPieces_Static45_v1","s":"ACTIVE"},"120251167396960118":{"a":"AS4-PatternInterrupt_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[0.0,1,0,0]},"n":"C17_47Reminders_Static45_v1","s":"ACTIVE"},"120251167397680118":{"a":"AS4-PatternInterrupt_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[5.39,28,0,0]},"n":"C18_UglyGraphic_Static45_v1","s":"ACTIVE"},"120251167398450118":{"a":"AS5-R1Clean_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[15.62,67,3,3]},"n":"C1_HandCallouts_Static45_v1","s":"ACTIVE"},"120251167399840118":{"a":"AS5-R1Clean_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[5.82,40,3,1]},"n":"C2_StickyNotesFridge_Static45_v1","s":"ACTIVE"},"120251167404310118":{"a":"AS5-R1Clean_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[0.43,4,1,0]},"n":"C3_UsVsThem_Static45_v1","s":"ACTIVE"},"120251167405220118":{"a":"AS5-R1Clean_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[2.74,68,0,0]},"n":"C5_NativeStoryPuzzle_Static45_v1","s":"ACTIVE"},"120251167406060118":{"a":"AS5-R1Clean_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{},"n":"C6_6MonthBundle_Static45_v1","s":"PAUSED"},"120251167406430118":{"a":"AS6-R1ScrollStoppers_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[18.27,71,1,1]},"n":"C7_KeysInFridge_Static45_v1","s":"ACTIVE"},"120251167407190118":{"a":"AS6-R1ScrollStoppers_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[6.45,75,2,1]},"n":"C9_UglyPhoneRedCircle_Static45_v1","s":"ACTIVE"},"120251167407960118":{"a":"AS6-R1ScrollStoppers_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[0.2,6,0,0]},"n":"C10_TrashCanOldRoutine_Static45_v1","s":"ACTIVE"},"120251167424810118":{"a":"AS5-R1Clean_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[1.47,29,0,0]},"n":"C4_TipOfTongueCrossword_Static45_v1","s":"ACTIVE"},"120251167425450118":{"a":"AS6-R1ScrollStoppers_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[3.36,32,0,0]},"n":"C8_StickyNoteExplosion_Static45_v1","s":"ACTIVE"}}},"asOf":"2026-11-06T22:52:00Z","jvz":{"glp":{"2026-11-06":[1,0,0,0]},"neuro":{},"wellness":{"2026-11-06":[1,0,0,0]}},"jvzSince":"2026-11-06","meta":{"glp":{"2026-11-03":[3.31,1068,1,0],"2026-11-04":[34.75,4197,25,7],"2026-11-05":[73.86,6867,19,9],"2026-11-06":[94.26,1821,19,15]},"neuro":{"2026-11-03":[2.96,1218,0,0],"2026-11-04":[21.5,3802,24,2],"2026-11-05":[20.12,3333,17,9],"2026-11-06":[2.82,602,2,1]},"wellness":{"2026-11-03":[1.25,394,0,0],"2026-11-04":[35.23,2212,40,19],"2026-11-05":[59.9,4241,12,5],"2026-11-06":[208.71,1416,46,32]}},"metaFrom":"2026-10-01","networks":{"jvzoo":{"name":"JVZoo"}},"notes":[{"d":"2026-11-06","p":null,"t":"New campaigns launched: SYN_Sales_ABO-Test_US_261106 (Wellness Notes) and GLP | Sales | Statics v1 (Glpatches)"}],"offers":[{"acct":"1614901483744859","buy":[{"label":"2 bottles","url":"https://www.jvzoo.com/b/117503/451967/99?src=yOj909O&aid=3601021"},{"label":"3 bottles","url":"https://www.jvzoo.com/b/117503/451969/99?src=yOj909O&aid=3601021"},{"label":"6 bottles","url":"https://www.jvzoo.com/b/117503/451971/99?src=yOj909O&aid=3601021"}],"color":"#2563EB","key":"wellness","lander":"https://wellnestnotes.com","name":"Wellness Notes","network":"jvzoo","offer":"Synaptril","sort":1,"status":"active"},{"acct":"1105909655657509","buy":[{"label":"2 bottles","url":"https://www.jvzoo.com/b/118457/453339/99?aid=3601021"},{"label":"3 bottles","url":"https://www.jvzoo.com/b/118457/453343/99?aid=3601021"},{"label":"6 bottles","url":"https://www.jvzoo.com/b/118457/453345/99?aid=3601021"}],"color":"#7C3AED","key":"neuro","lander":"https://vitalroutinedaily.com","name":"NeuroSharp","network":"jvzoo","offer":"NeuroSharp","sort":2,"status":"active"},{"acct":"1148819018097191","buy":[{"label":"2 pack","url":"https://www.jvzoo.com/b/117757/446537/99?aid=3601021"},{"label":"3 pack","url":"https://www.jvzoo.com/b/117757/447307/99?aid=3601021"},{"label":"6 pack","url":"https://www.jvzoo.com/b/117757/447309/99?aid=3601021"}],"color":"#DB2777","key":"glp","lander":"https://everydaywellnesspicks.com","name":"Glpatches","network":"jvzoo","offer":"GLPatches","sort":3,"status":"active"}],"settings":{"glp":{"autoPause":true,"autopausedAt":null,"budget":500.0,"cps":null,"start":"2026-11-03","warnAt":70},"neuro":{"autoPause":true,"autopausedAt":null,"budget":500.0,"cps":null,"start":"2026-11-03","warnAt":70},"wellness":{"autoPause":true,"autopausedAt":null,"budget":500.0,"cps":null,"start":"2026-11-03","warnAt":70}},"today":"2026-11-06","warn":[]};
+const DATA = {"ads":{"glp":{"120249955958100407":{"a":"ads-1-wide-fp","c":"Awareness","d":{"2026-11-03":[0.26,117,0,0],"2026-11-04":[0.21,84,0,0],"2026-11-05":[0.03,10,0,0],"2026-11-06":[0.0,2,0,0]},"n":"fp-1","s":"ACTIVE"},"120249956044460407":{"a":"ads-1-wide-fp","c":"Awareness","d":{"2026-11-03":[0.02,15,0,0],"2026-11-04":[0.13,53,0,0],"2026-11-05":[0.01,9,0,0]},"n":"fp-2","s":"ACTIVE"},"120249956047190407":{"a":"ads-1-wide-fp","c":"Awareness","d":{"2026-11-03":[0.3,94,0,0],"2026-11-04":[2.13,621,0,0],"2026-11-05":[5.33,1527,0,0],"2026-11-06":[1.01,259,0,0]},"n":"fp-3","s":"ACTIVE"},"120249956052170407":{"a":"ads-1-wide-fp","c":"Awareness","d":{"2026-11-03":[0.55,170,0,0],"2026-11-04":[1.47,417,0,0],"2026-11-05":[0.01,22,0,0],"2026-11-06":[0.01,1,0,0]},"n":"fp-4","s":"ACTIVE"},"120249956198360407":{"a":"ads-1-wide-fp","c":"Awareness-=GLP","d":{"2026-11-03":[0.87,257,1,0],"2026-11-04":[5.8,1658,2,2],"2026-11-05":[7.86,2202,7,6],"2026-11-06":[1.13,270,0,0]},"n":"1","s":"ACTIVE"},"120249956218070407":{"a":"ads-1-wide-fp","c":"Awareness-=GLP","d":{"2026-11-03":[0.01,8,0,0],"2026-11-04":[0.0,3,0,0],"2026-11-05":[0.46,134,0,0],"2026-11-06":[0.14,28,0,0]},"n":"3","s":"ACTIVE"},"120249956218080407":{"a":"ads-1-wide-fp","c":"Awareness-=GLP","d":{"2026-11-03":[0.06,34,0,0],"2026-11-05":[2.19,538,0,0],"2026-11-06":[0.0,1,0,0]},"n":"4","s":"ACTIVE"},"120249956218090407":{"a":"ads-1-wide-fp","c":"Awareness-=GLP","d":{"2026-11-03":[1.24,373,0,0],"2026-11-04":[1.86,544,1,0],"2026-11-05":[0.58,156,0,0],"2026-11-06":[0.06,33,0,0]},"n":"2","s":"ACTIVE"},"120249969595090407":{"a":"Adset_wide_FP","c":"Engagement","d":{"2026-11-04":[9.19,123,16,0],"2026-11-05":[11.33,199,8,0],"2026-11-06":[2.26,65,1,0]},"n":"1","s":"ACTIVE"},"120249975910540407":{"a":"ads1","c":"Sales. Prosp.","d":{"2026-11-04":[13.27,651,5,4],"2026-11-05":[10.65,535,1,1]},"n":"1","s":"CAMPAIGN_PAUSED"},"120249975953880407":{"a":"ads1","c":"Sales. Prosp.","d":{"2026-11-05":[23.99,1086,1,1]},"n":"2","s":"CAMPAIGN_PAUSED"},"120249975953890407":{"a":"ads1","c":"Sales. Prosp.","d":{"2026-11-05":[0.57,32,0,0]},"n":"3","s":"CAMPAIGN_PAUSED"},"120249975953900407":{"a":"ads1","c":"Sales. Prosp.","d":{"2026-11-04":[0.44,23,1,1],"2026-11-05":[3.27,120,1,0]},"n":"4","s":"CAMPAIGN_PAUSED"},"120249975953910407":{"a":"ads1","c":"Sales. Prosp.","d":{"2026-11-05":[2.02,88,0,0]},"n":"5","s":"CAMPAIGN_PAUSED"},"120249975953920407":{"a":"ads1","c":"Sales. Prosp.","d":{"2026-11-04":[0.25,20,0,0],"2026-11-05":[5.56,209,1,1]},"n":"6","s":"CAMPAIGN_PAUSED"},"120250012846960407":{"a":"GLP | S1 Clean Concepts | US W40+ | FB | Purchase - Copy","c":"GLP | Sales | Statics v1 | 2026-11-06","d":{"2026-11-06":[28.46,191,4,3]},"n":"C1 | Hand Callouts","s":"ACTIVE"},"120250012846970407":{"a":"GLP | S1 Clean Concepts | US W40+ | FB | Purchase - Copy","c":"GLP | Sales | Statics v1 | 2026-11-06","d":{},"n":"C4 | 3 PM Moment","s":"ACTIVE"},"120250012846980407":{"a":"GLP | S1 Clean Concepts | US W40+ | FB | Purchase - Copy","c":"GLP | Sales | Statics v1 | 2026-11-06","d":{"2026-11-06":[1.7,38,0,0]},"n":"C6 | Bundle Value","s":"ACTIVE"},"120250012846990407":{"a":"GLP | S1 Clean Concepts | US W40+ | FB | Purchase - Copy","c":"GLP | Sales | Statics v1 | 2026-11-06","d":{"2026-11-06":[28.2,235,3,3]},"n":"C3 | Us vs Them","s":"ACTIVE"},"120250012847000407":{"a":"GLP | S1 Clean Concepts | US W40+ | FB | Purchase - Copy","c":"GLP | Sales | Statics v1 | 2026-11-06","d":{"2026-11-06":[0.15,3,0,0]},"n":"C2 | Pouch Headline","s":"ACTIVE"},"120250012847010407":{"a":"GLP | S1 Clean Concepts | US W40+ | FB | Purchase - Copy","c":"GLP | Sales | Statics v1 | 2026-11-06","d":{"2026-11-06":[0.72,39,1,1]},"n":"C5 | Native Story","s":"ACTIVE"},"120250012850190407":{"a":"GLP | S2 Scroll-Stoppers | US W40+ | FB | Purchase - Copy","c":"GLP | Sales | Statics v1 | 2026-11-06","d":{"2026-11-06":[15.08,445,9,9]},"n":"C7 | Powder Explosion","s":"ACTIVE"},"120250012850200407":{"a":"GLP | S2 Scroll-Stoppers | US W40+ | FB | Purchase - Copy","c":"GLP | Sales | Statics v1 | 2026-11-06","d":{"2026-11-06":[0.63,5,1,1]},"n":"C8 | Trash Can","s":"ACTIVE"},"120250012850210407":{"a":"GLP | S2 Scroll-Stoppers | US W40+ | FB | Purchase - Copy","c":"GLP | Sales | Statics v1 | 2026-11-06","d":{"2026-11-06":[19.84,86,0,0]},"n":"C9 | Cookie Jar","s":"ACTIVE"},"120250012850220407":{"a":"GLP | S2 Scroll-Stoppers | US W40+ | FB | Purchase - Copy","c":"GLP | Sales | Statics v1 | 2026-11-06","d":{"2026-11-06":[10.61,437,8,4]},"n":"C10 | Fridge Note","s":"ACTIVE"}},"neuro":{"120249202057450701":{"a":"ads-1-wide-FP","c":"Awareness","d":{"2026-11-03":[0.23,106,0,0],"2026-11-04":[6.24,2057,4,2],"2026-11-05":[8.72,2908,9,9],"2026-11-06":[1.45,523,1,1]},"n":"1","s":"ACTIVE"},"120249202122140701":{"a":"ads-1-wide-FP","c":"Awareness","d":{"2026-11-03":[1.08,471,0,0],"2026-11-04":[0.48,187,0,0],"2026-11-05":[0.1,36,0,0],"2026-11-06":[0.04,26,0,0]},"n":"3","s":"ACTIVE"},"120249202122150701":{"a":"ads-1-wide-FP","c":"Awareness","d":{"2026-11-03":[0.11,59,0,0],"2026-11-04":[0.37,141,0,0],"2026-11-05":[0.06,41,0,0],"2026-11-06":[0.01,2,0,0]},"n":"4","s":"ACTIVE"},"120249202122160701":{"a":"ads-1-wide-FP","c":"Awareness","d":{"2026-11-03":[0.39,178,0,0],"2026-11-04":[1.42,526,0,0],"2026-11-05":[0.13,78,0,0],"2026-11-06":[0.0,6,0,0]},"n":"5","s":"ACTIVE"},"120249202122170701":{"a":"ads-1-wide-FP","c":"Awareness","d":{"2026-11-03":[1.15,404,0,0],"2026-11-04":[2.33,751,0,0],"2026-11-05":[0.09,54,0,0],"2026-11-06":[0.01,5,0,0]},"n":"2","s":"ACTIVE"},"120249216501740701":{"a":"adset-wide-fp","c":"Engagement","d":{"2026-11-04":[10.66,140,20,0],"2026-11-05":[11.02,216,8,0],"2026-11-06":[1.35,44,2,0]},"n":"1","s":"ACTIVE"}},"wellness":{"120251114982180118":{"a":"ads1_wide_FP","c":"Awareness","d":{"2026-11-03":[0.02,22,0,0],"2026-11-04":[0.19,73,0,0],"2026-11-05":[0.01,4,0,0],"2026-11-06":[0.01,3,0,0]},"n":"1","s":"ACTIVE"},"120251114991870118":{"a":"ads1_wide_FP","c":"Awareness","d":{"2026-11-03":[0.16,54,0,0],"2026-11-04":[2.53,692,0,0],"2026-11-05":[4.98,1335,0,0],"2026-11-06":[0.8,211,0,0]},"n":"2","s":"ACTIVE"},"120251114991880118":{"a":"ads1_wide_FP","c":"Awareness","d":{"2026-11-03":[0.0,5,0,0],"2026-11-04":[0.09,49,0,0],"2026-11-05":[0.0,4,0,0]},"n":"3","s":"ACTIVE"},"120251114991890118":{"a":"ads1_wide_FP","c":"Awareness","d":{"2026-11-03":[0.04,28,0,0],"2026-11-04":[0.12,52,0,0],"2026-11-05":[0.05,22,0,0]},"n":"4","s":"ACTIVE"},"120251114991900118":{"a":"ads1_wide_FP","c":"Awareness","d":{"2026-11-03":[1.03,285,0,0],"2026-11-04":[1.1,349,0,0],"2026-11-05":[0.07,45,0,0],"2026-11-06":[0.01,9,0,0]},"n":"5","s":"ACTIVE"},"120251128269520118":{"a":"ads-wide-FP","c":"Engagement","d":{"2026-11-04":[9.15,117,19,0],"2026-11-05":[9.99,213,4,0],"2026-11-06":[2.46,54,0,0]},"n":"1","s":"ACTIVE"},"120251131824380118":{"a":"ads_wide_advert","c":"Sales. Prospecting.","d":{"2026-11-04":[1.89,124,0,0],"2026-11-05":[1.62,104,0,0]},"n":"1","s":"CAMPAIGN_PAUSED"},"120251131874340118":{"a":"ads_wide_advert","c":"Sales. Prospecting.","d":{"2026-11-04":[1.26,67,2,2],"2026-11-05":[0.73,42,0,0]},"n":"3","s":"CAMPAIGN_PAUSED"},"120251131874350118":{"a":"ads_wide_advert","c":"Sales. Prospecting.","d":{"2026-11-04":[3.91,243,5,5],"2026-11-05":[7.21,525,2,1]},"n":"6","s":"CAMPAIGN_PAUSED"},"120251131874360118":{"a":"ads_wide_advert","c":"Sales. Prospecting.","d":{"2026-11-04":[3.67,177,2,2],"2026-11-05":[6.7,486,1,1]},"n":"2","s":"CAMPAIGN_PAUSED"},"120251131874370118":{"a":"ads_wide_advert","c":"Sales. Prospecting.","d":{"2026-11-04":[7.64,125,10,9],"2026-11-05":[0.58,22,2,1],"2026-11-06":[0.09,3,0,0]},"n":"4","s":"CAMPAIGN_PAUSED"},"120251131874380118":{"a":"ads_wide_advert","c":"Sales. Prospecting.","d":{"2026-11-04":[3.68,144,2,1],"2026-11-05":[27.96,1439,3,2]},"n":"5","s":"CAMPAIGN_PAUSED"},"120251166746230118":{"a":"AS1-PainCallout_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[27.75,129,5,3]},"n":"C19_Over55Checklist_Static45_v1","s":"ACTIVE"},"120251166748170118":{"a":"AS1-PainCallout_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[11.97,44,3,1]},"n":"C22_ThisIsForYouIf_Static45_v1","s":"ACTIVE"},"120251166750180118":{"a":"AS2-EasyNoRisk_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[19.04,63,5,5]},"n":"C20_2SecScorecard_Static45_v1","s":"ACTIVE"},"120251166752370118":{"a":"AS2-EasyNoRisk_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[10.49,66,4,2]},"n":"C21_OfferStack_Static45_v1","s":"ACTIVE"},"120251166753810118":{"a":"AS2-EasyNoRisk_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[22.77,62,7,5]},"n":"C24_NotAMiracle_Static45_v1","s":"ACTIVE"},"120251166754720118":{"a":"AS2-EasyNoRisk_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[4.22,15,2,2]},"n":"C25_3QuestionsFAQ_Static45_v1","s":"ACTIVE"},"120251166755650118":{"a":"AS3-Outcome_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[0.43,4,0,0]},"n":"C23_MorningNowVsWith_Static45_v1","s":"ACTIVE"},"120251166756480118":{"a":"AS3-Outcome_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[7.86,50,3,5]},"n":"C26_BeTheOneWhoRemembers_Static45_v1","s":"ACTIVE"},"120251167391700118":{"a":"AS1-PainCallout_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[2.95,19,1,1]},"n":"C13_HerNameAgain_Static45_v1","s":"ACTIVE"},"120251167392130118":{"a":"AS1-PainCallout_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[0.11,4,0,0]},"n":"C15_Error404Word_Static45_v1","s":"ACTIVE"},"120251167392720118":{"a":"AS3-Outcome_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[7.12,35,0,0]},"n":"C27_BrainWatercolor_Static45_v1","s":"ACTIVE"},"120251167393780118":{"a":"AS3-Outcome_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[21.04,93,5,2]},"n":"C28_BrainFlatBold_Static45_v1","s":"ACTIVE"},"120251167394190118":{"a":"AS4-PatternInterrupt_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[1.26,22,1,0]},"n":"C16_StickyOverload_Static45_v1","s":"ACTIVE"},"120251167394560118":{"a":"AS4-PatternInterrupt_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[4.69,27,1,1]},"n":"C11_TabloidKeysFreezer_Static45_v1","s":"ACTIVE"},"120251167395300118":{"a":"AS4-PatternInterrupt_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[21.03,166,2,2]},"n":"C12_EvidenceBag_Static45_v1","s":"ACTIVE"},"120251167396320118":{"a":"AS4-PatternInterrupt_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[0.19,3,0,0]},"n":"C14_MissingPieces_Static45_v1","s":"ACTIVE"},"120251167396960118":{"a":"AS4-PatternInterrupt_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[0.0,1,0,0]},"n":"C17_47Reminders_Static45_v1","s":"ACTIVE"},"120251167397680118":{"a":"AS4-PatternInterrupt_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[11.08,50,3,2]},"n":"C18_UglyGraphic_Static45_v1","s":"ACTIVE"},"120251167398450118":{"a":"AS5-R1Clean_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[16.33,75,3,3]},"n":"C1_HandCallouts_Static45_v1","s":"ACTIVE"},"120251167399840118":{"a":"AS5-R1Clean_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[8.59,43,3,1]},"n":"C2_StickyNotesFridge_Static45_v1","s":"ACTIVE"},"120251167404310118":{"a":"AS5-R1Clean_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[0.68,8,1,0]},"n":"C3_UsVsThem_Static45_v1","s":"ACTIVE"},"120251167405220118":{"a":"AS5-R1Clean_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[4.46,96,0,0]},"n":"C5_NativeStoryPuzzle_Static45_v1","s":"ACTIVE"},"120251167406060118":{"a":"AS5-R1Clean_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{},"n":"C6_6MonthBundle_Static45_v1","s":"PAUSED"},"120251167406430118":{"a":"AS6-R1ScrollStoppers_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[18.37,77,1,1]},"n":"C7_KeysInFridge_Static45_v1","s":"ACTIVE"},"120251167407190118":{"a":"AS6-R1ScrollStoppers_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[7.21,96,3,3]},"n":"C9_UglyPhoneRedCircle_Static45_v1","s":"ACTIVE"},"120251167407960118":{"a":"AS6-R1ScrollStoppers_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[0.25,11,0,0]},"n":"C10_TrashCanOldRoutine_Static45_v1","s":"ACTIVE"},"120251167424810118":{"a":"AS5-R1Clean_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[1.62,32,0,0]},"n":"C4_TipOfTongueCrossword_Static45_v1","s":"ACTIVE"},"120251167425450118":{"a":"AS6-R1ScrollStoppers_US55+_FB","c":"SYN_Sales_ABO-Test_US_261106","d":{"2026-11-06":[4.94,45,0,0]},"n":"C8_StickyNoteExplosion_Static45_v1","s":"ACTIVE"}}},"asOf":"2026-11-06T23:36:13.640202Z","jvz":{"glp":{"2026-11-06":[1,0,0,0]},"neuro":{},"wellness":{"2026-11-06":[1,0,0,0]}},"jvzSince":"2026-11-06","meta":{"glp":{"2026-11-03":[3.31,1068,1,0],"2026-11-04":[34.75,4197,25,7],"2026-11-05":[73.86,6867,19,9],"2026-11-06":[110.0,2138,27,21]},"neuro":{"2026-11-03":[2.96,1218,0,0],"2026-11-04":[21.5,3802,24,2],"2026-11-05":[20.12,3333,17,9],"2026-11-06":[2.86,606,3,1]},"wellness":{"2026-11-03":[1.25,394,0,0],"2026-11-04":[35.23,2212,40,19],"2026-11-05":[59.9,4241,12,5],"2026-11-06":[239.82,1616,54,39]}},"metaFrom":"2026-10-01","networks":{"jvzoo":{"name":"JVZoo"}},"notes":[{"d":"2026-11-06","p":null,"t":"New campaigns launched: SYN_Sales_ABO-Test_US_261106 (Wellness Notes) and GLP | Sales | Statics v1 (Glpatches)"}],"offers":[{"acct":"1614901483744859","buy":[{"label":"2 bottles","url":"https://www.jvzoo.com/b/117503/451967/99?src=yOj909O&aid=3601021"},{"label":"3 bottles","url":"https://www.jvzoo.com/b/117503/451969/99?src=yOj909O&aid=3601021"},{"label":"6 bottles","url":"https://www.jvzoo.com/b/117503/451971/99?src=yOj909O&aid=3601021"}],"color":"#2563EB","key":"wellness","lander":"https://wellnestnotes.com","name":"Wellness Notes","network":"jvzoo","offer":"Synaptril","sort":1,"status":"active"},{"acct":"1105909655657509","buy":[{"label":"2 bottles","url":"https://www.jvzoo.com/b/118457/453339/99?aid=3601021"},{"label":"3 bottles","url":"https://www.jvzoo.com/b/118457/453343/99?aid=3601021"},{"label":"6 bottles","url":"https://www.jvzoo.com/b/118457/453345/99?aid=3601021"}],"color":"#7C3AED","key":"neuro","lander":"https://vitalroutinedaily.com","name":"NeuroSharp","network":"jvzoo","offer":"NeuroSharp","sort":2,"status":"active"},{"acct":"1148819018097191","buy":[{"label":"2 pack","url":"https://www.jvzoo.com/b/117757/446537/99?aid=3601021"},{"label":"3 pack","url":"https://www.jvzoo.com/b/117757/447307/99?aid=3601021"},{"label":"6 pack","url":"https://www.jvzoo.com/b/117757/447309/99?aid=3601021"}],"color":"#DB2777","key":"glp","lander":"https://everydaywellnesspicks.com","name":"Glpatches","network":"jvzoo","offer":"GLPatches","sort":3,"status":"active"}],"settings":{"glp":{"autoPause":true,"autopausedAt":null,"budget":500.0,"cps":null,"start":"2026-11-03","warnAt":70},"neuro":{"autoPause":true,"autopausedAt":null,"budget":500.0,"cps":null,"start":"2026-11-03","warnAt":70},"wellness":{"autoPause":true,"autopausedAt":null,"budget":500.0,"cps":null,"start":"2026-11-03","warnAt":70}},"today":"2026-11-06","warn":[]};
 // @@DATA_END
 // DATA.meta[product][YYYY-MM-DD] = [spend, impressions, link clicks, landing page views]   Meta Ads API, ad account days
 // DATA.jvz[product][YYYY-MM-DD]  = [checkout visits, sales, refunds, commission]           JVZoo postbacks (NUTRA Tracker), UTC days
@@ -1278,15 +1410,17 @@ function renderBudgets(){
 function initBudgets(){
   document.addEventListener('click',e=>{const f=e.target.closest('[data-tbf]');if(f){tbFilter=f.dataset.tbf;renderBudgets();}});
 }
-function refresh(){activeTab==='overview'?renderOverview():renderBudgets();toast('Recalculated');}
+function refresh(){if(activeTab==='overview')renderOverview();else if(activeTab==='budgets')renderBudgets();toast('Recalculated');}
 
 // ── Tab switch ──
 function switchTab(tab){
   activeTab=tab;closeDP(false);closeMenu(false);closeAds();
   $('overviewView').hidden=tab!=='overview';
   $('budgetView').hidden=tab!=='budgets';
-  ['overview','budgets'].forEach(t=>$('tab-'+t).classList.toggle('active',t===tab));
-  tab==='overview'?renderOverview():renderBudgets();
+  $('settingsView').hidden=tab!=='settings';
+  ['overview','budgets','settings'].forEach(t=>$('tab-'+t).classList.toggle('active',t===tab));
+  document.querySelector('.settings-btn').classList.toggle('on',tab==='settings');
+  if(tab==='overview')renderOverview();else if(tab==='budgets')renderBudgets();
 }
 
 // ── Appearance ───────────────────────────────────────────────────────────
@@ -1321,9 +1455,181 @@ function initBadge(){
   b.title=warn.length?warn.join('\n'):(hrs>3?'The hourly sync hasn’t updated this page for a while':'Meta and JVZoo numbers, refreshed hourly');
 }
 document.addEventListener('DOMContentLoaded',()=>{
-  initDP();initMenus();initBadge();initAds();initBudgets();
+  initDP();initMenus();initBadge();initAds();initBudgets();stInit();
   $('focusChip').addEventListener('click',()=>{view.focus=null;fProd='all';rerenderAll();});
   renderOverview();
   let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{if(activeTab==='overview')redrawSparks();},150);});
 });
+
+// ── Settings tab (pause rules, networks, team) — stored in this artifact's database; the hourly sync reads it ──
+(function(){
+const CLAUDE_URL='https://claude.ai/artifact/J532xrrPfBJKFUzn2htdg8';
+const ST_METRICS={
+  ctr:{label:'Link CTR',dir:'below',unit:'%',help:''},
+  cpc:{label:'CPC',dir:'above',unit:'$',help:'An ad with zero link clicks counts as over the limit once its spend passes the limit.'},
+  cost_per_lpv:{label:'Cost per landing page view',dir:'above',unit:'$',help:'An ad with zero landing page views counts as over the limit once its spend passes the limit.'},
+  cost_per_checkout:{label:'Cost per checkout visit',dir:'above',unit:'$',help:'An ad with zero checkout visits counts as over the limit once its spend passes the limit. Needs each ad\'s URL parameters to include utm_content={{ad.id}}. Without it, the rule waits instead of pausing whenever a checkout visit can\'t be matched to an ad.'},
+  cost_per_sale:{label:'Cost per sale',dir:'above',unit:'$',help:'An ad with zero sales counts as over the limit once its spend passes the limit. Needs each ad\'s URL parameters to include utm_content={{ad.id}}. Without it, the rule waits instead of pausing whenever a sale can\'t be matched to an ad.'}
+};
+const ST_WIN={today:'today','3d':'last 3 days','7d':'last 7 days',since_start:'since the test started'};
+const GEN_SALE='{BASE}/api/public/postback?network={NETWORK}&key={KEY}&event=purchase&txn={SALE_ID}&type={SALE_TYPE}&product_id={PRODUCT_ID}&amount={AMOUNT}&commission={COMMISSION}&tid={TRACKING_ID}&utm_content={SUB_ID}';
+const GEN_CLICK='{BASE}/api/public/postback?network={NETWORK}&key={KEY}&event=initiated&product_id={PRODUCT_ID}&tid={TRACKING_ID}&utm_content={SUB_ID}';
+const g=id=>document.getElementById(id);
+const el=(tag,props,...kids)=>{const n=document.createElement(tag);if(props)for(const[k,v]of Object.entries(props)){if(k==='class')n.className=v;else if(k==='text')n.textContent=v;else if(k.startsWith('on'))n.addEventListener(k.slice(2),v);else if(v!==undefined&&v!==null&&v!==false)n.setAttribute(k,v===true?'':v);}for(const k of kids.flat())if(k!=null)n.append(k.nodeType?k:document.createTextNode(String(k)));return n;};
+const money=v=>'$'+Number(v||0).toLocaleString('en-US',{minimumFractionDigits:Number(v)%1?2:0,maximumFractionDigits:2});
+const fmtVal=(m,v)=>v==null?'none yet':ST_METRICS[m]&&ST_METRICS[m].unit==='%'?Number(v).toFixed(2)+'%':money(v);
+const when=iso=>{try{return new Date(iso).toLocaleString(undefined,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});}catch(e){return iso||'';}};
+const slug=s=>(s||'').toLowerCase().replace(/[^a-z0-9]+/g,'').slice(0,30)||'network';
+const offerList=()=>(typeof OFFERS!=='undefined'?OFFERS:[]);
+const offerName=k=>k==='all'||!k?'All offers':((offerList().find(o=>o.key===k)||{}).name||k);
+
+const S={rules:[],networks:[],team:[],auto:null,sync:null,log:[],pb:null};
+let db=null,canWrite=false,booted=false,sub='rules',editingNet=null;
+
+function note(msg,html){const n=g('stNote');n.textContent='';if(html)n.append(...html);else n.textContent=msg;n.hidden=false;}
+async function write(fn){if(!db||!canWrite){note('You can\'t change settings here.');return false;}
+  try{await fn();g('stNote').hidden=true;return true;}catch(e){note('Couldn\'t save: '+((e&&e.message)||'unknown error')+'. Try again.');return false;}}
+function armDelete(btn,go){if(btn.classList.contains('armed')){go();return;}btn.classList.add('armed');const t=btn.textContent;btn.textContent='Confirm';setTimeout(()=>{btn.classList.remove('armed');btn.textContent=t;},4000);}
+
+function setSub(s){if(!window.claude)return;sub=s;document.querySelectorAll('#settingsView [data-st]').forEach(b=>{const on=b.dataset.st===s;b.classList.toggle('active',on);b.setAttribute('aria-selected',on);});
+  document.querySelectorAll('#settingsView [data-stv]').forEach(v=>v.hidden=v.dataset.stv!==s);}
+
+function renderSync(){const s=S.sync,box=g('stSync');box.textContent='';
+  if(!s){box.append(el('span',{class:'st-dot'}),el('span',{text:'Waiting for the next hourly sync to report here.'}));return;}
+  const age=(Date.now()-new Date(s.at).getTime())/36e5,ok=s.ok&&s.pushed!==false;
+  box.append(el('span',{class:'st-dot '+(!ok?'bad':age>2?'warn':'ok')}),el('span',{text:`Last sync ${when(s.at)}`+(ok?' · dashboard updated':' · '+(s.error||'dashboard not updated'))+(s.paused?` · ${s.paused} ad${s.paused>1?'s':''} paused`:'')+(age>2?' · more than 2 hours ago':'')}));}
+
+function renderAuto(){const a=S.auto||{enabled:true,maxPerRun:10,protectLast:true};
+  g('stAutoOn').checked=!!a.enabled;g('stAutoLbl').textContent=a.enabled?'On':'Off';
+  if(document.activeElement!==g('stAutoMax'))g('stAutoMax').value=a.maxPerRun??10;
+  g('stAutoProtect').checked=a.protectLast!==false;['stAutoOn','stAutoMax','stAutoProtect'].forEach(i=>g(i).disabled=!canWrite);}
+async function saveAuto(patch){const a={enabled:true,maxPerRun:10,protectLast:true,...(S.auto||{}),...patch,updatedAt:new Date().toISOString()};await write(()=>db.doc('config/automation').set(a));}
+
+function sentence(r){const M=ST_METRICS[r.metric]||{label:r.metric,dir:'above',unit:'$'};const thr=M.unit==='%'?`${r.threshold}%`:money(r.threshold);
+  return [r.mode==='alert'?'Alert me':'Pause ad',' if ',el('b',{text:M.label}),` is ${M.dir} `,el('b',{text:thr})];}
+const meta=r=>`${ST_WIN[r.window]||r.window} · after ${money(r.minSpend||0)} spend${r.minImpr?` and ${Number(r.minImpr).toLocaleString()} impressions`:''} · ${offerName(r.offer)}`;
+function renderRules(){const list=g('stRuleList');list.textContent='';g('stAddRule').disabled=!canWrite;
+  if(!S.rules.length){list.append(el('div',{class:'st-empty',text:'No rules yet. Add one: for example, pause an ad when its link CTR stays under 0.8% after $20 of spend.'}));return;}
+  for(const r of [...S.rules].sort((a,b)=>(a.createdAt||'').localeCompare(b.createdAt||''))){
+    const tog=el('input',{type:'checkbox','aria-label':'Rule on or off'});tog.checked=!!r.enabled;tog.disabled=!canWrite;
+    tog.addEventListener('change',()=>write(()=>db.doc('rules/'+r.id).update({enabled:tog.checked,updatedAt:new Date().toISOString()})));
+    const del=el('button',{class:'btn btn-r st-btn sm',type:'button',text:'Delete'});del.disabled=!canWrite;
+    del.addEventListener('click',()=>armDelete(del,()=>write(()=>db.doc('rules/'+r.id).delete())));
+    const ed=el('button',{class:'btn btn-g st-btn sm',type:'button',text:'Edit',onclick:()=>openRule(r)});ed.disabled=!canWrite;
+    list.append(el('div',{class:'st-rule'+(r.enabled?'':' off')},el('label',{class:'st-sw'},tog,el('i')),
+      el('div',{style:'min-width:0'},el('div',{class:'s'},...sentence(r),' ',el('span',{class:'st-tag '+(r.mode==='alert'?'alert':'pause'),text:r.mode==='alert'?'alert only':'pauses'})),el('div',{class:'m',text:meta(r)+(r.enabled?'':' · off')})),
+      el('div',{class:'st-row',style:'gap:6px'},ed,del)));}}
+function openRule(r){const R=r?{...r}:{enabled:true,offer:'all',metric:'ctr',threshold:0.8,minSpend:20,minImpr:1000,window:'3d',mode:'pause'};
+  const box=g('stRuleEditor');box.hidden=false;box.textContent='';
+  const offerSel=el('select',{id:'stReOffer'},el('option',{value:'all',text:'All offers'}),...offerList().map(o=>el('option',{value:o.key,text:o.name})));offerSel.value=R.offer||'all';
+  const mSel=el('select',{id:'stReMetric'},...Object.entries(ST_METRICS).map(([k,M])=>el('option',{value:k,text:`${M.label} is ${M.dir}`})));mSel.value=R.metric;
+  const unitL=el('span'),thr=el('input',{id:'stReThr',type:'number',min:'0',step:'0.01',inputmode:'decimal',value:R.threshold});
+  const ms=el('input',{id:'stReMin',type:'number',min:'0',step:'1',inputmode:'decimal',value:R.minSpend});
+  const mi=el('input',{id:'stReImpr',type:'number',min:'0',step:'100',inputmode:'numeric',value:R.minImpr||0});
+  const wSel=el('select',{id:'stReWin'},...Object.entries(ST_WIN).map(([k,v])=>el('option',{value:k,text:v[0].toUpperCase()+v.slice(1)})));wSel.value=R.window;
+  const modeSel=el('select',{id:'stReMode'},el('option',{value:'pause',text:'Pause the ad'}),el('option',{value:'alert',text:'Alert me only (don\'t pause)'}));modeSel.value=R.mode;
+  const help=el('div',{class:'st-muted'}),prev=el('div',{class:'st-preview'}),err=el('div',{class:'st-note bad',hidden:true});
+  const sync=()=>{R.offer=offerSel.value;R.metric=mSel.value;R.threshold=parseFloat(thr.value);R.minSpend=parseFloat(ms.value)||0;R.minImpr=parseInt(mi.value,10)||0;R.window=wSel.value;R.mode=modeSel.value;
+    const M=ST_METRICS[R.metric];unitL.textContent=M.unit;help.textContent=M.help;help.hidden=!M.help;prev.textContent='';prev.append(...sentence({...R,threshold:isNaN(R.threshold)?'?':R.threshold}),' · '+meta(R));};
+  [offerSel,mSel,thr,ms,mi,wSel,modeSel].forEach(i=>i.addEventListener('input',sync));
+  const save=el('button',{class:'btn btn-p st-btn',type:'submit',text:r?'Save rule':'Add rule'});
+  const form=el('form',{class:'st-editor'},
+    el('div',{class:'st-g2'},el('label',{class:'st-f'},'Offer',offerSel),el('label',{class:'st-f'},'When',mSel)),
+    el('div',{class:'st-g3'},el('label',{class:'st-f'},'Limit',el('div',{class:'st-affix'},unitL,thr)),el('label',{class:'st-f'},'Only judge an ad after it spent',el('div',{class:'st-affix'},el('span',{text:'$'}),ms)),el('label',{class:'st-f'},'…and had at least (impressions)',mi)),
+    el('div',{class:'st-g2'},el('label',{class:'st-f'},'Look at',wSel),el('label',{class:'st-f'},'Then',modeSel)),
+    help,prev,err,el('div',{class:'st-row'},save,el('button',{class:'btn btn-g st-btn',type:'button',text:'Cancel',onclick:()=>{box.hidden=true;}})));
+  form.addEventListener('submit',async e=>{e.preventDefault();sync();
+    if(isNaN(R.threshold)||R.threshold<=0){err.textContent='Enter a limit above zero.';err.hidden=false;return;}
+    if(R.metric==='ctr'&&R.threshold>=100){err.textContent='Link CTR is a percentage. Enter something like 0.8.';err.hidden=false;return;}
+    const now=new Date().toISOString(),body={enabled:R.enabled!==false,offer:R.offer,metric:R.metric,threshold:R.threshold,minSpend:R.minSpend,minImpr:R.minImpr,window:R.window,mode:R.mode,createdAt:R.createdAt||now,updatedAt:now};
+    save.disabled=true;const ok=await write(()=>r?db.doc('rules/'+r.id).set(body):db.collection('rules').add(body));save.disabled=false;if(ok)box.hidden=true;});
+  box.append(form);sync();thr.focus();}
+
+function renderLog(){const tb=g('stLog');tb.textContent='';
+  if(!S.log.length){tb.append(el('tr',{},el('td',{colspan:'6',class:'st-empty',text:'No automatic actions yet.'})));return;}
+  const lbl={paused:'Paused',alert:'Alert sent',blocked:'Not paused (safety)',failed:'Pause failed',waiting:'Waiting for data'};
+  for(const x of S.log.slice(0,100))tb.append(el('tr',{},el('td',{style:'white-space:nowrap',text:when(x.at)}),el('td',{text:offerName(x.offer)}),
+    el('td',{style:'min-width:170px'},el('div',{text:x.adName||x.adId||'–'}),x.detail?el('div',{class:'st-muted',text:x.detail}):null),el('td',{text:x.rule||''}),
+    el('td',{style:'text-align:right',text:x.action==='waiting'?'–':fmtVal(x.metric,x.value)}),el('td',{class:'st-act-'+(x.action||''),style:'white-space:nowrap',text:lbl[x.action]||x.action||''})));}
+
+const fillUrl=(tpl,key)=>(tpl||'').replaceAll('{NETWORK}',key).replaceAll('{BASE}',(S.pb&&S.pb.base)||'https://nutra-tracker.lovable.app').replaceAll('{KEY}',S.pb&&S.pb.key?S.pb.key:'••••••');
+function copyBtn(text){const b=el('button',{class:'btn btn-g st-btn sm',type:'button',text:'Copy'});b.disabled=!(S.pb&&S.pb.key);
+  b.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(text);b.textContent='Copied';}catch(e){const r=document.createRange();r.selectNodeContents(b.closest('.st-url').querySelector('code'));const s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent='Selected';}setTimeout(()=>b.textContent='Copy',1600);});return b;}
+function renderNets(){const box=g('stNetList');box.textContent='';g('stAddNet').disabled=!canWrite;
+  if(!S.networks.length){box.append(el('div',{class:'card st-card st-empty',text:'No networks yet.'}));return;}
+  for(const n of [...S.networks].sort((a,b)=>(a.name||'').localeCompare(b.name||''))){
+    if(editingNet===n.id){box.append(netEditor(n));continue;}
+    const used=offerList().filter(o=>(o.network||'jvzoo')===n.id);
+    const ed=el('button',{class:'btn btn-g st-btn sm',type:'button',text:'Edit',onclick:()=>{editingNet=n.id;renderNets();}});ed.disabled=!canWrite;
+    const del=el('button',{class:'btn btn-r st-btn sm',type:'button',text:'Delete'});del.disabled=!canWrite||used.length>0;if(used.length)del.title='Used by '+used.map(o=>o.name).join(', ');
+    del.addEventListener('click',()=>armDelete(del,()=>write(()=>db.doc('networks/'+n.id).delete())));
+    const dl=el('dl',{class:'st-kv'});const add=(k,v,link)=>{if(v)dl.append(el('dt',{text:k}),el('dd',{},link?el('a',{href:v,target:'_blank',rel:'noopener',text:v.replace(/^https?:\/\//,'')}):v));};
+    add('Affiliate ID',n.affiliateId);add('Account email',n.accountEmail);add('Reports',n.reportsUrl,true);add('Where to paste postbacks',n.help);add('Notes',n.notes);
+    dl.append(el('dt',{text:'Used by'}),el('dd',{text:used.length?used.map(o=>o.name).join(', '):'No offers yet'}));
+    const sale=fillUrl(n.saleTemplate,n.id),click=fillUrl(n.clickTemplate,n.id);
+    box.append(el('div',{class:'card st-card'},el('div',{class:'st-spread'},el('div',{},el('h2',{class:'st-h',text:n.name}),el('div',{class:'st-muted',text:'key: '+n.id})),el('div',{class:'st-row',style:'gap:6px'},ed,del)),dl,
+      el('div',{class:'st-url'},el('div',{class:'st-spread'},el('span',{class:'st-muted',text:'Sale postback'}),copyBtn(sale)),el('code',{text:sale})),
+      el('div',{class:'st-url'},el('div',{class:'st-spread'},el('span',{class:'st-muted',text:'Checkout visit postback'}),copyBtn(click)),el('code',{text:click})),
+      S.pb&&S.pb.key?null:el('div',{class:'st-muted',text:'The postback key is only shown to people who can edit.'})));}}
+function netEditor(n){const N=n||{name:'',affiliateId:'',accountEmail:'',reportsUrl:'',help:'',notes:'',saleTemplate:GEN_SALE,clickTemplate:GEN_CLICK};
+  const f=(id,label,val,attrs)=>{const i=el('input',{id,value:val||'',...(attrs||{})});return [el('label',{class:'st-f'},label,i),i];};
+  const [lN,iN]=f('stNeName','Name',N.name,{required:true,maxlength:'60'}),[lA,iA]=f('stNeAff','Your affiliate ID',N.affiliateId,{maxlength:'80'}),[lM,iM]=f('stNeMail','Account email',N.accountEmail,{type:'email',maxlength:'120'}),
+    [lR,iR]=f('stNeRep','Reports link',N.reportsUrl,{type:'url',maxlength:'300',placeholder:'https://'}),[lH,iH]=f('stNeHelp','Where to paste postbacks',N.help,{maxlength:'200'}),[lO,iO]=f('stNeNotes','Notes',N.notes,{maxlength:'300'});
+  const tS=el('textarea',{id:'stNeSale'});tS.value=N.saleTemplate||'';const tC=el('textarea',{id:'stNeClick'});tC.value=N.clickTemplate||'';const err=el('div',{class:'st-note bad',hidden:true});
+  const close=()=>{editingNet=null;g('stNetNew').hidden=true;renderNets();};
+  const form=el('form',{class:'card st-card st-editor'},el('h2',{class:'st-h',text:n?'Edit '+N.name:'Add network'}),el('div',{class:'st-g2'},lN,lA,lM,lR),lH,lO,
+    el('div',{class:'st-muted',text:'Postback links: replace each {…} placeholder with this network\'s own macro (its help page lists them). Keep {BASE}, {KEY} and {NETWORK} as they are. Pass the ad ID into utm_content so cost-per-sale rules can match sales to ads.'}),
+    el('label',{class:'st-f'},'Sale postback',tS),el('label',{class:'st-f'},'Checkout visit postback',tC),err,
+    el('div',{class:'st-row'},el('button',{class:'btn btn-p st-btn',type:'submit',text:n?'Save':'Add network'}),el('button',{class:'btn btn-g st-btn',type:'button',text:'Cancel',onclick:close})));
+  form.addEventListener('submit',async e=>{e.preventDefault();const name=iN.value.trim();if(!name){err.textContent='Give the network a name.';err.hidden=false;return;}
+    let id=n?n.id:slug(name);if(!n){const taken=S.networks.map(x=>x.id);for(let i=2;taken.includes(id);i++)id=slug(name)+i;}
+    const body={name,affiliateId:iA.value.trim(),accountEmail:iM.value.trim(),reportsUrl:iR.value.trim(),help:iH.value.trim(),notes:iO.value.trim(),saleTemplate:tS.value.trim(),clickTemplate:tC.value.trim(),updatedAt:new Date().toISOString()};
+    if(await write(()=>db.doc('networks/'+id).set(body)))close();});
+  return form;}
+
+function renderTeam(){const tb=g('stTeam');tb.textContent='';g('stTeamForm').querySelectorAll('input,select,button').forEach(i=>i.disabled=!canWrite);
+  if(!S.team.length){tb.append(el('tr',{},el('td',{colspan:'5',class:'st-empty',text:'No one added yet.'})));return;}
+  for(const m of [...S.team].sort((a,b)=>(a.addedAt||'').localeCompare(b.addedAt||''))){
+    const role=el('select',{class:'st-sel','aria-label':'Access for '+(m.name||m.email)},el('option',{value:'editor',text:'Editor'}),el('option',{value:'viewer',text:'Viewer'}));role.value=m.role||'viewer';role.disabled=!canWrite;
+    role.addEventListener('change',()=>write(()=>db.doc('team/'+m.id).update({role:role.value})));
+    const del=el('button',{class:'btn btn-r st-btn sm',type:'button',text:'Remove'});del.disabled=!canWrite;del.addEventListener('click',()=>armDelete(del,()=>write(()=>db.doc('team/'+m.id).delete())));
+    tb.append(el('tr',{},el('td',{text:m.name||''}),el('td',{style:'overflow-wrap:anywhere',text:m.email||''}),el('td',{style:'min-width:110px'},role),el('td',{class:'st-muted',text:m.note||''}),el('td',{style:'text-align:right'},del)));}}
+
+function renderAll(){renderSync();renderAuto();renderRules();renderLog();renderNets();renderTeam();}
+
+async function boot(){booted=true;renderAll();
+  const C=window.claude;
+  if(!C||!C.use){g('stWho').textContent='Pause rules, affiliate networks and your team';
+    document.querySelectorAll('#settingsView [data-stv],#settingsView .st-sub,#stSync').forEach(x=>x.hidden=true);
+    note('',['Settings are only shown and changed in the Claude version of this dashboard. ',el('a',{href:CLAUDE_URL,target:'_blank',rel:'noopener',text:'Open it in Claude ↗'})]);
+    g('stNote').classList.remove('bad');return;}
+  const u=await C.use('user');if(u){const me=await u.me();canWrite=!!(me.canEdit||me.isOwner);g('stWho').textContent=me.isOwner?'Pause rules, affiliate networks and your team · you own these settings':canWrite?'Pause rules, affiliate networks and your team · you can change them':'View only: ask Vlad for Editor access to change settings';}
+  db=await C.use('db');
+  if(!db){canWrite=false;note('Settings can\'t load in this view. Open the dashboard on claude.ai while signed in.');renderAll();return;}
+  let loaded=false;const timer=setTimeout(()=>{if(!loaded)note('Settings can\'t be reached right now. They\'ll appear as soon as the connection comes back.');},10000);
+  const done=()=>{if(!loaded){loaded=true;clearTimeout(timer);g('stNote').hidden=true;}};
+  const err=e=>{done();note('Settings stopped updating ('+((e&&e.code)||'error')+'). Reload the page.');};
+  const col=(path,key,fn)=>db.collection(path).onSnapshot(s=>{if(!s.metadata.fromCache)done();S[key]=s.docs.map(d=>({id:d.id,...d.data()}));fn();},err);
+  const doc=(path,set,fn)=>db.doc(path).onSnapshot(s=>{if(!s.metadata.fromCache)done();set(s.exists?s.data():null);fn();},err);
+  col('rules','rules',renderRules);col('networks','networks',renderNets);col('team','team',renderTeam);
+  doc('config/automation',v=>S.auto=v,renderAuto);doc('config/sync',v=>S.sync=v,renderSync);
+  doc('log/recent',v=>S.log=(v&&v.items)||[],renderLog);doc('private/postback',v=>S.pb=v,renderNets);
+  renderAll();}
+
+function init(){
+  document.querySelectorAll('#settingsView [data-st]').forEach(b=>b.addEventListener('click',()=>setSub(b.dataset.st)));
+  g('stAutoOn').addEventListener('change',e=>saveAuto({enabled:e.target.checked}));
+  g('stAutoProtect').addEventListener('change',e=>saveAuto({protectLast:e.target.checked}));
+  g('stAutoMax').addEventListener('change',e=>{const v=Math.max(1,Math.min(50,parseInt(e.target.value,10)||10));e.target.value=v;saveAuto({maxPerRun:v});});
+  g('stAddRule').addEventListener('click',()=>openRule(null));
+  g('stAddNet').addEventListener('click',()=>{const b=g('stNetNew');b.textContent='';b.append(netEditor(null));b.hidden=false;b.querySelector('input').focus();});
+  g('stTeamForm').addEventListener('submit',async e=>{e.preventDefault();const email=g('stTmEmail').value.trim().toLowerCase();
+    if(S.team.some(m=>(m.email||'').toLowerCase()===email)){note('That email is already on the team.');return;}
+    if(await write(()=>db.collection('team').add({name:g('stTmName').value.trim(),email,role:g('stTmRole').value,note:g('stTmNote').value.trim(),addedAt:new Date().toISOString()})))e.target.reset();});
+  setSub('rules');
+  boot();   // start listening right away so the sync status and rules are live
+}
+window.stInit=init;
+window.stShow=s=>{if(s)setSub(s);};
+})();
 </script>
