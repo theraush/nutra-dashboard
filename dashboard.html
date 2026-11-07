@@ -1672,8 +1672,8 @@ function mergeNotes(){if(typeof NOTES==='undefined')return;let added=0;
   for(const n of S.notes||[]){if(!n.day||!n.text)continue;if(!NOTES.some(x=>x.d===n.day&&x.t===n.text&&(x.p||null)===(n.product||null))){NOTES.push({d:n.day,p:n.product||null,t:n.text});added++;}}
   if(added&&typeof activeTab!=='undefined'&&activeTab==='overview')renderOverview();}
 function initHosted(){if(!HOSTED)return;
-  g('stTeamNote').innerHTML='Everyone here can sign in at this address with their email and the password you set. <b>Editor</b> can change settings, <b>Viewer</b> can only look.';
-  g('stTmPwWrap').hidden=false;
+  g('stTeamNote').innerHTML='Add someone, then press <b>Copy invite link</b> and send it to them (WhatsApp, email…). They open it, choose their own password and they\'re in. Links work once and for 7 days. <b>Editor</b> can change settings, <b>Viewer</b> can only look.';
+  const btn=g('stTeamForm').querySelector('button[type=submit]');if(btn)btn.textContent='Create invite';
   const who=g('stWho');const out=el('a',{href:'/logout',class:'st-linkbtn',text:'Sign out',style:'margin-left:8px'});who.after(el('div',{style:'margin-top:4px'},out));
   const link=document.getElementById('addNoteLink'),form=document.getElementById('noteForm');
   if(link&&form){link.textContent='+ Add note';link.removeAttribute('target');link.href='#';
@@ -1777,12 +1777,25 @@ function renderTeam(){const tb=g('stTeam');tb.textContent='';g('stTeamForm').que
     const del=el('button',{class:'btn btn-r st-btn sm',type:'button',text:'Remove'});del.disabled=!canWrite;del.addEventListener('click',()=>armDelete(del,()=>write(()=>db.doc('team/'+m.id).delete())));
     if(HOSTED&&window.NUTRA_ME&&(m.email||'').toLowerCase()===window.NUTRA_ME.email&&window.NUTRA_ME.role==='owner'){del.hidden=true;role.disabled=true;}
     let pwCell=null;
-    if(HOSTED){const set=el('button',{class:'st-linkbtn',type:'button',text:m.hasPassword?'Change password':'Set password'});set.disabled=!canWrite;
-      pwCell=el('div',{class:'st-muted'},m.hasPassword?'Can sign in · ':'No password yet · ',set);
-      set.addEventListener('click',()=>{const i=el('input',{type:'text',minlength:'8',placeholder:'New password (8+)','aria-label':'New password for '+(m.name||m.email),style:'max-width:180px'});
-        const ok=el('button',{class:'btn btn-p st-btn sm',type:'button',text:'Save'});
-        ok.addEventListener('click',async()=>{if(i.value.length<8){note('Passwords need at least 8 characters.');return;}if(await write(()=>db.doc('team/'+m.id).update({password:i.value}))&&typeof toast==='function')toast('Password saved');});
-        pwCell.replaceChildren(el('div',{class:'st-row'},i,ok));i.focus();});}
+    if(HOSTED){const me=window.NUTRA_ME||{},self=(m.email||'').toLowerCase()===me.email;
+      if(m.hasPassword){
+        if(self){const set=el('button',{class:'st-linkbtn',type:'button',text:'Change my password'});
+          pwCell=el('div',{class:'st-muted'},'Signed up · ',set);
+          set.addEventListener('click',()=>{const i=el('input',{type:'password',minlength:'8',autocomplete:'new-password',placeholder:'New password (8+)','aria-label':'Your new password',style:'max-width:180px'});
+            const ok=el('button',{class:'btn btn-p st-btn sm',type:'button',text:'Save'});
+            ok.addEventListener('click',async()=>{if(i.value.length<8){note('Passwords need at least 8 characters.');return;}if(await write(()=>db.doc('team/'+m.id).update({password:i.value}))&&typeof toast==='function')toast('Password saved');});
+            pwCell.replaceChildren(el('div',{class:'st-row'},i,ok));i.focus();});}
+        else{const rs=el('button',{class:'st-linkbtn',type:'button',text:'Reset login'});rs.disabled=!canWrite;
+          rs.addEventListener('click',()=>armDelete(rs,async()=>{if(await write(()=>db.doc('team/'+m.id).update({resetLogin:true}))&&typeof toast==='function')toast('Login reset: send them the new invite link');}));
+          pwCell=el('div',{class:'st-muted'},'Signed up · ',rs);}}
+      else if(m.inviteToken){const link=location.origin+'/invite?t='+encodeURIComponent(m.inviteToken);
+        const cp=el('button',{class:'st-linkbtn',type:'button',text:'Copy invite link'}),nl=el('button',{class:'st-linkbtn',type:'button',text:'New link'});nl.disabled=!canWrite;
+        cp.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(link);cp.textContent='Copied ✓';setTimeout(()=>cp.textContent='Copy invite link',2000);}catch(e){note('',[el('span',{text:'Copy this invite link: '}),el('input',{value:link,readonly:true,style:'width:100%',onclick:ev=>ev.target.select()})]);}});
+        nl.addEventListener('click',()=>write(()=>db.doc('team/'+m.id).update({newInvite:true})));
+        const old=m.inviteAt&&(Date.now()-new Date(m.inviteAt))>6.5*864e5;
+        pwCell=el('div',{class:'st-muted'},old?'Invite expired · ':'Invite pending · ',old?null:cp,old?null:' · ',nl);}
+      else{const nl=el('button',{class:'st-linkbtn',type:'button',text:'Create invite link'});nl.disabled=!canWrite;
+        nl.addEventListener('click',()=>write(()=>db.doc('team/'+m.id).update({newInvite:true})));pwCell=el('div',{class:'st-muted'},'Not invited yet · ',nl);}}
     tb.append(el('tr',{},el('td',{text:m.name||''}),el('td',{style:'overflow-wrap:anywhere'},m.email||'',pwCell),el('td',{style:'min-width:110px'},role),el('td',{class:'st-muted',text:m.note||''}),el('td',{style:'text-align:right'},del)));}}
 
 function renderTh(){const f=[['stThCtr','minCtr'],['stThCt','minCt'],['stThLpv','minLpv'],['stThCo','coClicks'],['stThBench','coBench']];
@@ -1899,8 +1912,8 @@ function init(){
   g('stAddNet').addEventListener('click',()=>{const b=g('stNetNew');b.textContent='';b.append(netEditor(null));b.hidden=false;b.querySelector('input').focus();});
   g('stTeamForm').addEventListener('submit',async e=>{e.preventDefault();const email=g('stTmEmail').value.trim().toLowerCase();
     if(S.team.some(m=>(m.email||'').toLowerCase()===email)){note('That email is already on the team.');return;}
-    const pw=HOSTED?g('stTmPw').value:'';if(HOSTED&&pw.length<8){note('Give them a password of at least 8 characters.');return;}
-    if(await write(()=>db.collection('team').add({name:g('stTmName').value.trim(),email,role:g('stTmRole').value,note:g('stTmNote').value.trim(),addedAt:new Date().toISOString(),...(pw?{password:pw}:{})})))e.target.reset();});
+    if(await write(()=>db.collection('team').add({name:g('stTmName').value.trim(),email,role:g('stTmRole').value,note:g('stTmNote').value.trim(),addedAt:new Date().toISOString()}))){e.target.reset();
+      if(HOSTED&&typeof toast==='function')toast('Invite created: press "Copy invite link" and send it to them');}});
   setSub('rules');
   initHosted();
   boot();   // start listening right away so the sync status and rules are live

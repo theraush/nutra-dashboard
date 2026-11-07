@@ -1,5 +1,5 @@
 """NUTRA dashboard on Vercel: one Python (WSGI) function serves every route (see vercel.json)."""
-import os, sys, json, re, html, hmac, urllib.parse, secrets
+import os, sys, json, re, html, hmac, urllib.parse, secrets, datetime
 from http.cookies import SimpleCookie
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -36,7 +36,7 @@ def cookie_header(value, max_age):
 
 
 STATUS = {200: '200 OK', 302: '302 Found', 400: '400 Bad Request', 401: '401 Unauthorized', 403: '403 Forbidden',
-          404: '404 Not Found', 405: '405 Method Not Allowed', 409: '409 Conflict', 500: '500 Internal Server Error', 503: '503 Service Unavailable'}
+          404: '404 Not Found', 405: '405 Method Not Allowed', 409: '409 Conflict', 410: '410 Gone', 500: '500 Internal Server Error', 503: '503 Service Unavailable'}
 
 
 # ── request parsing ──
@@ -117,6 +117,8 @@ def api_db(user, p):
             d = dict(r['data'])
             if r['path'].startswith('team/'):
                 d['hasPassword'] = bool(d.pop('pwHash', None))
+                if user['role'] not in ('owner', 'editor') or d['hasPassword']:
+                    d.pop('inviteToken', None)
             docs.append({'path': r['path'], 'data': d, 'version': r['version']})
         return jresp({'ok': True, 'docs': docs})
     if user['role'] not in ('owner', 'editor'):
@@ -146,13 +148,28 @@ def api_db(user, p):
     if path.startswith('team/'):
         data.pop('hasPassword', None)
         pw = data.pop('password', None)
+        new_link, reset = bool(data.pop('newInvite', False)), bool(data.pop('resetLogin', False))
+        for k in ('inviteToken', 'inviteAt', 'pwHash'):  # only the server sets these
+            data.pop(k, None)
+            if cur and k in cur:
+                data[k] = cur[k]
         data['email'] = str(data.get('email') or '').strip().lower()
+        if not re.match(r'^[^@\s]+@[^@\s]+\.[^@\s]+$', data['email']):
+            return jresp({'ok': False, 'error': 'That email address looks wrong'}, 400)
+        if any(m['email'] == data['email'] and f"team/{m['id']}" != path for m in auth.members() if m.get('email')):
+            return jresp({'ok': False, 'error': 'That email is already on the team'}, 400)
         if pw:
             if len(str(pw)) < 8:
                 return jresp({'ok': False, 'error': 'Password needs at least 8 characters'}, 400)
             data['pwHash'] = auth.hash_pw(str(pw))
-        elif cur and cur.get('pwHash'):
-            data['pwHash'] = cur['pwHash']
+        elif reset and data['email'] != auth.owner_email():
+            data.pop('pwHash', None)
+            new_link = True
+        if data.get('pwHash'):
+            data.pop('inviteToken', None); data.pop('inviteAt', None)
+        elif new_link or not data.get('inviteToken'):
+            data['inviteToken'] = secrets.token_urlsafe(24)
+            data['inviteAt'] = datetime.datetime.now(datetime.timezone.utc).isoformat()
     db.kv_set(path, data)
     return jresp({'ok': True})
 
@@ -258,7 +275,6 @@ def route(env):
         # Anyone (e.g. an hourly pinger) may start a sync, but at most once every 25 minutes; nothing is returned but status.
         last = db.kv_data('config/sync') or {}
         try:
-            import datetime
             age = (datetime.datetime.now(datetime.timezone.utc) - datetime.datetime.fromisoformat(str(last.get('at')).replace('Z', '+00:00'))).total_seconds()
         except (TypeError, ValueError):
             age = 1e9
@@ -287,11 +303,35 @@ def route(env):
             return redirect('/', [cookie_header(auth.make_cookie(auth.owner_email()), auth.DAYS * 86400)])
         return Resp(200, auth_page('Set up NUTRA', sub, [('Password (10+ characters)', 'password', 'password', 'new-password')], 'Create owner login', action='/setup'))
 
+    if path == '/invite':
+        tok = str(p.get('t') or '')
+        m = next((m for m in auth.members() if tok and m.get('inviteToken') and hmac.compare_digest(m['inviteToken'], tok) and not m.get('pwHash')), None)
+        if m:
+            try:
+                age = datetime.datetime.now(datetime.timezone.utc) - datetime.datetime.fromisoformat(m.get('inviteAt'))
+                if age.days >= 7:
+                    m = None
+            except (TypeError, ValueError):
+                m = None
+        if not m:
+            return Resp(410, auth_page('Invite link expired', 'This invite link is used up or older than 7 days. Ask the dashboard owner for a new one in Settings → Users.', [], 'Go to sign in', action='/login'))
+        sub = 'Hi ' + html.escape(m.get('name') or '') + ', choose a password for <b>' + html.escape(m['email']) + '</b>. You\'ll sign in with your email and this password.'
+        fields = [('Password (8+ characters)', 'password', 'password', 'new-password')]
+        act = '/invite?t=' + urllib.parse.quote(tok)
+        if method == 'POST' and same_origin(env):
+            pw = str(p.get('password') or '')
+            if len(pw) < 8:
+                return Resp(400, auth_page('Join the NUTRA dashboard', sub, fields, 'Set password and sign in', 'Use at least 8 characters.', act))
+            d = {k: v for k, v in m.items() if k not in ('id', 'inviteToken', 'inviteAt')}
+            db.kv_set(f"team/{m['id']}", {**d, 'pwHash': auth.hash_pw(pw), 'joinedAt': datetime.datetime.now(datetime.timezone.utc).isoformat()})
+            return redirect('/', [cookie_header(auth.make_cookie(m['email']), auth.DAYS * 86400)])
+        return Resp(200, auth_page('Join the NUTRA dashboard', sub, fields, 'Set password and sign in', action=act))
+
     if path == '/login':
         if auth.needs_setup():
             return redirect('/setup')
         fields = [('Email', 'email', 'email', 'username'), ('Password', 'password', 'password', 'current-password')]
-        if method == 'POST' and same_origin(env):
+        if method == 'POST' and same_origin(env) and p.get('email'):
             m = auth.login(p.get('email'), p.get('password'))
             if m:
                 return redirect('/', [cookie_header(auth.make_cookie(m['email']), auth.DAYS * 86400)])
