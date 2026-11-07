@@ -248,9 +248,19 @@ def route(env):
 
     if path == '/api/cron':
         user = current_user(env)
-        if not (cron_ok(env, p) or (user and user['role'] in ('owner', 'editor') and method == 'POST' and same_origin(env))):
-            return jresp({'ok': False}, 401)
-        return jresp(sync.run())
+        if cron_ok(env, p) or (user and user['role'] in ('owner', 'editor') and method == 'POST' and same_origin(env)):
+            return jresp(sync.run())
+        # Anyone (e.g. an hourly pinger) may start a sync, but at most once every 25 minutes; nothing is returned but status.
+        last = db.kv_data('config/sync') or {}
+        try:
+            import datetime
+            age = (datetime.datetime.now(datetime.timezone.utc) - datetime.datetime.fromisoformat(str(last.get('at')).replace('Z', '+00:00'))).total_seconds()
+        except (TypeError, ValueError):
+            age = 1e9
+        if age < 25 * 60:
+            return jresp({'ok': True, 'skipped': 'synced recently', 'at': last.get('at')})
+        r = sync.run()
+        return jresp({'ok': r.get('ok'), 'summary': r.get('summary'), 'errors': len(r.get('errors') or [])})
 
     # first run: the owner (OWNER_EMAIL) sets a password
     if path == '/setup':

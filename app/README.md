@@ -11,7 +11,7 @@ hourly job that pulls Meta numbers and pauses losing ads. Python (one WSGI funct
 | Name | What |
 |---|---|
 | `OWNER_EMAIL` | The owner's login email. First visit asks this person to set a password. |
-| `CRON_SECRET` | Long random string. The hourly job calls `/api/cron` with `Authorization: Bearer <CRON_SECRET>`. |
+| `CRON_SECRET` | Optional. Calls to `/api/cron` with `Authorization: Bearer <CRON_SECRET>` always run; without it, `/api/cron` runs at most once every 25 minutes for anyone. |
 | `META_TOKEN` | Meta system-user token with `ads_read` + `ads_management` on the three ad accounts. |
 | `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` | Optional: alerts by Telegram. |
 | `RESEND_API_KEY`, `ALERT_EMAIL`, `ALERT_FROM` | Optional: alerts by email (Resend). |
@@ -29,8 +29,8 @@ hourly job that pulls Meta numbers and pauses losing ads. Python (one WSGI funct
 
 ## Hourly schedule
 `vercel.json` has a daily cron (allowed on the free Hobby plan). On Pro, change it to `"17 * * * *"`.
-On Hobby, an external scheduler (e.g. cron-job.org) calls `https://nutra.palmtreemedia.co/api/cron` hourly with the
-`Authorization: Bearer <CRON_SECRET>` header.
+On Hobby, anything that opens `https://nutra.palmtreemedia.co/api/cron` once an hour keeps it hourly (it runs at most
+once every 25 minutes, so extra calls are harmless).
 
 ## Meta safety
 The app only ever sets campaigns/ads to PAUSED (`lib/meta.py: pause`). It never activates, creates, or edits budgets.
