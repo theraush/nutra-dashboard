@@ -4,7 +4,7 @@
     python3 update.py payload.json   # merge fresh data, rebuild, write actions.json
     python3 update.py --build        # only rebuild index.html from dashboard.html
 
-dashboard.html is the source (also published to the claude.ai artifact); index.html is the GitHub Pages copy.
+dashboard.html is the page, published to the claude.ai artifact; index.html is a GitHub Pages redirect to that artifact.
 Only the block between "// @@DATA_START" and "// @@DATA_END" is rewritten. See README.md for the payload format.
 """
 import json, re, sys, os, math
@@ -44,10 +44,26 @@ def write_page(s, a, b, data):
     open(SRC, 'w', encoding='utf-8').write(s[:a] + block + s[b:])
 
 
+DASH_URL = 'https://claude.ai/artifact/J532xrrPfBJKFUzn2htdg8'
+REDIRECT = f'''<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="refresh" content="0; url={DASH_URL}">
+<title>NUTRA Dashboard</title>
+<style>body{{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;font:15px system-ui,-apple-system,sans-serif;background:#fff;color:#111}}a{{color:#2563EB}}</style>
+<script>location.replace({json.dumps(DASH_URL)});</script>
+</head>
+<body><p>Opening the NUTRA dashboard… <a href="{DASH_URL}">Open it</a></p></body>
+</html>
+'''
+
+
 def build():
-    s = open(SRC, encoding='utf-8').read()
-    i = s.index('</style>') + len('</style>')
-    open(OUT, 'w', encoding='utf-8').write(HEAD + s[:i] + '\n</head>\n<body>\n' + s[i:] + '\n</body>\n</html>\n')
+    """nutra.palmtreemedia.co (GitHub Pages) forwards to the live dashboard in Claude, where Settings can be saved."""
+    open(OUT, 'w', encoding='utf-8').write(REDIRECT)
 
 
 def num(v, kind, where):
