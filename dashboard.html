@@ -123,7 +123,7 @@ input,select{font-family:inherit;}
 .ftab.active{background:var(--fg);color:var(--surface);border-color:var(--fg);}
 .funnel-body{padding:14px 16px;}
 .fwrap{overflow-x:auto;}
-.fgrid{display:grid;grid-template-columns:repeat(4,minmax(100px,1fr));gap:10px;min-width:440px;}
+.fgrid{display:grid;grid-template-columns:repeat(5,minmax(96px,1fr));gap:10px;min-width:520px;}
 .fcol{display:flex;flex-direction:column;align-items:center;min-width:0;}
 .fstep-label{font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--fg3);margin-bottom:5px;text-align:center;min-height:22px;display:flex;align-items:flex-end;}
 .fsrc{font-size:9px;font-weight:600;padding:1px 7px;border-radius:10px;background:var(--surface2);color:var(--fg3);border:1px solid var(--border);margin-bottom:7px;white-space:nowrap;}
@@ -517,7 +517,7 @@ body.noscroll{overflow:hidden;}
 .st-editor{border:1px solid var(--fg);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:12px;}
 .st-preview{font-size:13px;background:var(--surface2);border-radius:8px;padding:10px 12px;}
 .st-empty{padding:20px 0;text-align:center;color:var(--fg3);font-size:12.5px;}
-.st-act-paused{color:var(--red);font-weight:700;} .st-act-alert{color:var(--amber);font-weight:700;} .st-act-blocked,.st-act-waiting{color:var(--fg2);font-weight:700;} .st-act-failed{color:var(--red);font-weight:700;}
+.st-act-checkout{color:var(--amber);font-weight:700;} .st-act-paused{color:var(--red);font-weight:700;} .st-act-alert{color:var(--amber);font-weight:700;} .st-act-blocked,.st-act-waiting{color:var(--fg2);font-weight:700;} .st-act-failed{color:var(--red);font-weight:700;}
 .st-kv{display:grid;grid-template-columns:150px minmax(0,1fr);gap:4px 12px;font-size:12.5px;margin:0;}
 .st-kv dt{color:var(--fg3);} .st-kv dd{margin:0;min-width:0;overflow-wrap:anywhere;}
 .st-kv a{color:var(--accent);}
@@ -528,6 +528,12 @@ body.noscroll{overflow:hidden;}
 .st-dot{width:8px;height:8px;border-radius:50%;background:var(--fg3);flex:none;}
 .st-dot.ok{background:var(--green);} .st-dot.bad{background:var(--red);} .st-dot.warn{background:var(--amber);}
 #settingsView .ptbl td{vertical-align:top;}
+.vd{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;background:var(--surface2);color:var(--fg2);white-space:nowrap;cursor:help;}
+.vd-keep{background:var(--green-lt);color:var(--green);} .vd-wait{background:var(--surface2);color:var(--fg2);}
+.vd-ad,.vd-adv,.vd-stop{background:var(--red-lt);color:var(--red);} .vd-checkout{background:var(--amber-lt);color:var(--amber);}
+.vd-row{margin:2px 0 8px;}
+.tb-vd{min-width:220px;max-width:320px;} .tb-vd .stat-s{margin-top:4px;white-space:normal;line-height:1.4;}
+.alert-co{background:var(--amber-lt);border-color:var(--amber);} .alert-co p{color:var(--amber);}
 @media(max-width:560px){#tab-settings{display:none;}}
 .settings-btn.on{background:var(--fg);color:var(--surface);}
 </style>
@@ -663,7 +669,7 @@ body.noscroll{overflow:hidden;}
   <div class="card lp-card">
     <div class="ch"><div class="clabel">Landing page conversion</div></div>
     <div class="lp-sub" id="lpSub"></div>
-    <div class="tbl-wrap"><table class="ptbl"><thead><tr><th>Landing page</th><th>Page views</th><th>Clicked to offer</th><th>Click-through</th><th>Sales</th><th>Checkout → sale</th></tr></thead><tbody id="lpBody"></tbody></table></div>
+    <div class="tbl-wrap"><table class="ptbl"><thead><tr><th>Landing page</th><th>Page views</th><th>Clicked through</th><th>Click-through <span style="font-weight:500;text-transform:none;letter-spacing:0">(your page)</span></th><th>Started checkout</th><th>Sales</th><th>Checkout conversion <span style="font-weight:500;text-transform:none;letter-spacing:0">(vendor)</span></th></tr></thead><tbody id="lpBody"></tbody></table></div>
   </div>
 
   <!-- Offer cards -->
@@ -701,8 +707,8 @@ body.noscroll{overflow:hidden;}
   <div class="card tb-strip" id="tbStrip"></div>
   <div id="alertEl"></div>
   <div class="card tb-card">
-    <div class="tbl-wrap"><table class="ptbl tb"><thead><tr><th>Offer</th><th>Budget</th><th>CPC</th><th>Lander CTR</th><th>Checkouts</th><th>Sales / break-even</th><th>Net</th><th>Status</th><th></th></tr></thead><tbody id="tbBody"></tbody></table></div>
-    <div class="tb-note">Tests that need attention are listed first. The tick on each bar is your warning level. At 100%, auto-pause pauses that offer’s active campaigns; it never turns anything back on.</div>
+    <div class="tbl-wrap"><table class="ptbl tb"><thead><tr><th>Offer</th><th>Budget</th><th>CPC</th><th>Lander click-through</th><th>Started checkout</th><th>Sales / break-even</th><th>Net</th><th>Offer check</th><th>Budget</th><th></th></tr></thead><tbody id="tbBody"></tbody></table></div>
+    <div class="tb-note"><b>Offer check</b> grades each test since it started: the ad (link CTR), your advertorial (visitors who click a buy button) and the vendor's checkout (sales per click-through). Hover a verdict for the numbers; change the limits in Settings. Tests that need attention are listed first. The tick on each bar is your warning level. At 100%, auto-pause pauses that offer’s active campaigns; it never turns anything back on.</div>
   </div>
 </div>
 </div>
@@ -737,6 +743,17 @@ body.noscroll{overflow:hidden;}
             <div class="st-muted">If the rules would switch off every live ad of an offer, nothing is paused and you get an alert. That usually means tracking broke.</div>
           </div>
         </div>
+      </div>
+      <div class="card st-card">
+        <div><h2 class="st-h">Offer check limits</h2><div class="st-muted">Used for the verdict on each offer (Test Budgets and offer cards) and the one-time checkout warning on your phone.</div></div>
+        <form id="stThForm" class="st-g3" autocomplete="off">
+          <label class="st-f">Ad: minimum link CTR<div class="st-affix"><input id="stThCtr" type="number" min="0.1" max="10" step="0.1" inputmode="decimal"><span>%</span></div></label>
+          <label class="st-f">Advertorial: minimum click-through<div class="st-affix"><input id="stThCt" type="number" min="1" max="90" step="1" inputmode="decimal"><span>%</span></div></label>
+          <label class="st-f">…judged after landing page views<input id="stThLpv" type="number" min="20" max="5000" step="10" inputmode="numeric"></label>
+          <label class="st-f">Checkout: warn after click-throughs with 0 sales<input id="stThCo" type="number" min="10" max="2000" step="5" inputmode="numeric"></label>
+          <label class="st-f">Normal checkout conversion<div class="st-affix"><input id="stThBench" type="number" min="0.5" max="30" step="0.5" inputmode="decimal"><span>%</span></div></label>
+          <div style="display:flex;align-items:flex-end"><button class="btn btn-p st-btn" type="submit">Save limits</button></div>
+        </form>
       </div>
       <div class="card st-card">
         <div class="st-spread"><h2 class="st-h">Rules</h2><button type="button" class="btn btn-p st-btn" id="stAddRule">+ Add rule</button></div>
@@ -857,12 +874,13 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 
 // ── Aggregation over any date range ──
 function agg(ks,from,to){
-  const o={spend:0,impr:0,clicks:0,lpv:0,lpvJ:0,checkouts:0,sales:0,refunds:0,commission:0,manual:0,manualRev:0,be:0,beOk:true};
+  const o={spend:0,impr:0,clicks:0,lpv:0,lpvJ:0,lpvT:0,through:0,btn:0,ofv:0,checkouts:0,sales:0,refunds:0,commission:0,manual:0,manualRev:0,be:0,beOk:true};
   ks.forEach(k=>{
-    const m=DATA.meta[k]||{},j=DATA.jvz[k]||{};
-    let ks_sp=0;for(const d in m)if(d>=from&&d<=to){const r=m[d];o.spend+=r[0];o.impr+=r[1];o.clicks+=r[2];o.lpv+=r[3];ks_sp+=r[0];if(d>=JVZ_SINCE)o.lpvJ+=r[3];}
+    const m=DATA.meta[k]||{},j=DATA.jvz[k]||{},f=(DATA.ofv||{})[k]||{};
+    let ks_sp=0;for(const d in m)if(d>=from&&d<=to){const r=m[d];o.spend+=r[0];o.impr+=r[1];o.clicks+=r[2];o.lpv+=r[3];ks_sp+=r[0];if(d>=JVZ_SINCE)o.lpvJ+=r[3];if(d>=THR_SINCE)o.lpvT+=r[3];}
     const cps=budgets[k]&&budgets[k].cps;if(cps>0)o.be+=ks_sp/cps;else if(ks_sp>0)o.beOk=false;
-    for(const d in j)if(d>=from&&d<=to){const r=j[d];o.checkouts+=r[0];o.sales+=r[1];o.refunds+=r[2];o.commission+=r[3];}
+    for(const d in j)if(d>=from&&d<=to){const r=j[d];o.checkouts+=r[0];o.sales+=r[1];o.refunds+=r[2];o.commission+=r[3];if(d>=BTN_SINCE&&r[4]){o.through+=r[4];o.btn+=r[4];}}
+    for(const d in f)if(d>=from&&d<=to&&d<BTN_SINCE){o.through+=f[d];o.ofv+=f[d];}
     afSales.forEach(s=>{if(s.prod===k&&s.date>=from&&s.date<=to){o.manual++;o.manualRev+=s.amount;}});
   });
   o.spend=Math.round(o.spend*100)/100;
@@ -871,6 +889,32 @@ function agg(ks,from,to){
   o.cps=ks.length===1?budgets[ks[0]].cps:null;
   return o;
 }
+// Click-throughs: buy-button clicks counted by the landing pages; before that started, JVZoo's order-form views.
+const BTN_SINCE=Object.values(DATA.jvz||{}).flatMap(o=>Object.entries(o).filter(([,v])=>v[4]).map(([d])=>d)).sort()[0]||'9999-12-31';
+const THR_SINCE=[...Object.values(DATA.ofv||{}).flatMap(o=>Object.keys(o)),BTN_SINCE].sort()[0];
+const TH_DEFAULT={minCtr:0.8,minCt:8,minLpv:200,coClicks:75,coBench:4};
+let TH={...TH_DEFAULT,...(DATA.th||{})};
+const thrSrc=c=>c.btn&&c.ofv?'Button clicks + JVZoo order forms':c.btn?'Your landing page':'JVZoo order forms';
+// Offer check: grade the ad, the advertorial and the checkout; one verdict per offer since its test started.
+// Ad grade uses only campaigns that send people to the page (name contains Sales/Conversion/Purchase), not awareness/engagement.
+const SALES_RE=/sales|conver|purchase|\bconv\b/i;
+function salesCtr(k,from,to){let i=0,c=0;const ads=(DATA.ads||{})[k]||{};
+  for(const ad of Object.values(ads)){if(!SALES_RE.test(ad.c||''))continue;for(const d in ad.d)if(d>=from&&d<=to){i+=ad.d[d][1];c+=ad.d[d][2];}}
+  return i?{impr:i,clicks:c,ctr:c/i*100}:null;}
+function verdict(k){const b=budgets[k]||{},a=sinceStart(k),t=TH,sc=salesCtr(k,b.start||FIRST,TODAY);
+  if(sc){a.impr=sc.impr;a.clicks=sc.clicks;}
+  const ctr=a.impr?a.clicks/a.impr*100:null,ct=a.lpvT?a.through/a.lpvT*100:null,sales=a.allSales;
+  const V=(key,icon,label,detail)=>({key,icon,label,detail,a});
+  if(sales>0&&a.rev>=a.spend)return V('keep','🟢','Keep going',`Profitable: ${fmt(a.rev)} commission on ${fmt(a.spend)} spend.`);
+  if(b.budget>0&&a.spend>=b.budget&&sales===0)return V('stop','⛔','Stop',`Test budget spent (${fmt(a.spend,0)}) with no sales.`);
+  if(sales>0){const be=b.cps?Math.ceil(a.spend/b.cps-1e-9):null;return V('keep','🟢','Selling',`${fmtN(sales)} sale${sales===1?'':'s'}${be?` · break-even at ${fmtN(be)}`:''}. Watch cost per sale.`);}
+  if(a.impr<2000)return V('wait','🟡','Collecting data',`${fmtK(a.impr)} impressions so far; judging the ad after 2K.`);
+  if(ctr<t.minCtr)return V('ad','🔴','Ad problem',`Link CTR ${pct(ctr,2)}${sc?' in your sales campaigns':''} is under ${t.minCtr}%. Fix the creative or hook.`);
+  if(a.through<t.coClicks&&a.lpvT<t.minLpv)return V('wait','🟡','Collecting data',`${fmtN(t.minLpv-a.lpvT)} more landing page views before the advertorial can be judged.`);
+  if(a.through<t.coClicks&&ct<t.minCt)return V('adv','🔴','Advertorial problem',`Only ${pct(ct,1)} of visitors click through (target ${t.minCt}%). Fix the page.`);
+  if(a.through>=t.coClicks)return V('checkout','⚠️','Checkout problem',`${fmtN(a.through)} people reached the order form, ${fmtN(a.checkouts)} started checkout, 0 sales (≈${Math.round(a.through*t.coBench/100)} expected at ${t.coBench}%). Your ad and page are getting people there; the vendor's checkout isn't closing. Stop or talk to the vendor.`);
+  return V('wait','🟡','Waiting on checkout',`Ad and page pass. ${fmtN(t.coClicks-a.through)} more click-throughs before the checkout can be judged.`);}
+const vBadge=v=>`<span class="vd vd-${v.key}" title="${esc(v.detail)}">${v.icon} ${esc(v.label)}</span>`;
 function sinceStart(k){const b=budgets[k]||{};return agg([k],b.start||FIRST,TODAY);}
 function series(k,from,to,idx){const m=DATA.meta[k]||{},out=[];for(let d=from;d<=to;d=addD(d,1)){const r=m[d];out.push({d,v:r?r[idx]:0});}return out;}
 const hasSpend=d=>KEYS.some(k=>{const r=(DATA.meta[k]||{})[d];return r&&r[0]>0;});
@@ -887,8 +931,10 @@ const METRICS={
   lpv:      {label:'Landing page views', f:c=>c.lpv,                                     fmt:fmtN,                   good:true},
   lpvRate:  {label:'Page-load rate',     f:c=>c.clicks?c.lpv/c.clicks*100:null,          fmt:v=>pct(v,0),            good:true, hint:'Share of link clicks that loaded your landing page'},
   cplpv:    {label:'Cost per page view', f:c=>c.lpv?c.spend/c.lpv:null,                  fmt:v=>fmt(v),              good:false},
-  lpCtr:    {label:'Lander click-through', f:c=>c.lpvJ?c.checkouts/c.lpvJ*100:null,     fmt:v=>pct(v,0),            good:true, jvz:true, hint:'Landing page views that clicked through to the JVZoo checkout (counted from when JVZoo tracking started)'},
-  checkouts:{label:'Checkout visits',    f:c=>c.checkouts,                               fmt:fmtN,                   good:true, jvz:true},
+  lpCtr:    {label:'Lander click-through', f:c=>c.lpvT?c.through/c.lpvT*100:null,     fmt:v=>v>100?'100%+':pct(v,0),            good:true, jvz:true, hint:'Landing page visitors who clicked a buy button (before button counting started: JVZoo order-form views ÷ page views)'},
+  through:  {label:'Click-throughs',     f:c=>c.through,                                 fmt:fmtN,                   good:true, jvz:true, hint:'People who clicked a buy button on your landing page'},
+  coConv:   {label:'Checkout conversion',f:c=>c.through?c.allSales/c.through*100:null,  fmt:v=>pct(v,1),            good:true, jvz:true, hint:'Sales ÷ click-throughs: how well the vendor checkout closes'},
+  checkouts:{label:'Started checkout',    f:c=>c.checkouts,                               fmt:fmtN,                   good:true, jvz:true},
   sales:    {label:'Sales',              f:c=>c.allSales,                                fmt:fmtN,                   good:true, jvz:true},
   rev:      {label:'Commission',         f:c=>c.rev,                                     fmt:v=>fmt(v),              good:true, jvz:true},
   roas:     {label:'ROAS',               f:c=>c.spend?c.rev/c.spend:null,                fmt:v=>v==null?'—':v.toFixed(2)+'×', good:true, jvz:true},
@@ -1198,6 +1244,7 @@ function renderOverview(){
         <div style="min-width:0"><div class="clabel">${esc(P.name)}</div><div class="s-offer">${esc(P.offer)} · ${esc(nn)}${b.paused?' · <span class="s-paused">Auto-paused</span>':''}</div></div>
         <button class="menu-btn" data-menu="spark" data-k="${k}" aria-haspopup="menu" aria-expanded="false" aria-label="${esc(P.name)} options">···</button>
       </div>
+      <div class="vd-row">${vBadge(verdict(k))}</div>
       <div class="links">
         <button type="button" class="lnk" data-ads="${k}" title="Which ads are spending"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1.5" y="2.5" width="13" height="11" rx="2"/><path d="M4.5 10.5l2-3 2 2 3-4"/></svg>Ads</button>
         ${P.lander?`<a class="lnk" href="${esc(P.lander)}" target="_blank" rel="noopener" title="Open ${esc(P.lander.replace(/^https?:\/\//,''))}"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1.5" y="2.5" width="13" height="11" rx="2"/><path d="M1.5 5.5h13"/></svg>Lander</a>`:''}
@@ -1253,14 +1300,16 @@ function renderFunnel(){
   $('fTabs').innerHTML=['all',...KEYS].map(k=>`<button type="button" class="ftab${fProd===k?' active':''}" data-fp="${k}">${k==='all'?'All':esc(PROD[k].name)}</button>`).join('');
   const r=curRange(),ks=fProd==='all'||!PROD[fProd]?KEYS:[fProd],c=agg(ks,r.from,r.to);
   const on=r.to>=JVZ_SINCE,part=r.from<JVZ_SINCE,since=` since ${fmtD(JVZ_SINCE)}`;
-  const lpCtr=c.lpvJ?c.checkouts/c.lpvJ*100:null,coR=c.checkouts?c.allSales/c.checkouts*100:null;
+  const lpCtr=c.lpvT?c.through/c.lpvT*100:null,stR=c.through?c.checkouts/c.through*100:null,coR=c.through?c.allSales/c.through*100:null,tOn=r.to>=THR_SINCE;
   const steps=[
     {n:'Link clicks',src:'Meta ads',v:c.clicks,rate:c.impr?c.clicks/c.impr*100:null,cv:`${c.impr?(c.clicks/c.impr*100).toFixed(2):'0'}% of ${fmtK(c.impr)} impressions`},
     {n:'Landing page views',src:'Meta Pixel',v:c.lpv,rate:c.clicks?c.lpv/c.clicks*100:null},
-    {n:'Clicked to offer',src:'Network postback',v:on?c.checkouts:null,rate:lpCtr,how:`Postback tracking started ${fmtD(JVZ_SINCE)}`,
-      cv:lpCtr!=null?`${pct(lpCtr,lpCtr<10?1:0)} of page views${part?since:''}`:(on?'no page views yet':'')},
+    {n:'Clicked through',src:thrSrc(c),v:tOn?c.through:null,rate:lpCtr,how:'Counting starts with the next sync',
+      cv:lpCtr!=null?`${pct(Math.min(lpCtr,100),lpCtr<10?1:0)} of page views · your advertorial`:(tOn?'no page views yet':'')},
+    {n:'Started checkout',src:'Network postback',v:on?c.checkouts:null,rate:stR,how:`Postback tracking started ${fmtD(JVZ_SINCE)}`,
+      cv:stR!=null?`${pct(stR,stR<10?1:0)} of click-throughs`:(on?'no click-throughs yet':'')},
     {n:'Sales',src:c.manual?'Postback + manual':'Network postback',v:on||c.manual?c.allSales:null,rate:coR,how:`Postback tracking started ${fmtD(JVZ_SINCE)}`,
-      cv:coR!=null?`${pct(coR,0)} of checkouts`:(on?'no checkouts yet':'')},
+      cv:coR!=null?`${pct(coR,1)} of click-throughs · vendor checkout`:(on?'no click-throughs yet':'')},
   ];
   const maxV=Math.max(c.clicks,1);
   $('fGrid').innerHTML=steps.map((s,i)=>{
@@ -1276,20 +1325,19 @@ function renderFunnel(){
 
 // ── Landing page conversion ──
 function renderLanding(r){
-  const on=r.to>=JVZ_SINCE,from=r.from<JVZ_SINCE?JVZ_SINCE:r.from;
-  $('lpSub').textContent=on?`Page views from the Meta Pixel, click-throughs from the networks’ checkout postbacks · ${fmtRange(from,r.to)}${r.from<JVZ_SINCE?` (tracking started ${fmtD(JVZ_SINCE)})`:''}`
-    :`Click-through tracking started ${fmtD(JVZ_SINCE)}, after the dates you picked.`;
+  const on=r.to>=THR_SINCE,from=r.from<THR_SINCE?THR_SINCE:r.from;
+  const t0=agg(KEYS,r.from,r.to);
+  $('lpSub').textContent=on?`Page views from the Meta Pixel · click-throughs from ${thrSrc(t0).toLowerCase()} · sales from JVZoo postbacks · ${fmtRange(from,r.to)}${t0.ofv?' · JVZoo counts repeat order-form loads, so click-through can read 100%+ until the landing pages’ own button counts take over':''}`
+    :`Click-through tracking starts ${fmtD(THR_SINCE)}, after the dates you picked.`;
   if(!on){$('lpBody').innerHTML='';return;}
-  const rows=KEYS.map(k=>({k,a:agg([k],r.from,r.to)})).sort((x,y)=>y.a.lpvJ-x.a.lpvJ);
-  const best=Math.max(...rows.map(x=>x.a.lpvJ?x.a.checkouts/x.a.lpvJ:0),0.0001);
-  const tot=agg(KEYS,r.from,r.to);
-  const row=(name,sub,a,color)=>{const ctr=a.lpvJ?a.checkouts/a.lpvJ*100:null,co=a.checkouts?a.allSales/a.checkouts*100:null;
+  const rows=KEYS.map(k=>({k,a:agg([k],r.from,r.to)})).sort((x,y)=>y.a.lpvT-x.a.lpvT);
+  const row=(name,sub,a,color)=>{const ctr=a.lpvT?a.through/a.lpvT*100:null,co=a.through?a.allSales/a.through*100:null;
     return`<tr><td><div class="pname">${name}</div><div class="pacct">${sub}</div></td>
-      <td><div class="stat">${fmtN(a.lpvJ)}</div></td><td><div class="stat">${fmtN(a.checkouts)}</div></td>
-      <td><div class="lp-rate"><span class="stat">${ctr==null?'—':pct(ctr,ctr<10?1:0)}</span>${color&&ctr!=null?`<span class="lp-bar"><i style="width:${Math.min(ctr/100/best*100,100)}%;background:${color}"></i></span>`:''}</div></td>
-      <td><div class="stat">${fmtN(a.allSales)}</div></td><td><div class="stat">${co==null?'—':pct(co,0)}</div></td></tr>`;};
+      <td><div class="stat">${fmtN(a.lpvT)}</div></td><td><div class="stat">${fmtN(a.through)}</div></td>
+      <td><div class="lp-rate"><span class="stat">${ctr==null?'—':ctr>100?'100%+':pct(ctr,ctr<10?1:0)}</span>${color&&ctr!=null?`<span class="lp-bar"><i style="width:${Math.min(ctr,100)}%;background:${color}"></i></span>`:''}</div></td>
+      <td><div class="stat">${fmtN(a.checkouts)}</div></td><td><div class="stat">${fmtN(a.allSales)}</div></td><td><div class="stat">${co==null?'—':pct(co,1)}</div></td></tr>`;};
   $('lpBody').innerHTML=rows.map(({k,a})=>row(esc(PROD[k].name),PROD[k].lander?`<a href="${esc(PROD[k].lander)}" target="_blank" rel="noopener">${esc(PROD[k].lander.replace(/^https?:\/\//,''))}</a>`:'No landing page set',a,PROD[k].color)).join('')
-    +`<tr class="tot">${row('All offers',fmtRange(from,r.to),tot,null).slice(4)}`;
+    +`<tr class="tot">${row('All offers',fmtRange(from,r.to),t0,null).slice(4)}`;
 }
 
 // ── Notes (from NUTRA Tracker → Notes) ──
@@ -1382,30 +1430,32 @@ function renderBudgets(){
   const rows=KEYS.map(k=>({k,st:tbStatus(k),a:sinceStart(k),b:budgets[k]}));
   const running=rows.filter(x=>x.st.key!=='paused');
   const wkFrom=addD(TODAY,-dow(TODAY)),wk=agg(KEYS,wkFrom,TODAY),all=rows.reduce((o,x)=>({sp:o.sp+x.a.spend,rev:o.rev+x.a.rev}),{sp:0,rev:0});
-  const att=rows.filter(x=>x.st.key==='depleted'||x.st.key==='watch').length;
+  const att=rows.filter(x=>x.st.key==='depleted'||x.st.key==='watch'||['checkout','ad','adv','stop'].includes(verdict(x.k).key)).length;
   $('tbStrip').innerHTML=`<span><b>${running.length}</b> test${running.length===1?'':'s'} running</span><span><b>${fmt(wk.spend)}</b> spent this week</span><span><b>${fmt(all.sp)}</b> spent since the tests started</span><span><b>${fmt(all.rev)}</b> commission</span><span class="${all.rev-all.sp<0?'neg':'pos'}">Net <b>${fmt(all.rev-all.sp)}</b></span>`;
   $('tbFilters').innerHTML=[['all','All',rows.length],['att','Needs attention',att],['paused','Paused',rows.filter(x=>x.st.key==='paused').length]]
     .map(([id,l,n])=>`<button type="button" class="fpill${tbFilter===id?' active':''}" data-tbf="${id}">${l} <span class="fcnt">${n}</span></button>`).join('');
   const over=rows.filter(x=>x.st.key==='depleted');
-  $('alertEl').innerHTML=over.map(x=>`<div class="alert-dep"><p><strong>${esc(PROD[x.k].name)}</strong> is over its ${fmt(x.b.budget,0)} test budget (${fmt(x.a.spend)} spent). ${x.b.autoPause?'Auto-pause is on: the hourly sync pauses its active campaigns on its next run.':'Auto-pause is off for this offer, so pause it in Ads Manager if you want it stopped.'}</p>
+  const coBad=rows.filter(x=>verdict(x.k).key==='checkout');
+  $('alertEl').innerHTML=coBad.map(x=>`<div class="alert-dep alert-co"><p><strong>⚠️ ${esc(PROD[x.k].name)}: checkout problem.</strong> ${esc(verdict(x.k).detail)}</p></div>`).join('')+over.map(x=>`<div class="alert-dep"><p><strong>${esc(PROD[x.k].name)}</strong> is over its ${fmt(x.b.budget,0)} test budget (${fmt(x.a.spend)} spent). ${x.b.autoPause?'Auto-pause is on: the hourly sync pauses its active campaigns on its next run.':'Auto-pause is off for this offer, so pause it in Ads Manager if you want it stopped.'}</p>
     <div style="display:flex;gap:6px;"><a class="btn btn-g" href="${TRACKER_BUDGETS}" target="_blank" rel="noopener">Raise budget ↗</a></div></div>`).join('');
-  let list=rows;if(tbFilter==='att')list=rows.filter(x=>x.st.key==='depleted'||x.st.key==='watch');if(tbFilter==='paused')list=rows.filter(x=>x.st.key==='paused');
+  let list=rows;if(tbFilter==='att')list=rows.filter(x=>x.st.key==='depleted'||x.st.key==='watch'||['checkout','ad','adv','stop'].includes(verdict(x.k).key));if(tbFilter==='paused')list=rows.filter(x=>x.st.key==='paused');
   list.sort((x,y)=>x.st.rank-y.st.rank||y.st.p-x.st.p);
   $('tbBody').innerHTML=list.length?list.map(({k,st,a,b})=>{const P=PROD[k],days=Math.max(1,diffD(b.start,TODAY)+1),avg=a.spend/days,rem=Math.max(b.budget-a.spend,0),dl=avg>0?rem/avg:Infinity;
     const pace=b.paused?`Paused ${b.autopausedAt?fmtD(b.autopausedAt.slice(0,10)):''}`:st.key==='depleted'?`${fmt(a.spend-b.budget)} over`:dl===Infinity?'no spend yet':dl<1?'< 1 day left':`≈ ${Math.round(dl)} day${Math.round(dl)===1?'':'s'} left`;
-    const pw=Math.min(st.p,100),lp=METRICS.lpCtr.f(a),be=b.cps?Math.ceil(a.spend/b.cps-1e-9):null;
+    const pw=Math.min(st.p,100),lp=METRICS.lpCtr.f(a),be=b.cps?Math.ceil(a.spend/b.cps-1e-9):null,vd=verdict(k);
     return`<tr class="tb-${st.key}">
       <td><div class="pname"><span class="dot" style="background:${P.color}"></span>${esc(P.name)}</div><div class="pacct">${esc(P.offer)} · ${esc(netName(k))} · day ${days}</div></td>
       <td class="tb-bud"><div class="tb-bar"><i class="${st.key}" style="width:${pw}%"></i><s style="left:${Math.min(b.warnAt,100)}%"></s></div>
         <div class="stat-s"><b>${fmt(a.spend,0)}</b> of ${fmt(b.budget,0)} · ${st.p.toFixed(0)}% · ${pace}</div></td>
       <td><div class="stat">${METRICS.cpc.fmt(METRICS.cpc.f(a))}</div></td>
-      <td><div class="stat">${lp==null?'—':pct(lp,lp<10?1:0)}</div></td>
+      <td><div class="stat">${lp==null?'—':lp>100?'100%+':pct(lp,lp<10?1:0)}</div></td>
       <td><div class="stat">${fmtN(a.checkouts)}</div></td>
       <td><div class="stat">${fmtN(a.allSales)}${be!=null?`<span class="stat-s"> / ${fmtN(be)}</span>`:''}</div></td>
       <td><div class="stat ${a.rev-a.spend<0?'neg':'pos'}">${fmt(a.rev-a.spend,0)}</div></td>
+      <td class="tb-vd">${vBadge(vd)}<div class="stat-s">${esc(vd.detail)}</div></td>
       <td><span class="spill ${st.key}">${st.label}</span></td>
       <td class="tb-act"><button type="button" class="btn btn-g" data-ads="${k}">Ads</button><a class="btn btn-g" href="${TRACKER_BUDGETS}" target="_blank" rel="noopener" title="Edit budget, auto-pause and offer details">Edit ↗</a></td>
-    </tr>`;}).join(''):`<tr><td colspan="9" class="ad-empty">No tests match this filter.</td></tr>`;
+    </tr>`;}).join(''):`<tr><td colspan="10" class="ad-empty">No tests match this filter.</td></tr>`;
 }
 function initBudgets(){
   document.addEventListener('click',e=>{const f=e.target.closest('[data-tbf]');if(f){tbFilter=f.dataset.tbf;renderBudgets();}});
@@ -1547,7 +1597,7 @@ function openRule(r){const R=r?{...r}:{enabled:true,offer:'all',metric:'ctr',thr
 
 function renderLog(){const tb=g('stLog');tb.textContent='';
   if(!S.log.length){tb.append(el('tr',{},el('td',{colspan:'6',class:'st-empty',text:'No automatic actions yet.'})));return;}
-  const lbl={paused:'Paused',alert:'Alert sent',blocked:'Not paused (safety)',failed:'Pause failed',waiting:'Waiting for data'};
+  const lbl={checkout:'Checkout warning',paused:'Paused',alert:'Alert sent',blocked:'Not paused (safety)',failed:'Pause failed',waiting:'Waiting for data'};
   for(const x of S.log.slice(0,100))tb.append(el('tr',{},el('td',{style:'white-space:nowrap',text:when(x.at)}),el('td',{text:offerName(x.offer)}),
     el('td',{style:'min-width:170px'},el('div',{text:x.adName||x.adId||'–'}),x.detail?el('div',{class:'st-muted',text:x.detail}):null),el('td',{text:x.rule||''}),
     el('td',{style:'text-align:right',text:x.action==='waiting'?'–':fmtVal(x.metric,x.value)}),el('td',{class:'st-act-'+(x.action||''),style:'white-space:nowrap',text:lbl[x.action]||x.action||''})));}
@@ -1595,7 +1645,12 @@ function renderTeam(){const tb=g('stTeam');tb.textContent='';g('stTeamForm').que
     const del=el('button',{class:'btn btn-r st-btn sm',type:'button',text:'Remove'});del.disabled=!canWrite;del.addEventListener('click',()=>armDelete(del,()=>write(()=>db.doc('team/'+m.id).delete())));
     tb.append(el('tr',{},el('td',{text:m.name||''}),el('td',{style:'overflow-wrap:anywhere',text:m.email||''}),el('td',{style:'min-width:110px'},role),el('td',{class:'st-muted',text:m.note||''}),el('td',{style:'text-align:right'},del)));}}
 
-function renderAll(){renderSync();renderAuto();renderRules();renderLog();renderNets();renderTeam();}
+function renderTh(){const f=[['stThCtr','minCtr'],['stThCt','minCt'],['stThLpv','minLpv'],['stThCo','coClicks'],['stThBench','coBench']];
+  f.forEach(([id,k])=>{const i=g(id);if(i&&document.activeElement!==i)i.value=TH[k];if(i)i.disabled=!canWrite;});
+  const b=g('stThForm')&&g('stThForm').querySelector('button');if(b)b.disabled=!canWrite;}
+function applyTh(v){TH={...TH_DEFAULT,...(DATA.th||{}),...(v||{})};renderTh();
+  if(typeof activeTab!=='undefined'){if(activeTab==='overview')renderOverview();else if(activeTab==='budgets')renderBudgets();}}
+function renderAll(){renderSync();renderAuto();renderTh();renderRules();renderLog();renderNets();renderTeam();}
 
 async function boot(){booted=true;renderAll();
   const C=window.claude;
@@ -1612,7 +1667,7 @@ async function boot(){booted=true;renderAll();
   const col=(path,key,fn)=>db.collection(path).onSnapshot(s=>{if(!s.metadata.fromCache)done();S[key]=s.docs.map(d=>({id:d.id,...d.data()}));fn();},err);
   const doc=(path,set,fn)=>db.doc(path).onSnapshot(s=>{if(!s.metadata.fromCache)done();set(s.exists?s.data():null);fn();},err);
   col('rules','rules',renderRules);col('networks','networks',renderNets);col('team','team',renderTeam);
-  doc('config/automation',v=>S.auto=v,renderAuto);doc('config/sync',v=>S.sync=v,renderSync);
+  doc('config/automation',v=>S.auto=v,renderAuto);doc('config/thresholds',v=>applyTh(v),()=>{});doc('config/sync',v=>S.sync=v,renderSync);
   doc('log/recent',v=>S.log=(v&&v.items)||[],renderLog);doc('private/postback',v=>S.pb=v,renderNets);
   renderAll();}
 
@@ -1622,6 +1677,10 @@ function init(){
   g('stAutoProtect').addEventListener('change',e=>saveAuto({protectLast:e.target.checked}));
   g('stAutoMax').addEventListener('change',e=>{const v=Math.max(1,Math.min(50,parseInt(e.target.value,10)||10));e.target.value=v;saveAuto({maxPerRun:v});});
   g('stAddRule').addEventListener('click',()=>openRule(null));
+  g('stThForm').addEventListener('submit',async e=>{e.preventDefault();const n=id=>parseFloat(g(id).value);
+    const v={minCtr:n('stThCtr'),minCt:n('stThCt'),minLpv:Math.round(n('stThLpv')),coClicks:Math.round(n('stThCo')),coBench:n('stThBench')};
+    if(Object.values(v).some(x=>!(x>0))){note('Every limit needs a number above zero.');return;}
+    if(await write(()=>db.doc('config/thresholds').set({...v,updatedAt:new Date().toISOString()}))){applyTh(v);if(typeof toast==='function')toast('Limits saved');}});
   g('stAddNet').addEventListener('click',()=>{const b=g('stNetNew');b.textContent='';b.append(netEditor(null));b.hidden=false;b.querySelector('input').focus();});
   g('stTeamForm').addEventListener('submit',async e=>{e.preventDefault();const email=g('stTmEmail').value.trim().toLowerCase();
     if(S.team.some(m=>(m.email||'').toLowerCase()===email)){note('That email is already on the team.');return;}

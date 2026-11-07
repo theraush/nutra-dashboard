@@ -232,6 +232,61 @@ def rule_actions(p, data, today):
     return final
 
 
+TH_DEFAULT = {'minCtr': 0.8, 'minCt': 8, 'minLpv': 200, 'coClicks': 75, 'coBench': 4}
+
+
+def offer_funnel(data, k, frm, to):
+    """Totals for one offer: spend, impr, link clicks, lpv, click-throughs (lander button clicks, or JVZoo
+    order-form views on days before button counting started), checkout starts, sales."""
+    btn_since = min([d for o in data.get('jvz', {}).values() for d, v in o.items() if len(v) > 4 and v[4]] or ['9999'])
+    t = dict(spend=0, impr=0, clicks=0, lpv=0, through=0, starts=0, sales=0)
+    for d, v in data['meta'].get(k, {}).items():
+        if frm <= d <= to:
+            t['spend'] += v[0]; t['impr'] += v[1]; t['clicks'] += v[2]; t['lpv'] += v[3]
+    for d, v in data.get('jvz', {}).get(k, {}).items():
+        if frm <= d <= to:
+            t['starts'] += v[0]; t['sales'] += v[1]
+            if d >= btn_since:
+                t['through'] += v[4] if len(v) > 4 else 0
+    for d, n in data.get('ofv', {}).get(k, {}).items():
+        if frm <= d <= to and d < btn_since:
+            t['through'] += n
+    return t
+
+
+def checkout_warnings(p, data, today):
+    """One alert per test when the ad and advertorial pass but enough people reached checkout with no sale."""
+    th = {**TH_DEFAULT, **data.get('th', {})}
+    out = []
+    for o in data['offers']:
+        k, st = o['key'], data['settings'].get(o['key'], {})
+        if o['status'] != 'active':
+            continue
+        start = st.get('start') or today
+        if any(x.get('action') == 'checkout' and x.get('offer') == k and str(x.get('at', ''))[:10] >= start for x in p.get('ruleLog') or []):
+            continue
+        t = offer_funnel(data, k, start, today)
+        si = sc = 0  # CTR from sales campaigns only (awareness/engagement dilute it)
+        for ad in data.get('ads', {}).get(k, {}).values():
+            if re.search(r'sales|conver|purchase|\bconv\b', ad.get('c') or '', re.I):
+                for d, v in ad['d'].items():
+                    if start <= d <= today:
+                        si += v[1]; sc += v[2]
+        if si:
+            t['impr'], t['clicks'] = si, sc
+        ctr = t['clicks'] / t['impr'] * 100 if t['impr'] else 0
+        ct = t['through'] / t['lpv'] * 100 if t['lpv'] else 0
+        # enough people reached the order form → the ad and advertorial did their job; judge the checkout
+        if t['sales'] == 0 and t['through'] >= th['coClicks'] and (t['impr'] < 2000 or ctr >= th['minCtr']):
+            exp = t['through'] * th['coBench'] / 100
+            out.append({'action': 'checkout_warning', 'key': k, 'name': o['name'], 'acct': o['acct'], 'spent': round(t['spend'], 2),
+                        'through': t['through'], 'starts': t['starts'], 'expected': round(exp, 1),
+                        'detail': f"{t['through']} people clicked through to the order form, {t['starts']} started checkout, 0 sales "
+                                  f"(about {exp:.0f} expected at {th['coBench']}%) after ${t['spend']:,.0f} spend. "
+                                  f"Your ad ({ctr:.2f}% CTR) and page are getting people to the order form; the checkout isn't closing."})
+    return out
+
+
 def rule_text(r):
     label, direction, unit, _ = RULE_METRICS.get(r.get('metric'), (r.get('metric'), 'above', '$', None))
     thr = r.get('threshold')
@@ -327,9 +382,11 @@ def apply(p):
             if key not in new or not d:
                 skipped += 1
                 continue
-            arr = new[key].setdefault(d, [0, 0, 0, 0])
+            arr = new[key].setdefault(d, [0, 0, 0, 0, 0])
             n, c = num(r.get('n'), 'int', 'jvz.n'), num(r.get('commission'), 'money', 'jvz.commission')
-            if r.get('event') == 'initiated':
+            if r.get('event') == 'click':
+                arr[4] += n
+            elif r.get('event') == 'initiated':
                 arr[0] += n
             elif r.get('event') == 'purchase':
                 if str(r.get('type') or '').upper() == 'RFND':
@@ -342,6 +399,22 @@ def apply(p):
         if skipped:
             print(f'note: skipped {skipped} postback row(s) not matched to an offer')
 
+    # JVZoo order-form views (the AddToCart events JVZoo sends to each offer's pixel), per offer and day
+    ofv_since = p.get('ofvSince') or since
+    data.setdefault('ofv', {})
+    for k, rows in (p.get('ofv') or {}).items():
+        if rows is None or k not in keys:
+            continue
+        cur = data['ofv'].setdefault(k, {})
+        for d in [d for d in cur if ofv_since <= d <= today]:
+            del cur[d]
+        for r in rows:
+            d = day(r.get('date'))
+            if d and ofv_since <= d <= today and num(r.get('n'), 'int', f'ofv.{k}') > 0:
+                cur[d] = cur.get(d, 0) + num(r.get('n'), 'int', f'ofv.{k}')
+    if p.get('thresholds') is not None:
+        data['th'] = {**TH_DEFAULT, **{k: v for k, v in p['thresholds'].items() if k in TH_DEFAULT and isinstance(v, (int, float))}}
+
     data['asOf'], data['today'] = p['asOf'], today
     data['metaFrom'] = min(data.get('metaFrom', since), since)
     data['warn'] = warn
@@ -350,7 +423,7 @@ def apply(p):
     actions = []
     for o in data['offers']:
         k, st = o['key'], data['settings'].get(o['key'], {})
-        if o['status'] != 'active' or not st.get('budget'):
+        if o['status'] != 'active' or not st.get('budget') or p.get('offers') is None:  # no fresh alert state → no budget actions
             continue
         spent = round(sum(v[0] for d, v in data['meta'].get(k, {}).items() if st['start'] <= d <= today), 2)
         pct = spent / st['budget'] * 100
@@ -362,6 +435,7 @@ def apply(p):
         elif pct >= st['warnAt'] and not st['_warned'] and pct < 100:
             actions.append({**base, 'action': 'alert_warning', 'warnAt': st['warnAt']})
     actions += rule_actions(p, data, today)
+    actions += checkout_warnings(p, data, today)
     for st in data['settings'].values():
         st.pop('_warned', None), st.pop('_depleted', None)
     write_page(s, a, b, data)
