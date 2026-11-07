@@ -446,6 +446,10 @@ input,select{font-family:inherit;}
 
 /* ── Notes ── */
 .notes-card{padding:14px 16px;margin-bottom:14px;}
+.note-form{display:grid;grid-template-columns:150px 150px minmax(0,1fr) auto;gap:8px;margin:10px 0 4px;}
+.note-form input,.note-form select{font:inherit;font-size:13px;color:var(--fg);background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 10px;min-width:0;}
+@media(max-width:640px){.note-form{grid-template-columns:minmax(0,1fr) minmax(0,1fr);}.note-form #nfText{grid-column:1/-1;}.note-form button{grid-column:1/-1;}}
+.st-linkbtn{background:none;border:0;padding:0;font:inherit;font-size:12px;color:var(--accent);cursor:pointer;font-weight:600;}
 .notes-list{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:6px;}
 .notes-list li{display:flex;gap:10px;align-items:baseline;font-size:12.5px;flex-wrap:wrap;}
 .n-date{font-variant-numeric:tabular-nums;color:var(--fg3);font-size:11.5px;min-width:44px;}
@@ -722,7 +726,13 @@ body.noscroll{overflow:hidden;}
 
   <!-- Notes -->
   <div class="card notes-card">
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;"><div class="clabel">Notes in this period</div><a class="card-link" href="https://nutra-tracker.lovable.app/notes" target="_blank" rel="noopener">+ Add note ↗</a></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;"><div class="clabel">Notes in this period</div><a class="card-link" id="addNoteLink" href="https://nutra-tracker.lovable.app/notes" target="_blank" rel="noopener">+ Add note ↗</a></div>
+    <form id="noteForm" class="note-form" hidden autocomplete="off">
+      <input type="date" id="nfDay" aria-label="Day" required>
+      <select id="nfProd" aria-label="Offer"><option value="">All offers</option></select>
+      <input id="nfText" maxlength="300" placeholder="What changed? e.g. new hook ads live" aria-label="Note" required>
+      <button class="btn btn-p" type="submit">Save note</button>
+    </form>
     <ul class="notes-list" id="notesList"></ul>
   </div>
 
@@ -841,13 +851,14 @@ body.noscroll{overflow:hidden;}
     <div class="st-body" data-stv="users" hidden>
       <div class="card st-card">
         <h2 class="st-h">Team</h2>
-        <div class="st-note">Adding someone here records who's on the team and what they should be able to do. To give them access, press <b>Share</b> at the top of this dashboard in Claude and invite the same email: <b>Editor</b> can change settings, <b>Viewer</b> can only look. The nutra.palmtreemedia.co link is view-only for anyone who has it.</div>
+        <div class="st-note" id="stTeamNote">Adding someone here records who's on the team and what they should be able to do. To give them access, press <b>Share</b> at the top of this dashboard in Claude and invite the same email: <b>Editor</b> can change settings, <b>Viewer</b> can only look. The nutra.palmtreemedia.co link is view-only for anyone who has it.</div>
         <div class="tbl-wrap"><table class="ptbl"><thead><tr><th>Name</th><th>Email</th><th>Access</th><th>Note</th><th></th></tr></thead>
         <tbody id="stTeam"><tr><td colspan="5" class="st-empty">Loading…</td></tr></tbody></table></div>
         <form id="stTeamForm" class="st-g3" autocomplete="off">
           <label class="st-f">Name<input id="stTmName" required maxlength="80"></label>
           <label class="st-f">Email<input id="stTmEmail" type="email" required maxlength="120"></label>
           <label class="st-f">Access<select id="stTmRole"><option value="editor">Editor: can change settings</option><option value="viewer">Viewer: can only look</option></select></label>
+          <label class="st-f" id="stTmPwWrap" hidden>Password (8+ characters)<input id="stTmPw" type="text" minlength="8" maxlength="200" autocomplete="new-password" placeholder="They sign in with this"></label>
           <label class="st-f" style="grid-column:1/-1">Note (optional)<input id="stTmNote" maxlength="160" placeholder="e.g. media buyer for GLP"></label>
           <div><button class="btn btn-p st-btn" type="submit">Add user</button></div>
         </form>
@@ -1615,6 +1626,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 // ── Settings tab (pause rules, networks, team) — stored in this artifact's database; the hourly sync reads it ──
 (function(){
 const CLAUDE_URL='https://claude.ai/artifact/J532xrrPfBJKFUzn2htdg8';
+const HOSTED=!!window.NUTRA_HOSTED;
 const ST_METRICS={
   ctr:{label:'Link CTR',dir:'below',unit:'%',help:''},
   cpc:{label:'CPC',dir:'above',unit:'$',help:'An ad with zero link clicks counts as over the limit once its spend passes the limit.'},
@@ -1634,7 +1646,7 @@ const slug=s=>(s||'').toLowerCase().replace(/[^a-z0-9]+/g,'').slice(0,30)||'netw
 const offerList=()=>(typeof OFFERS!=='undefined'?OFFERS:[]);
 const offerName=k=>k==='all'||!k?'All offers':((offerList().find(o=>o.key===k)||{}).name||k);
 
-const S={rules:[],networks:[],team:[],auto:null,sync:null,log:[],pb:null,autoplan:null,offers:[]};
+const S={rules:[],networks:[],team:[],auto:null,sync:null,log:[],pb:null,autoplan:null,offers:[],notes:[]};
 let db=null,canWrite=false,booted=false,sub='rules',editingNet=null;
 
 function note(msg,html){const n=g('stNote');n.textContent='';if(html)n.append(...html);else n.textContent=msg;n.hidden=false;}
@@ -1646,10 +1658,28 @@ function setSub(s){if(!window.claude)return;sub=s;document.querySelectorAll('#se
   document.querySelectorAll('#settingsView [data-stv]').forEach(v=>v.hidden=v.dataset.stv!==s);}
 
 function renderSync(){const s=S.sync,box=g('stSync');box.textContent='';
+  if(HOSTED&&canWrite){const b=el('button',{class:'st-linkbtn',type:'button',text:'Sync now'});b.addEventListener('click',syncNow);setTimeout(()=>box.append(' · ',b),0);}
   if(!s){box.append(el('span',{class:'st-dot'}),el('span',{text:'Waiting for the next hourly sync to report here.'}));return;}
   const age=(Date.now()-new Date(s.at).getTime())/36e5,ok=s.ok&&s.pushed!==false;
   box.append(el('span',{class:'st-dot '+(!ok?'bad':age>2?'warn':'ok')}),el('span',{text:`Last sync ${when(s.at)}`+(ok?' · dashboard updated':' · '+(s.error||'dashboard not updated'))+(s.paused?` · ${s.paused} ad${s.paused>1?'s':''} paused`:'')+(age>2?' · more than 2 hours ago':'')}));}
 
+async function syncNow(e){const b=e.target;b.disabled=true;b.textContent='Syncing… (up to a minute)';
+  try{const r=await fetch('/api/cron',{method:'POST',credentials:'same-origin'});const j=await r.json().catch(()=>({}));
+    if(j.ok||j.summary){location.reload();return;}note('Sync finished with problems: '+((j.errors||[]).join('; ')||j.error||('error '+r.status)));}
+  catch(err){note('Sync failed: '+err.message);}b.disabled=false;b.textContent='Sync now';}
+function mergeNotes(){if(typeof NOTES==='undefined')return;let added=0;
+  for(const n of S.notes||[]){if(!n.day||!n.text)continue;if(!NOTES.some(x=>x.d===n.day&&x.t===n.text&&(x.p||null)===(n.product||null))){NOTES.push({d:n.day,p:n.product||null,t:n.text});added++;}}
+  if(added&&typeof activeTab!=='undefined'&&activeTab==='overview')renderOverview();}
+function initHosted(){if(!HOSTED)return;
+  g('stTeamNote').innerHTML='Everyone here can sign in at this address with their email and the password you set. <b>Editor</b> can change settings, <b>Viewer</b> can only look.';
+  g('stTmPwWrap').hidden=false;
+  const who=g('stWho');const out=el('a',{href:'/logout',class:'st-linkbtn',text:'Sign out',style:'margin-left:8px'});who.after(el('div',{style:'margin-top:4px'},out));
+  const link=document.getElementById('addNoteLink'),form=document.getElementById('noteForm');
+  if(link&&form){link.textContent='+ Add note';link.removeAttribute('target');link.href='#';
+    const sel=g('nfProd');offerList().forEach(o=>sel.append(el('option',{value:o.key,text:o.name})));
+    link.addEventListener('click',e=>{e.preventDefault();form.hidden=!form.hidden;if(!form.hidden){g('nfDay').value=g('nfDay').value||TODAY;g('nfText').focus();}});
+    form.addEventListener('submit',async e=>{e.preventDefault();const v={day:g('nfDay').value,product:g('nfProd').value||null,text:g('nfText').value.trim(),createdAt:new Date().toISOString()};
+      if(!v.day||!v.text)return;if(await write(()=>db.collection('notes').add(v))){g('nfText').value='';form.hidden=true;if(typeof toast==='function')toast('Note saved');}});}}
 function renderAuto(){const a=S.auto||{enabled:true,maxPerRun:10,protectLast:true};
   g('stAutoOn').checked=!!a.enabled;g('stAutoLbl').textContent=a.enabled?'On':'Off';
   if(document.activeElement!==g('stAutoMax'))g('stAutoMax').value=a.maxPerRun??10;
@@ -1703,7 +1733,7 @@ function renderLog(){const tb=g('stLog');tb.textContent='';
     el('td',{style:'min-width:170px'},el('div',{text:x.adName||x.adId||'–'}),x.detail?el('div',{class:'st-muted',text:x.detail}):null),el('td',{text:x.rule||''}),
     el('td',{style:'text-align:right',text:x.action==='waiting'?'–':fmtVal(x.metric,x.value)}),el('td',{class:'st-act-'+(x.action||''),style:'white-space:nowrap',text:lbl[x.action]||x.action||''})));}
 
-const fillUrl=(tpl,key)=>(tpl||'').replaceAll('{NETWORK}',key).replaceAll('{BASE}',(S.pb&&S.pb.base)||'https://nutra-tracker.lovable.app').replaceAll('{KEY}',S.pb&&S.pb.key?S.pb.key:'••••••');
+const fillUrl=(tpl,key)=>(tpl||'').replaceAll('{NETWORK}',key).replaceAll('{BASE}',HOSTED?location.origin:((S.pb&&S.pb.base)||'https://nutra-tracker.lovable.app')).replaceAll('{KEY}',S.pb&&S.pb.key?S.pb.key:'••••••');
 function copyBtn(text){const b=el('button',{class:'btn btn-g st-btn sm',type:'button',text:'Copy'});b.disabled=!(S.pb&&S.pb.key);
   b.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(text);b.textContent='Copied';}catch(e){const r=document.createRange();r.selectNodeContents(b.closest('.st-url').querySelector('code'));const s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent='Selected';}setTimeout(()=>b.textContent='Copy',1600);});return b;}
 function renderNets(){const box=g('stNetList');box.textContent='';g('stAddNet').disabled=!canWrite;
@@ -1744,7 +1774,15 @@ function renderTeam(){const tb=g('stTeam');tb.textContent='';g('stTeamForm').que
     const role=el('select',{class:'st-sel','aria-label':'Access for '+(m.name||m.email)},el('option',{value:'editor',text:'Editor'}),el('option',{value:'viewer',text:'Viewer'}));role.value=m.role||'viewer';role.disabled=!canWrite;
     role.addEventListener('change',()=>write(()=>db.doc('team/'+m.id).update({role:role.value})));
     const del=el('button',{class:'btn btn-r st-btn sm',type:'button',text:'Remove'});del.disabled=!canWrite;del.addEventListener('click',()=>armDelete(del,()=>write(()=>db.doc('team/'+m.id).delete())));
-    tb.append(el('tr',{},el('td',{text:m.name||''}),el('td',{style:'overflow-wrap:anywhere',text:m.email||''}),el('td',{style:'min-width:110px'},role),el('td',{class:'st-muted',text:m.note||''}),el('td',{style:'text-align:right'},del)));}}
+    if(HOSTED&&window.NUTRA_ME&&(m.email||'').toLowerCase()===window.NUTRA_ME.email&&window.NUTRA_ME.role==='owner'){del.hidden=true;role.disabled=true;}
+    let pwCell=null;
+    if(HOSTED){const set=el('button',{class:'st-linkbtn',type:'button',text:m.hasPassword?'Change password':'Set password'});set.disabled=!canWrite;
+      pwCell=el('div',{class:'st-muted'},m.hasPassword?'Can sign in · ':'No password yet · ',set);
+      set.addEventListener('click',()=>{const i=el('input',{type:'text',minlength:'8',placeholder:'New password (8+)','aria-label':'New password for '+(m.name||m.email),style:'max-width:180px'});
+        const ok=el('button',{class:'btn btn-p st-btn sm',type:'button',text:'Save'});
+        ok.addEventListener('click',async()=>{if(i.value.length<8){note('Passwords need at least 8 characters.');return;}if(await write(()=>db.doc('team/'+m.id).update({password:i.value}))&&typeof toast==='function')toast('Password saved');});
+        pwCell.replaceChildren(el('div',{class:'st-row'},i,ok));i.focus();});}
+    tb.append(el('tr',{},el('td',{text:m.name||''}),el('td',{style:'overflow-wrap:anywhere'},m.email||'',pwCell),el('td',{style:'min-width:110px'},role),el('td',{class:'st-muted',text:m.note||''}),el('td',{style:'text-align:right'},del)));}}
 
 function renderTh(){const f=[['stThCtr','minCtr'],['stThCt','minCt'],['stThLpv','minLpv'],['stThCo','coClicks'],['stThBench','coBench']];
   f.forEach(([id,k])=>{const i=g(id);if(i&&document.activeElement!==i)i.value=TH[k];if(i)i.disabled=!canWrite;});
@@ -1840,6 +1878,7 @@ async function boot(){booted=true;renderAll();
   const col=(path,key,fn)=>db.collection(path).onSnapshot(s=>{if(!s.metadata.fromCache)done();S[key]=s.docs.map(d=>({id:d.id,...d.data()}));fn();},err);
   const doc=(path,set,fn)=>db.doc(path).onSnapshot(s=>{if(!s.metadata.fromCache)done();set(s.exists?s.data():null);fn();},err);
   col('offers','offers',()=>{applyOfferEdits();renderOffers();renderAutoPlan();});
+  if(HOSTED)col('notes','notes',mergeNotes);
   col('rules','rules',()=>{renderRules();renderAutoPlan();});doc('config/autoplan',v=>S.autoplan=v,renderAutoPlan);doc('config/network_stats',v=>{window.NETSTATS=v||{};},()=>{if(typeof activeTab!=='undefined'&&activeTab==='overview')renderInsights();});col('networks','networks',renderNets);col('team','team',renderTeam);
   doc('config/automation',v=>S.auto=v,renderAuto);doc('config/thresholds',v=>applyTh(v),()=>{});doc('config/sync',v=>S.sync=v,renderSync);
   doc('log/recent',v=>S.log=(v&&v.items)||[],renderLog);doc('private/postback',v=>S.pb=v,renderNets);
@@ -1859,8 +1898,10 @@ function init(){
   g('stAddNet').addEventListener('click',()=>{const b=g('stNetNew');b.textContent='';b.append(netEditor(null));b.hidden=false;b.querySelector('input').focus();});
   g('stTeamForm').addEventListener('submit',async e=>{e.preventDefault();const email=g('stTmEmail').value.trim().toLowerCase();
     if(S.team.some(m=>(m.email||'').toLowerCase()===email)){note('That email is already on the team.');return;}
-    if(await write(()=>db.collection('team').add({name:g('stTmName').value.trim(),email,role:g('stTmRole').value,note:g('stTmNote').value.trim(),addedAt:new Date().toISOString()})))e.target.reset();});
+    const pw=HOSTED?g('stTmPw').value:'';if(HOSTED&&pw.length<8){note('Give them a password of at least 8 characters.');return;}
+    if(await write(()=>db.collection('team').add({name:g('stTmName').value.trim(),email,role:g('stTmRole').value,note:g('stTmNote').value.trim(),addedAt:new Date().toISOString(),...(pw?{password:pw}:{})})))e.target.reset();});
   setSub('rules');
+  initHosted();
   boot();   // start listening right away so the sync status and rules are live
 }
 window.stInit=init;
