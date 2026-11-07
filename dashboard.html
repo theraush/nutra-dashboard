@@ -517,6 +517,12 @@ body.noscroll{overflow:hidden;}
 .st-note.bad{background:var(--red-lt);color:var(--red);}
 .st-spread{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
 .st-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.st-off{display:grid;grid-template-columns:repeat(5,minmax(0,1fr)) auto;gap:12px;align-items:end;padding:14px 0;border-top:1px solid var(--border);}
+.st-off:first-child{border-top:0;padding-top:4px;}
+.st-off-h{grid-column:1/-1;display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px;}
+.st-off-h i{width:10px;height:10px;border-radius:50%;display:inline-block;}
+.st-off-h span{font-weight:500;font-size:12px;color:var(--fg3);}
+@media(max-width:900px){.st-off{grid-template-columns:repeat(2,minmax(0,1fr));}.st-off>.st-row{grid-column:1/-1;}}
 .st-g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}
 .st-g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;}
 @media(max-width:640px){.st-g2,.st-g3{grid-template-columns:minmax(0,1fr);}}
@@ -741,7 +747,7 @@ body.noscroll{overflow:hidden;}
 <div class="page">
   <div class="ph">
     <div><div class="ph-title">Test Budgets</div><div class="ph-sub">Spend counts from each test’s start date · budgets and auto-pause are set in NUTRA Tracker</div></div>
-    <div class="ph-actions"><div class="fpills" id="tbFilters"></div><a class="btn btn-g" href="https://nutra-tracker.lovable.app/offers" target="_blank" rel="noopener" style="height:42px;display:inline-flex;align-items:center;padding:0 14px;text-decoration:none;">+ Add offer / edit ↗</a></div>
+    <div class="ph-actions"><div class="fpills" id="tbFilters"></div><a class="btn btn-g" href="#offer-settings" style="height:42px;display:inline-flex;align-items:center;padding:0 14px;text-decoration:none;">Edit budgets</a></div>
   </div>
   <div class="card tb-strip" id="tbStrip"></div>
   <div id="alertEl"></div>
@@ -759,6 +765,7 @@ body.noscroll{overflow:hidden;}
   <div class="ph">
     <div><div class="ph-title">Settings</div><div class="ph-sub" id="stWho">Pause rules, affiliate networks and your team</div></div>
     <div class="st-sub" role="tablist" aria-label="Settings sections">
+      <button type="button" class="fpill" data-st="offers" role="tab" aria-selected="false">Offers &amp; budgets</button>
       <button type="button" class="fpill active" data-st="rules" role="tab" aria-selected="true">Pause rules</button>
       <button type="button" class="fpill" data-st="networks" role="tab" aria-selected="false">Affiliate networks</button>
       <button type="button" class="fpill" data-st="users" role="tab" aria-selected="false">Users</button>
@@ -767,6 +774,14 @@ body.noscroll{overflow:hidden;}
   <div class="st-body">
     <div class="st-note bad" id="stNote" hidden></div>
     <div class="st-status" id="stSync"><span class="st-dot"></span><span>Waiting for the next hourly sync to report here.</span></div>
+
+    <!-- Offers & budgets -->
+    <div class="st-body" data-stv="offers" hidden>
+      <div class="card st-card">
+        <div><h2 class="st-h">Offers &amp; budgets</h2><div class="st-muted">What each sale pays you, how much you'll spend testing the offer, and when to warn or pause. Saved changes show here right away; the hourly sync uses them from its next run.</div></div>
+        <div id="stOffList" class="st-body"></div>
+      </div>
+    </div>
 
     <!-- Pause rules -->
     <div class="st-body" data-stv="rules">
@@ -816,7 +831,7 @@ body.noscroll{overflow:hidden;}
 
     <!-- Networks -->
     <div class="st-body" data-stv="networks" hidden>
-      <div class="st-note">Each offer picks its network in <a href="https://nutra-tracker.lovable.app/offers" target="_blank" rel="noopener">Offers &amp; budgets ↗</a>. Paste a network's two postback links into that network's postback settings so sales and checkout visits show up here.</div>
+      <div class="st-note">Each offer's network is set when the offer is added. Paste a network's two postback links into that network's postback settings so sales and checkout visits show up here.</div>
       <div id="stNetList" class="st-body"><div class="card st-card st-empty">Loading networks…</div></div>
       <div><button type="button" class="btn btn-p st-btn" id="stAddNet">+ Add network</button></div>
       <div id="stNetNew" hidden></div>
@@ -869,7 +884,8 @@ OFFERS.forEach((o,i)=>{const c=/^#[0-9a-f]{6}$/i.test(o.color||'')?o.color:PALET
 const KEYS=OFFERS.map(o=>o.key);
 const netName=k=>(NETWORKS[PROD[k].network]||{}).name||PROD[k].network;
 const netReports=k=>(NETWORKS[PROD[k].network]||{}).reports||null;
-const TRACKER_URL='https://nutra-tracker.lovable.app', TRACKER_BUDGETS=TRACKER_URL+'/offers', TRACKER_NOTES=TRACKER_URL+'/notes';
+const TRACKER_URL='https://nutra-tracker.lovable.app', TRACKER_BUDGETS='#offer-settings', TRACKER_NOTES=TRACKER_URL+'/notes';
+document.addEventListener('click',e=>{const a=e.target.closest('a[href="#offer-settings"]');if(!a)return;e.preventDefault();switchTab('settings');if(window.stShow)window.stShow('offers');window.scrollTo(0,0);});
 
 // ── Dates: plain YYYY-MM-DD strings, handled in UTC so time zones can't shift a day ──
 const DATA_AS_OF=new Date(DATA.asOf), TODAY=DATA.today, FIRST=DATA.metaFrom, JVZ_SINCE=DATA.jvzSince;
@@ -1184,7 +1200,7 @@ function menuSpec(kind,btn){
   if(kind==='spark'){const k=btn.dataset.k,P=PROD[k];return{title:P.name,groups:[
     {type:'radio',label:'Daily chart',items:[['spend','Spend'],['impr','Impressions'],['clicks','Link clicks'],['lpv','Landing page views']].map(([id,l])=>({id,label:l,on:view.spark[k]===id})),pick:id=>{view.spark[k]=id;}},
     {type:'action',label:'Dashboard',items:[{id:'focus',label:view.focus===k?'Show all products again':`Focus dashboard on ${P.name}`,run:()=>{view.focus=view.focus===k?null:k;fProd=view.focus||'all';}}]},
-    {type:'action',label:'Links',items:[{id:'ads',label:'Show ads for this offer',run:()=>openAds(k),keepToast:true},...(P.lander?[{id:'lander',label:`Open landing page ↗`,href:P.lander,sub:P.lander.replace(/^https?:\/\//,'')}]:[]),{id:'edit',label:'Edit offer & budget ↗',href:TRACKER_BUDGETS},
+    {type:'action',label:'Links',items:[{id:'ads',label:'Show ads for this offer',run:()=>openAds(k),keepToast:true},...(P.lander?[{id:'lander',label:`Open landing page ↗`,href:P.lander,sub:P.lander.replace(/^https?:\/\//,'')}]:[]),{id:'edit',label:'Edit offer & budget',run:()=>{switchTab('settings');window.stShow('offers');}},
       ...P.buy.map(([l,u])=>({id:'buy',label:`Copy ${l} buy link`,copy:u,sub:'Copy only: opening it counts as a checkout visit'})),
       {id:'ads',label:'Copy Ads Manager link',copy:`https://adsmanager.facebook.com/adsmanager/manage/campaigns?act=${P.acct}`,sub:`Account ${P.acct}`}]}]};}
   if(kind==='table')return{title:'Ad accounts table',groups:[
@@ -1323,7 +1339,7 @@ function renderOverview(){
   $('sparkGrid').innerHTML=KEYS.map(k=>{const P=PROD[k],a=agg([k],r.from,r.to),key=view.spark[k]||'spend',M=METRICS[key],b=budgets[k];
     const rep=netReports(k),nn=netName(k);
     const be=b.cps?`Break-even: <b>${fmtN(Math.ceil(sinceStart(k).spend/b.cps-1e-9))} sales</b> at ${fmt(b.cps,0)} commission · ${fmtN(sinceStart(k).allSales)} so far`
-      :`<a href="${TRACKER_BUDGETS}" target="_blank" rel="noopener">Add commission per sale</a> to see break-even`;
+      :`<a href="${TRACKER_BUDGETS}">Add commission per sale</a> to see break-even`;
     return`<div class="card scard${view.focus===k?' focused':''}${view.focus&&view.focus!==k?' dimmed':''}">
       <div class="ch" style="padding:0;margin-bottom:6px;">
         <div style="min-width:0"><div class="clabel">${esc(P.name)}</div><div class="s-offer">${esc(P.offer)} · ${esc(nn)}${b.paused?' · <span class="s-paused">Auto-paused</span>':''}</div></div>
@@ -1522,7 +1538,7 @@ function renderBudgets(){
   const over=rows.filter(x=>x.st.key==='depleted');
   const coBad=rows.filter(x=>verdict(x.k).key==='checkout');
   $('alertEl').innerHTML=coBad.map(x=>`<div class="alert-dep alert-co"><p><strong>⚠️ ${esc(PROD[x.k].name)}: checkout problem.</strong> ${esc(verdict(x.k).detail)}</p></div>`).join('')+over.map(x=>`<div class="alert-dep"><p><strong>${esc(PROD[x.k].name)}</strong> is over its ${fmt(x.b.budget,0)} test budget (${fmt(x.a.spend)} spent). ${x.b.autoPause?'Auto-pause is on: the hourly sync pauses its active campaigns on its next run.':'Auto-pause is off for this offer, so pause it in Ads Manager if you want it stopped.'}</p>
-    <div style="display:flex;gap:6px;"><a class="btn btn-g" href="${TRACKER_BUDGETS}" target="_blank" rel="noopener">Raise budget ↗</a></div></div>`).join('');
+    <div style="display:flex;gap:6px;"><a class="btn btn-g" href="${TRACKER_BUDGETS}">Raise budget</a></div></div>`).join('');
   let list=rows;if(tbFilter==='att')list=rows.filter(x=>x.st.key==='depleted'||x.st.key==='watch'||['checkout','ad','adv','stop'].includes(verdict(x.k).key));if(tbFilter==='paused')list=rows.filter(x=>x.st.key==='paused');
   list.sort((x,y)=>x.st.rank-y.st.rank||y.st.p-x.st.p);
   $('tbBody').innerHTML=list.length?list.map(({k,st,a,b})=>{const P=PROD[k],days=Math.max(1,diffD(b.start,TODAY)+1),avg=a.spend/days,rem=Math.max(b.budget-a.spend,0),dl=avg>0?rem/avg:Infinity;
@@ -1539,7 +1555,7 @@ function renderBudgets(){
       <td><div class="stat ${a.rev-a.spend<0?'neg':'pos'}">${fmt(a.rev-a.spend,0)}</div></td>
       <td class="tb-vd">${vBadge(vd)}<div class="stat-s">${esc(vd.detail)}</div></td>
       <td><span class="spill ${st.key}">${st.label}</span></td>
-      <td class="tb-act"><button type="button" class="btn btn-g" data-ads="${k}">Ads</button><a class="btn btn-g" href="${TRACKER_BUDGETS}" target="_blank" rel="noopener" title="Edit budget, auto-pause and offer details">Edit ↗</a></td>
+      <td class="tb-act"><button type="button" class="btn btn-g" data-ads="${k}">Ads</button><a class="btn btn-g" href="${TRACKER_BUDGETS}" title="Edit commission, budget and auto-pause">Edit</a></td>
     </tr>`;}).join(''):`<tr><td colspan="10" class="ad-empty">No tests match this filter.</td></tr>`;
 }
 function initBudgets(){
@@ -1618,7 +1634,7 @@ const slug=s=>(s||'').toLowerCase().replace(/[^a-z0-9]+/g,'').slice(0,30)||'netw
 const offerList=()=>(typeof OFFERS!=='undefined'?OFFERS:[]);
 const offerName=k=>k==='all'||!k?'All offers':((offerList().find(o=>o.key===k)||{}).name||k);
 
-const S={rules:[],networks:[],team:[],auto:null,sync:null,log:[],pb:null,autoplan:null};
+const S={rules:[],networks:[],team:[],auto:null,sync:null,log:[],pb:null,autoplan:null,offers:[]};
 let db=null,canWrite=false,booted=false,sub='rules',editingNet=null;
 
 function note(msg,html){const n=g('stNote');n.textContent='';if(html)n.append(...html);else n.textContent=msg;n.hidden=false;}
@@ -1781,7 +1797,33 @@ function previewAutoPlan(){const box=g('stAutoPreview');box.textContent='';const
     if(await saveAutoPlan(patch)){box.hidden=true;if(typeof toast==='function')toast('Rules applied');}apply.disabled=false;});
   box.append(list,el('div',{class:'st-row',style:'margin-top:10px'},apply,el('button',{class:'btn btn-g st-btn',type:'button',text:'Cancel',onclick:()=>{box.hidden=true;}}),
     el('span',{class:'st-muted',text:'Replaces earlier Do-it-for-me rules for these offers. Your own rules stay as they are.'})));}
-function renderAll(){renderSync();renderAuto();renderTh();renderAutoPlan();renderRules();renderLog();renderNets();renderTeam();}
+// ── Offers & budgets: stored here, copied into the tracker by the hourly sync ──
+function applyOfferEdits(){if(typeof budgets==='undefined')return;
+  for(const o of S.offers){const b=budgets[o.id];if(!b)continue;
+    if(o.cps!==undefined)b.cps=o.cps>0?+o.cps:null;if(o.budget!==undefined)b.budget=+o.budget||0;
+    if(o.start)b.start=o.start;if(o.warnAt)b.warnAt=+o.warnAt;if(o.autoPause!==undefined)b.autoPause=!!o.autoPause;}
+  if(typeof activeTab!=='undefined'){if(activeTab==='overview')renderOverview();else if(activeTab==='budgets')renderBudgets();}}
+function renderOffers(){const box=g('stOffList');if(!box)return;box.textContent='';
+  for(const o of offerList()){const k=o.key,b=(typeof budgets!=='undefined'&&budgets[k])||{},P=PROD[k]||{};
+    const inp=(id,label,val,attrs,affix,suf)=>{const i=el('input',{id:id+'-'+k,type:'number',inputmode:'decimal',value:val??'',...attrs});i.disabled=!canWrite;
+      return el('label',{class:'st-f'},label,affix||suf?el('div',{class:'st-affix'},affix?el('span',{text:affix}):null,i,suf?el('span',{text:suf}):null):i);};
+    const start=el('input',{id:'stOS-'+k,type:'date',value:b.start||''});start.disabled=!canWrite;
+    const ap=el('input',{type:'checkbox',id:'stOA-'+k});ap.checked=b.autoPause!==false;ap.disabled=!canWrite;
+    const save=el('button',{class:'btn btn-p st-btn',type:'submit',text:'Save'});save.disabled=!canWrite;
+    const f=el('form',{class:'st-off',autocomplete:'off'},
+      el('div',{class:'st-off-h'},el('i',{style:'background:'+(P.color||'var(--accent)')}),o.name,el('span',{text:(P.offer&&P.offer!==o.name?P.offer+' · ':'')+netName(k)})),
+      inp('stOC','You earn per sale',b.cps,{min:'0',step:'1'},'$'),
+      inp('stOB','Test budget',b.budget||'',{min:'0',step:'10'},'$'),
+      el('label',{class:'st-f'},'Test started',start),
+      inp('stOW','Warn me at (% spent)',b.warnAt||70,{min:'10',max:'99',step:'5'},null,'%'),
+      el('div',{class:'st-f'},'At 100% of budget',el('label',{class:'st-sw',style:'height:36px'},ap,el('i'),el('span',{text:'Pause the campaigns'}))),
+      el('div',{class:'st-row'},save));
+    f.addEventListener('submit',async e=>{e.preventDefault();const n=id=>parseFloat(g(id+'-'+k).value);
+      const v={cps:n('stOC')>0?n('stOC'):null,budget:n('stOB')>0?n('stOB'):0,start:start.value||null,warnAt:Math.min(99,Math.max(10,Math.round(n('stOW')||70))),autoPause:ap.checked,updatedAt:new Date().toISOString()};
+      if(await write(()=>db.doc('offers/'+k).set(v))&&typeof toast==='function')toast(o.name+' saved');});
+    box.append(f);}
+  if(!canWrite&&db)box.append(el('div',{class:'st-muted',text:'View only: ask Vlad for Editor access to change these.'}));}
+function renderAll(){renderSync();renderOffers();renderAuto();renderTh();renderAutoPlan();renderRules();renderLog();renderNets();renderTeam();}
 
 async function boot(){booted=true;renderAll();
   const C=window.claude;
@@ -1797,6 +1839,7 @@ async function boot(){booted=true;renderAll();
   const err=e=>{done();note('Settings stopped updating ('+((e&&e.code)||'error')+'). Reload the page.');};
   const col=(path,key,fn)=>db.collection(path).onSnapshot(s=>{if(!s.metadata.fromCache)done();S[key]=s.docs.map(d=>({id:d.id,...d.data()}));fn();},err);
   const doc=(path,set,fn)=>db.doc(path).onSnapshot(s=>{if(!s.metadata.fromCache)done();set(s.exists?s.data():null);fn();},err);
+  col('offers','offers',()=>{applyOfferEdits();renderOffers();renderAutoPlan();});
   col('rules','rules',()=>{renderRules();renderAutoPlan();});doc('config/autoplan',v=>S.autoplan=v,renderAutoPlan);doc('config/network_stats',v=>{window.NETSTATS=v||{};},()=>{if(typeof activeTab!=='undefined'&&activeTab==='overview')renderInsights();});col('networks','networks',renderNets);col('team','team',renderTeam);
   doc('config/automation',v=>S.auto=v,renderAuto);doc('config/thresholds',v=>applyTh(v),()=>{});doc('config/sync',v=>S.sync=v,renderSync);
   doc('log/recent',v=>S.log=(v&&v.items)||[],renderLog);doc('private/postback',v=>S.pb=v,renderNets);
