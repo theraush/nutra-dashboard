@@ -1,2 +1,4 @@
 payload.json
 actions.json
+__pycache__/
+*.pyc
