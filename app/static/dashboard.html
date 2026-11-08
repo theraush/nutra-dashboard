@@ -527,6 +527,59 @@ body.noscroll{overflow:hidden;}
 .st-off-h i{width:10px;height:10px;border-radius:50%;display:inline-block;}
 .st-off-h span{font-weight:500;font-size:12px;color:var(--fg3);}
 @media(max-width:900px){.st-off{grid-template-columns:repeat(2,minmax(0,1fr));}.st-off>.st-row{grid-column:1/-1;}}
+.nt-wrap{display:flex;flex-direction:column;gap:16px;}
+.nt-sub{font-size:13px;color:var(--fg2);margin-top:4px;}
+.nt-primary{min-height:46px;padding:0 20px;border:0;border-radius:10px;background:var(--fg);color:var(--surface);font:inherit;font-size:14px;font-weight:700;cursor:pointer;}
+.nt-primary:disabled{opacity:.5;cursor:default;}
+.nt-second{min-height:46px;padding:0 18px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--fg);font:inherit;font-size:14px;font-weight:600;cursor:pointer;}
+.nt-link{background:none;border:0;padding:0;font:inherit;color:var(--accent);font-weight:600;cursor:pointer;}
+.nt-strip{list-style:none;margin:0 0 16px;padding:0;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;font-size:11.5px;color:var(--fg2);}
+.nt-strip li{padding:10px;border-radius:10px;background:var(--surface);border:1px solid var(--border);}
+.nt-strip b{display:block;font-size:12.5px;color:var(--fg);}
+@media(max-width:760px){.nt-strip{grid-template-columns:repeat(3,minmax(0,1fr));}}
+.nt-tablewrap{overflow-x:auto;}
+.nt-table{width:100%;min-width:720px;border-collapse:collapse;font-size:13.5px;}
+.nt-table th{text-align:left;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--fg2);padding:12px 16px;border-bottom:1px solid var(--border);}
+.nt-table td{padding:14px 16px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.nt-table tr:last-child td{border-bottom:0;}
+.nt-bar{height:8px;border-radius:999px;background:var(--surface2);overflow:hidden;margin-top:6px;}
+.nt-bar i{display:block;height:100%;background:var(--fg);}
+.nt-tag{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.04em;padding:2px 8px;border-radius:999px;}
+.nt-you{background:var(--amber-lt);color:var(--amber);} .nt-claude{background:var(--accent-lt);color:var(--accent);} .nt-done{background:var(--green-lt);color:var(--green);} .nt-next{background:var(--surface2);color:var(--fg2);}
+.nt-help{font-size:12.5px;color:var(--fg2);margin:12px 0 0;}
+.nt-empty{padding:28px 16px;text-align:center;color:var(--fg2);}
+.nt-head{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-bottom:16px;}
+.nt-head h1{margin:0;font-size:20px;font-weight:800;}
+.nt-cols{display:flex;flex-wrap:wrap;gap:18px;align-items:flex-start;}
+.nt-steps{flex:1 1 280px;min-width:0;list-style:none;margin:0;padding:8px;display:flex;flex-direction:column;gap:4px;}
+.nt-step{width:100%;display:flex;gap:12px;align-items:flex-start;text-align:left;padding:12px;border:0;border-radius:10px;background:transparent;font:inherit;color:inherit;cursor:pointer;}
+.nt-step[aria-current="step"]{background:var(--surface2);}
+.nt-step:disabled{cursor:default;opacity:.6;}
+.nt-dot{flex-shrink:0;width:30px;height:30px;border-radius:999px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;background:var(--surface2);color:var(--fg2);}
+.nt-dot.done{background:var(--green);color:#fff;} .nt-dot.you{background:#F59E0B;color:#111118;} .nt-dot.claude{background:var(--accent);color:#fff;}
+.nt-stepname{font-weight:600;font-size:14px;display:block;} .nt-who{font-size:12px;color:var(--fg2);display:block;margin:2px 0 4px;}
+@media(max-width:640px){.nt-steps{order:2;}.nt-who{display:none;}}
+.nt-main{flex:999 1 540px;min-width:0;display:flex;flex-direction:column;gap:14px;}
+.nt-panel{padding:22px;display:flex;flex-direction:column;gap:14px;}
+.nt-panel.you{border:2px solid #F59E0B;}
+.nt-eyebrow{font-size:11.5px;font-weight:800;letter-spacing:.07em;}
+.nt-panel h2{margin:0;font-size:21px;font-weight:800;}
+.nt-panel p{margin:0;font-size:14px;line-height:1.55;color:var(--fg2);}
+.nt-f{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;}
+.nt-f input,.nt-f textarea,.nt-f select{font:inherit;font-weight:400;font-size:14px;padding:11px 12px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--fg);min-width:0;}
+.nt-g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;} .nt-g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}
+@media(max-width:640px){.nt-g2,.nt-g3{grid-template-columns:minmax(0,1fr);}}
+.nt-stat{padding:14px;border-radius:10px;background:var(--surface2);font-size:12px;color:var(--fg2);} .nt-stat b{display:block;font-size:24px;font-weight:800;color:var(--fg);margin-top:2px;}
+.nt-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
+.nt-wait{display:block;padding:14px;line-height:1.5;border-radius:10px;background:var(--accent-lt);color:var(--accent);font-size:13.5px;font-weight:600;}
+.nt-upnext{display:flex;flex-wrap:wrap;gap:10px;align-items:baseline;padding:14px 16px;border-radius:12px;background:var(--surface2);font-size:14px;}
+.nt-upnext span{font-size:11px;font-weight:800;letter-spacing:.07em;color:var(--fg2);}
+.nt-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;}
+@media(max-width:640px){.nt-grid{grid-template-columns:repeat(3,minmax(0,1fr));}}
+.nt-ad{display:flex;flex-direction:column;gap:4px;font-size:11.5px;}
+.nt-ad img,.nt-ad .ph4{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:8px;background:var(--surface2);}
+.nt-prev{display:flex;flex-wrap:wrap;gap:12px;}
+.nt-prev a{flex:1 1 200px;min-height:120px;border-radius:10px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-weight:600;text-decoration:none;}
 .st-g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}
 .st-g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;}
 @media(max-width:640px){.st-g2,.st-g3{grid-template-columns:minmax(0,1fr);}}
@@ -578,6 +631,7 @@ body.noscroll{overflow:hidden;}
 .tb-vd{min-width:220px;max-width:320px;} .tb-vd .stat-s{margin-top:4px;white-space:normal;line-height:1.4;}
 .alert-co{background:var(--amber-lt);border-color:var(--amber);} .alert-co p{color:var(--amber);}
 @media(max-width:560px){#tab-settings{display:none;}}
+@media(max-width:430px){.nav-pill svg{display:none;}}
 .settings-btn.on{background:var(--fg);color:var(--surface);}
 </style>
 
@@ -604,6 +658,10 @@ body.noscroll{overflow:hidden;}
     <button class="nav-pill" id="tab-budgets" onclick="switchTab('budgets')">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1" y="4" width="14" height="10" rx="1.5"/><path d="M5 4V3a2 2 0 0 1 4 0v1"/><circle cx="8" cy="9" r="1.5"/></svg>
       Test Budgets
+    </button>
+    <button class="nav-pill" id="tab-tests" onclick="switchTab('tests')">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 1.5h4M6.8 1.5v4.2L2.6 13a1.2 1.2 0 0 0 1 1.8h8.8a1.2 1.2 0 0 0 1-1.8L9.2 5.7V1.5"/><path d="M4.4 10h7.2"/></svg>
+      New Tests
     </button>
     <button class="nav-pill" id="tab-settings" onclick="switchTab('settings')">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="2.2"/><path d="M8 1.5v1.8M8 12.7v1.8M14.5 8h-1.8M3.3 8H1.5M12.6 3.4l-1.3 1.3M4.7 11.3l-1.3 1.3M12.6 12.6l-1.3-1.3M4.7 4.7L3.4 3.4"/></svg>
@@ -770,6 +828,26 @@ body.noscroll{overflow:hidden;}
 
 
 <!-- ══ SETTINGS ══ -->
+<!-- ══ NEW TESTS ══ -->
+<div id="testsView" hidden>
+<div class="page nt-wrap">
+  <div id="ntList">
+    <div class="ph">
+      <div><div class="ph-title">New product tests</div><div class="nt-sub">Six steps from a product link to live ads. Each row shows the one thing that happens next.</div></div>
+      <button type="button" class="nt-primary" id="ntStart">+ Start a new product test</button>
+    </div>
+    <ol class="nt-strip" aria-label="The six steps">
+      <li><b>1 Add product</b>You</li><li><b>2 Advertorial</b>Claude → you approve</li><li><b>3 Ad budget</b>You</li>
+      <li><b>4 Ads</b>Claude → you approve</li><li><b>5 Facebook</b>Built paused</li><li><b>6 Go live</b>You switch on</li>
+    </ol>
+    <div class="card nt-tablewrap"><table class="nt-table"><thead><tr><th>Product</th><th>Progress</th><th>Next step</th><th></th></tr></thead><tbody id="ntRows"></tbody></table></div>
+    <p class="nt-help">Claude works on your tests when you tell it in Claude: <b>"continue my product tests"</b>. <button type="button" class="nt-link" data-copy="continue my product tests">Copy</button></p>
+  </div>
+  <div id="ntGuide" hidden></div>
+  <div class="st-note bad" id="ntNote" hidden></div>
+</div>
+</div>
+
 <div id="settingsView" hidden>
 <div class="page st-wrap">
   <div class="ph">
@@ -1581,7 +1659,9 @@ function switchTab(tab){
   $('overviewView').hidden=tab!=='overview';
   $('budgetView').hidden=tab!=='budgets';
   $('settingsView').hidden=tab!=='settings';
-  ['overview','budgets','settings'].forEach(t=>$('tab-'+t).classList.toggle('active',t===tab));
+  $('testsView').hidden=tab!=='tests';
+  ['overview','budgets','tests','settings'].forEach(t=>$('tab-'+t).classList.toggle('active',t===tab));
+  if(tab==='tests'&&window.ntShow)window.ntShow();
   document.querySelector('.settings-btn').classList.toggle('on',tab==='settings');
   if(tab==='overview')renderOverview();else if(tab==='budgets')renderBudgets();
 }
@@ -1618,7 +1698,7 @@ function initBadge(){
   b.title=warn.length?warn.join('\n'):(hrs>3?'The hourly sync hasn’t updated this page for a while':'Meta and JVZoo numbers, refreshed hourly');
 }
 document.addEventListener('DOMContentLoaded',()=>{
-  initDP();initMenus();initBadge();initAds();initBudgets();stInit();
+  initDP();initMenus();initBadge();initAds();initBudgets();stInit();if(window.ntInit)window.ntInit();
   $('focusChip').addEventListener('click',()=>{view.focus=null;fProd='all';rerenderAll();});
   renderOverview();
   let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{if(activeTab==='overview')redrawSparks();},150);});
@@ -1805,9 +1885,13 @@ function applyTh(v){TH={...TH_DEFAULT,...(DATA.th||{}),...(v||{})};renderTh();
   if(typeof activeTab!=='undefined'){if(activeTab==='overview')renderOverview();else if(activeTab==='budgets')renderBudgets();}}
 // ── Do it for me: rules generated from commission and target cost per sale ──
 const r5=v=>Math.max(5,Math.round(v/5)*5);
-function planFor(k,C,T){const n=PROD[k]?PROD[k].name:k;return[
-  {why:`Weak hook: health ads average about 1.7% link CTR, so under 0.8% is bottom tier. Judged after 2,000 impressions and ${money(r5(T*.25))} spend (¼ of your target) so new ads get a fair chance.`,
-   r:{metric:'ctr',threshold:0.8,minSpend:r5(T*.25),minImpr:2000,window:'3d'}},
+function planFor(k,C,T){const n=PROD[k]?PROD[k].name:k;
+  const tb=(typeof budgets!=='undefined'&&budgets[k]&&budgets[k].budget)||0,test=tb>0&&tb<=1000; // test budgets: ~$33 per ad, so judge CTR sooner
+  const cs=test?25:r5(T*.25),ci=test?1500:2000;
+  return[
+  {why:test?`Weak hook: health ads average about 1.7% link CTR, so under 0.8% is bottom tier. This is a test budget (about $33 per ad), so each ad is judged after ${money(cs)} spend and 1,500 impressions, early enough to move money to the better ads.`
+      :`Weak hook: health ads average about 1.7% link CTR, so under 0.8% is bottom tier. Judged after 2,000 impressions and ${money(cs)} spend (¼ of your target) so new ads get a fair chance.`,
+   r:{metric:'ctr',threshold:0.8,minSpend:cs,minImpr:ci,window:'3d'}},
   {why:`Too expensive: at a typical 2% of clicks turning into a sale, a ${money(T)} target can pay about ${money(+(T*.02).toFixed(2))} per click. Judged after ${money(r5(T*.5))} spend.`,
    r:{metric:'cpc',threshold:+(T*.02).toFixed(2),minSpend:r5(T*.5),minImpr:0,window:'3d'}},
   {why:`No sale: an ad that spends 1.5× your target (${money(r5(T*1.5))}) without a sale is unlikely to come good. Needs sales matched to ads.`,
@@ -1919,6 +2003,143 @@ function init(){
   boot();   // start listening right away so the sync status and rules are live
 }
 window.stInit=init;
+// ── New Tests: the 6-step product-test guide. Docs live in tests/<id>; Claude does the work and writes back. ──
+(function(){
+const STEPS=[
+  {n:1,t:'Add the product',who:'You paste the link · Claude checks the prices'},
+  {n:2,t:'Review the advertorial',who:'Claude builds it · You approve'},
+  {n:3,t:'Set the ad budget',who:'You set it · Claude recommends the ad count'},
+  {n:4,t:'Approve the ads',who:'Claude makes them · You approve'},
+  {n:5,t:'Set up on Facebook',who:'You pick the account · Claude builds it paused'},
+  {n:6,t:'Go live',who:'You switch it on in Ads Manager'}];
+const NEXT={1:'Step 2 · Claude builds the advertorial and asks you to review it.',2:'Step 3 · You set the ad budget. Claude recommends how many ads to make.',
+  3:'Step 4 · Claude makes the ads and asks you to approve them.',4:'Step 5 · You pick the ad account. Claude builds everything paused.',
+  5:'Step 6 · You switch it on in Ads Manager. The test appears in Test Budgets.',6:'Nothing more to do. If the test looks promising, ask Claude for a full landing page as a second variant.'};
+const LBL={you:'YOUR TURN',claude:'CLAUDE WORKING',done:'DONE',next:'UP NEXT'};
+const g=id=>document.getElementById(id), e=s=>esc(s==null?'':s);
+let db=null,canWrite=false,tests=[],openId=null,viewStep=null,draft=false;
+const now=()=>new Date().toISOString();
+const st=(t,n)=>((t.steps||{})[n]||{}).state||(n<(t.step||1)?'done':n===(t.step||1)?'claude':'next');
+function recommend(budget){const b=+budget||0;const ads=Math.max(9,Math.floor(b/33/3)*3);return{ads,angles:3,per:ads/3,perAd:b?b/ads:0};}
+function note(m){const n=g('ntNote');n.textContent=m;n.hidden=!m;}
+async function save(t,patch,req){if(!db||!canWrite){note('View only: ask the owner for Editor access.');return false;}
+  const steps={...(t.steps||{})};for(const[k,v]of Object.entries(patch.steps||{}))steps[k]={...(steps[k]||{}),...v};
+  const reqs=[...(t.requests||[])];if(req)reqs.push({at:now(),...req,by:(window.NUTRA_ME&&window.NUTRA_ME.email)||''});
+  const next={...t,...patch,steps,requests:reqs.slice(-50),updatedAt:now()};delete next.id;
+  try{await db.doc('tests/'+t.id).set(next);note('');return true;}catch(err){note('Could not save: '+(err.message||err));return false;}}
+function whoNext(t){const s=t.step||1,x=st(t,s);
+  if(x==='you')return{cls:'nt-you',lbl:'YOUR TURN',txt:STEPS[s-1].t,btn:'Open',strong:true};
+  if(x==='claude')return{cls:'nt-claude',lbl:'CLAUDE WORKING',txt:{1:'Reading the product page and checking prices',2:'Building the advertorial',3:'Planning the ads',4:'Making the ads',5:'Building the campaign (paused)',6:'Adding the test to Test Budgets'}[s],btn:'View'};
+  if(s===6&&x==='done')return{cls:'nt-done',lbl:'LIVE',txt:'Running · see results in Test Budgets',btn:'View'};
+  return{cls:'nt-next',lbl:'UP NEXT',txt:STEPS[s-1].t,btn:'View'};}
+function renderList(){const tb=g('ntRows');if(!tb)return;
+  const rows=[...tests].sort((a,b)=>(b.updatedAt||'').localeCompare(a.updatedAt||''));
+  if(!rows.length){tb.innerHTML=`<tr><td colspan="4" class="nt-empty">No product tests yet. Press <b>Start a new product test</b> and paste a product link.</td></tr>`;return;}
+  tb.innerHTML=rows.map(t=>{const w=whoNext(t),s=t.step||1,pct=Math.round(((s-1)+(st(t,s)==='done'?1:0))/6*100);
+    return`<tr><td><b>${e(t.name||'New product')}</b><div class="nt-sub" style="margin:2px 0 0">${e((t.network||'jvzoo').toUpperCase())}${t.budget?' · '+fmt(t.budget,0)+' budget':''}</div></td>
+    <td style="min-width:170px"><span style="font-size:12px">Step ${s} of 6</span><div class="nt-bar"><i style="width:${pct}%"></i></div></td>
+    <td><span class="nt-tag ${w.cls}">${w.lbl}</span><div style="margin-top:4px">${e(w.txt)}</div></td>
+    <td style="text-align:right"><button type="button" class="${w.strong?'nt-primary':'nt-second'}" data-open="${e(t.id)}">${w.btn}</button></td></tr>`;}).join('');}
+function stepList(t){const cur=viewStep;return STEPS.map(s=>{const x=t?st(t,s.n):(s.n===1?'you':'next');const mark=x==='done'?'✓':s.n;
+  return`<li><button type="button" class="nt-step" data-step="${s.n}" ${cur===s.n?'aria-current="step"':''} ${!t&&s.n>1?'disabled':''}>
+  <span class="nt-dot ${x}">${mark}</span><span><span class="nt-stepname">${s.t}</span><span class="nt-who">${s.who}</span><span class="nt-tag nt-${x}">${LBL[x]}</span></span></button></li>`;}).join('');}
+function panel(t,n){const x=t?st(t,n):'you',S=(t&&t.steps&&t.steps[n])||{},cls=x==='you'?'card nt-panel you':'card nt-panel';
+  const eb=`<span class="nt-eyebrow" style="color:${x==='you'?'var(--amber)':x==='done'?'var(--green)':x==='claude'?'var(--accent)':'var(--fg2)'}">STEP ${n} · ${LBL[x]}</span>`;
+  const wait=m=>`<div class="nt-wait">⏳ ${m} Tell Claude <b>"continue my product tests"</b> if it isn't already on it.</div>`;
+  if(n===1){if(!t)return`<form class="${cls}" id="ntForm" autocomplete="off">${eb}<h2>Add the product</h2>
+    <p>Paste the product's sales page or JVZoo listing. Claude reads it, checks every price on the checkout pages and writes the advertorial. Only the link is required.</p>
+    <label class="nt-f">Product page link *<input type="url" name="url" required placeholder="https://…"></label>
+    <div class="nt-g2"><label class="nt-f">Product name<input name="name" placeholder="e.g. Synaptril"></label>
+    <label class="nt-f">Network<select name="network"><option value="jvzoo">JVZoo</option><option value="clickbank">ClickBank</option><option value="digistore">Digistore24</option><option value="other">Other</option></select></label></div>
+    <label class="nt-f">Your affiliate buy links (one per line, e.g. 2 / 3 / 6 bottles)<textarea name="buy" rows="3" placeholder="https://www.jvzoo.com/b/…"></textarea></label>
+    <div class="nt-g2"><label class="nt-f">You earn per sale ($)<input name="cps" inputmode="decimal" placeholder="e.g. 220"></label>
+    <label class="nt-f">Image links (optional, one per line)<textarea name="imgs" rows="2" placeholder="Or attach images in the Claude chat"></textarea></label></div>
+    <label class="nt-f">Notes for Claude (angle ideas, audience, what to avoid)<textarea name="notes" rows="3" placeholder="e.g. Women 45+, keep claims mild, 6-bottle default"></textarea></label>
+    <div class="nt-row"><button type="submit" class="nt-primary" ${canWrite?'':'disabled'}>Start: build the advertorial</button><button type="button" class="nt-link" data-back>Cancel</button></div></form>`;
+    const F=t.facts||{};const b=(F.bundles||[]);
+    return`<div class="${cls}">${eb}<h2>Add the product</h2>${x==='claude'?wait('Claude is reading the product page and checking prices.'):`<p>Claude read the sales page and checked every price on the checkout pages.</p>`}
+    <p><a href="${e(t.url)}" target="_blank" rel="noopener">${e(t.url)}</a></p>
+    ${b.length?`<div class="nt-g3">${b.map(x=>`<div class="nt-stat">${e(x.label)}<b>${e(x.total)}</b></div>`).join('')}</div>`:''}
+    ${F.returnDays?`<p>Return policy: ${e(F.returnDays)} days, handled by the vendor.${F.avoid?' Claims to avoid: '+e(F.avoid):''}</p>`:''}</div>`;}
+  if(n===2){if(x==='next')return`<div class="${cls}">${eb}<h2>Review the advertorial</h2><p>Starts after step 1.</p></div>`;
+    if(x==='claude')return`<div class="${cls}">${eb}<h2>Review the advertorial</h2>${wait('Claude is building the story page in Lovable (about 10 minutes).')}${S.changes?`<p>Your last changes: “${e(S.changes)}”</p>`:''}</div>`;
+    return`<div class="${cls}">${eb}<h2>Review the advertorial</h2><p>Claude built the story page. Its buttons go straight to checkout. Read it on desktop and phone, then approve it or say what to change.</p>
+    <div class="nt-prev">${S.preview?`<a href="${e(S.preview)}" target="_blank" rel="noopener">Open the page ↗</a>`:''}${S.editor?`<a href="${e(S.editor)}" target="_blank" rel="noopener">Open in Lovable ↗</a>`:''}</div>
+    ${S.headline?`<p>Headline: “${e(S.headline)}”${S.story?' · Story: '+e(S.story):''}</p>`:''}
+    ${x==='you'?`<label class="nt-f">What should change? (leave empty to approve)<textarea id="ntChanges" rows="2" placeholder="e.g. Shorter opening, more about the guarantee"></textarea></label>
+    <div class="nt-row"><button type="button" class="nt-primary" data-act="approve2">Approve → go to step 3</button><button type="button" class="nt-second" data-act="changes2">Send my changes</button></div>`:''}</div>`;}
+  if(n===3){if(x==='next')return`<div class="${cls}">${eb}<h2>Set the ad budget</h2><p>Starts after the advertorial is approved.</p></div>`;
+    const bud=S.budget||t.budget||500,r=recommend(bud),ads=S.ads||r.ads;
+    if(x==='done'||x==='claude')return`<div class="${cls}">${eb}<h2>Set the ad budget</h2><div class="nt-g3"><div class="nt-stat">Test budget<b>${fmt(bud,0)}</b></div><div class="nt-stat">Ads<b>${ads}</b></div><div class="nt-stat">Angles<b>3 × ${ads/3}</b></div></div></div>`;
+    return`<div class="${cls}">${eb}<h2>Set the ad budget</h2><p>How much may this test spend? Claude recommends how many ads to make so each ad gets about $33, enough to tell if it works. Always at least 3 angles.</p>
+    <div class="nt-g2"><label class="nt-f">Test budget ($)<input id="ntBudget" inputmode="decimal" value="${e(bud)}"></label><label class="nt-f">Ads to make (recommended, you can change it)<input id="ntAds" inputmode="numeric" value="${r.ads}"></label></div>
+    <div class="nt-g3"><div class="nt-stat">Ads<b id="ntRAds">${r.ads}</b></div><div class="nt-stat">Angles<b id="ntRAng">3 × ${r.per}</b></div><div class="nt-stat">Spend per ad<b id="ntRPer">≈ ${fmt(r.perAd,0)}</b></div></div>
+    <div class="nt-row"><button type="button" class="nt-primary" data-act="plan3">Use this plan → make the ads</button></div></div>`;}
+  if(n===4){if(x==='next')return`<div class="${cls}">${eb}<h2>Approve the ads</h2><p>Starts after you set the budget.</p></div>`;
+    const cr=S.creatives||[];
+    if(x==='claude')return`<div class="${cls}">${eb}<h2>Approve the ads</h2>${wait('Claude is researching winning ads in Gethookd and making the images (about 20 minutes).')}</div>`;
+    const by={};cr.forEach((c,i)=>{(by[c.angle||'Ads']=by[c.angle||'Ads']||[]).push({...c,i});});
+    return`<div class="${cls}">${eb}<h2>Approve the ads</h2><p>Untick any you don't want. Each ad has a 4:5 and a 9:16 version with its primary text and headline.</p>
+    ${Object.entries(by).map(([a,list])=>`<div><b style="font-size:14px">${e(a)}</b><div class="nt-grid" style="margin-top:8px">${list.map(c=>`<label class="nt-ad">${c.img?`<img src="${e(c.img)}" alt="${e(c.headline||'Ad')}" loading="lazy">`:'<span class="ph4"></span>'}<span><input type="checkbox" data-keep="${c.i}" ${c.keep!==false?'checked':''} ${x==='you'?'':'disabled'}> Keep</span></label>`).join('')}</div></div>`).join('')}
+    ${x==='you'?`<div class="nt-row"><button type="button" class="nt-primary" data-act="approve4">Approve ticked ads → step 5</button><button type="button" class="nt-second" data-act="replace4">Replace the unticked ones</button></div>`:''}</div>`;}
+  if(n===5){if(x==='next')return`<div class="${cls}">${eb}<h2>Set up on Facebook</h2><p>Starts after you approve the ads.</p></div>`;
+    if(x==='claude')return`<div class="${cls}">${eb}<h2>Set up on Facebook</h2>${wait('Claude is building the campaign in '+e(S.account||'your ad account')+', all paused.')}</div>`;
+    if(x==='done')return`<div class="${cls}">${eb}<h2>Set up on Facebook</h2><p>Built paused in ${e(S.account||'')}: ${e(S.summary||'1 campaign, 3 ad sets')}.</p></div>`;
+    const accts=[...new Set(Object.values(PROD).map(o=>o.acct).filter(Boolean))];
+    return`<div class="${cls}">${eb}<h2>Set up on Facebook (paused)</h2><p>Pick the ad account. Claude creates 1 campaign, one ad set per angle and the approved ads, all <b>paused</b>, so nothing spends yet.</p>
+    <label class="nt-f" style="max-width:360px">Ad account ID<input id="ntAcct" list="ntAccts" placeholder="e.g. 1614901483744859"><datalist id="ntAccts">${accts.map(a=>`<option value="${e(a)}">`).join('')}</datalist></label>
+    <div class="nt-row"><button type="button" class="nt-primary" data-act="build5">Build it paused</button></div></div>`;}
+  if(n===6){if(x==='next')return`<div class="${cls}">${eb}<h2>Go live</h2><p>Starts after the campaign is built.</p></div>`;
+    return`<div class="${cls}">${eb}<h2>Go live</h2><p>Open Ads Manager in Dolphin, check the campaign and switch it on. The test then shows in <b>Test Budgets</b> with spend, clicks, sales and the automatic pause rules.</p>
+    ${x==='you'?`<div class="nt-row"><button type="button" class="nt-primary" data-act="live6">I switched it on</button></div>`:x==='claude'?wait('Claude is adding the test to Test Budgets.'):'<p>✓ Live and tracked in Test Budgets.</p>'}</div>`;}}
+function renderGuide(){const box=g('ntGuide');if(!box)return;const t=openId?tests.find(x=>x.id===openId):null;
+  if(openId&&!t&&!draft){openId=null;showList();return;}
+  const cur=t?(t.step||1):1;if(!viewStep)viewStep=cur;
+  const done=t?STEPS.filter(s=>st(t,s.n)==='done').length:0;
+  box.innerHTML=`<div class="nt-head"><button type="button" class="nt-link" data-back>← All tests</button><div style="flex:1 1 260px;min-width:0"><h1>Product test: ${e(t?(t.name||'New product'):'New product')}</h1>
+    <div class="nt-sub">${t?e((t.network||'jvzoo').toUpperCase())+(t.cps?' · you earn '+fmt(t.cps,0)+' per sale':''):'Fill in step 1 to start'}</div></div>
+    <div style="min-width:200px"><b style="font-size:13px">${done} of 6 steps done</b><div class="nt-bar"><i style="width:${Math.round(done/6*100)}%"></i></div></div></div>
+    <div class="nt-cols"><ol class="card nt-steps" aria-label="Steps">${stepList(t)}</ol><section class="nt-main">${panel(t,viewStep)}
+    <div class="nt-upnext"><span>UP NEXT</span>${e(NEXT[viewStep])}</div></section></div>`;
+  const bi=g('ntBudget'),ai=g('ntAds');
+  if(bi&&ai){const upd=fromBudget=>{const b=parseFloat(bi.value)||0;if(fromBudget)ai.value=recommend(b).ads;const n=Math.max(3,Math.round((parseInt(ai.value,10)||3)/3)*3);
+    g('ntRAds').textContent=n;g('ntRAng').textContent='3 × '+(n/3);g('ntRPer').textContent='≈ '+fmt(b/n,0);};
+    bi.addEventListener('input',()=>upd(true));ai.addEventListener('input',()=>upd(false));}
+  const f=g('ntForm');if(f)f.addEventListener('submit',create);}
+async function create(ev){ev.preventDefault();const f=ev.target,v=n=>(f.elements[n].value||'').trim();
+  if(!db||!canWrite){note('View only: ask the owner for Editor access.');return;}
+  const id='t'+Date.now().toString(36);const lines=x=>x.split(/\s*\n\s*/).filter(Boolean);
+  const doc={name:v('name')||'',url:v('url'),network:v('network'),buyLinks:lines(v('buy')),cps:parseFloat(v('cps'))||null,imageLinks:lines(v('imgs')),notes:v('notes'),
+    step:1,steps:{1:{state:'claude'}},requests:[{at:now(),step:1,action:'start',by:(window.NUTRA_ME&&window.NUTRA_ME.email)||''}],createdAt:now(),updatedAt:now()};
+  try{await db.doc('tests/'+id).set(doc);draft=false;openId=id;viewStep=1;toast('Saved. Tell Claude "continue my product tests" to start.');}catch(err){note('Could not save: '+(err.message||err));}}
+async function act(a){const t=tests.find(x=>x.id===openId);if(!t)return;
+  if(a==='approve2'){const c=(g('ntChanges').value||'').trim();if(c)return act('changes2');
+    if(await save(t,{step:3,steps:{2:{state:'done'},3:{state:'you'}}},{step:2,action:'approve'}))viewStep=3;}
+  else if(a==='changes2'){const c=(g('ntChanges').value||'').trim();if(!c){note('Write what should change first.');return;}await save(t,{steps:{2:{state:'claude',changes:c}}},{step:2,action:'changes',text:c});}
+  else if(a==='plan3'){const b=parseFloat(g('ntBudget').value)||0;if(b<100){note('Enter a test budget of at least $100.');return;}
+    const ads=Math.max(3,Math.round((parseInt(g('ntAds').value,10)||recommend(b).ads)/3)*3);
+    if(await save(t,{budget:b,step:4,steps:{3:{state:'done',budget:b,ads,angles:3},4:{state:'claude'}}},{step:3,action:'plan',text:`$${b} → ${ads} ads, 3 angles`}))viewStep=4;}
+  else if(a==='approve4'||a==='replace4'){const cr=[...((t.steps&&t.steps[4]&&t.steps[4].creatives)||[])].map((c,i)=>{const cb=document.querySelector(`[data-keep="${i}"]`);return{...c,keep:cb?cb.checked:c.keep!==false};});
+    if(a==='approve4'){if(!cr.some(c=>c.keep)){note('Keep at least one ad.');return;}if(await save(t,{step:5,steps:{4:{state:'done',creatives:cr},5:{state:'you'}}},{step:4,action:'approve',text:cr.filter(c=>c.keep).length+' ads kept'}))viewStep=5;}
+    else await save(t,{steps:{4:{state:'claude',creatives:cr}}},{step:4,action:'replace',text:cr.filter(c=>!c.keep).length+' to replace'});}
+  else if(a==='build5'){const acct=(g('ntAcct').value||'').replace(/^act_/,'').trim();if(!/^\d{6,20}$/.test(acct)){note('Enter the ad account ID (numbers only).');return;}
+    await save(t,{account:acct,steps:{5:{state:'claude',account:acct}}},{step:5,action:'build',text:'Ad account '+acct});}
+  else if(a==='live6'){await save(t,{steps:{6:{state:'claude'}}},{step:6,action:'live'});}
+  renderGuide();}
+function showList(){openId=null;draft=false;viewStep=null;g('ntList').hidden=false;g('ntGuide').hidden=true;renderList();}
+function showGuide(id){openId=id;draft=!id;viewStep=null;g('ntList').hidden=true;g('ntGuide').hidden=false;renderGuide();window.scrollTo(0,0);}
+window.ntShow=()=>{if(g('ntGuide').hidden)renderList();else renderGuide();};
+window.ntInit=async()=>{
+  g('testsView').addEventListener('click',ev=>{const o=ev.target.closest('[data-open]'),s=ev.target.closest('[data-step]'),b=ev.target.closest('[data-back]'),a=ev.target.closest('[data-act]'),c=ev.target.closest('[data-copy]');
+    if(o)showGuide(o.dataset.open);else if(b)showList();else if(s&&!s.disabled){viewStep=+s.dataset.step;renderGuide();}else if(a)act(a.dataset.act);
+    else if(c){try{navigator.clipboard.writeText(c.dataset.copy).then(()=>toast('Copied'),()=>{});}catch(err){}}});
+  g('ntStart').addEventListener('click',()=>showGuide(null));
+  const C=window.claude;if(!C||!C.use){g('ntRows').innerHTML='<tr><td colspan="4" class="nt-empty">New Tests works on nutra.palmtreemedia.co.</td></tr>';g('ntStart').disabled=true;return;}
+  try{const u=await C.use('user');if(u){const me=await u.me();canWrite=!!(me&&(me.canEdit||me.isOwner));}
+    db=await C.use('db');if(!db)return;g('ntStart').disabled=!canWrite;
+    db.collection('tests').onSnapshot(s=>{tests=s.docs.map(d=>({id:d.id,...d.data()}));if(typeof activeTab!=='undefined'&&activeTab==='tests'){if(g('ntGuide').hidden)renderList();else if(!document.activeElement||!g('ntGuide').contains(document.activeElement)||document.activeElement.tagName==='BUTTON')renderGuide();}},err=>note('Tests stopped updating. Reload the page.'));
+  }catch(err){note('Tests could not load: '+(err.message||err));}};
+})();
 window.stShow=s=>{if(s)setSub(s);};
 })();
 </script>
