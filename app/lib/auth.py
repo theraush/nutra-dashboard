@@ -37,9 +37,15 @@ def members():
     return [{'id': r['path'].split('/', 1)[1], **r['data']} for r in db.kv_list('team')]
 
 
-def find(email):
+def find_all(email):
     email = (email or '').strip().lower()
-    return next((m for m in members() if (m.get('email') or '').lower() == email), None)
+    return [m for m in members() if (m.get('email') or '').strip().lower() == email] if email else []
+
+
+def find(email):
+    """The member with this email; if there are duplicates, the one that has a password wins."""
+    ms = find_all(email)
+    return next((m for m in ms if m.get('pwHash')), ms[0] if ms else None)
 
 
 def role_of(m):
@@ -79,7 +85,13 @@ def read_cookie(raw):
 
 
 def login(email, pw):
-    m = find(email)
-    if m and m.get('pwHash') and check_pw(pw or '', m['pwHash']):
-        return m
+    for m in find_all(email):
+        if m.get('pwHash') and check_pw(pw or '', m['pwHash']):
+            return m
     return None
+
+
+def reset_code():
+    """Owner password reset is only open while OWNER_RESET_CODE (8+ chars) is set in Vercel."""
+    c = (os.environ.get('OWNER_RESET_CODE') or '').strip()
+    return c if len(c) >= 8 else ''

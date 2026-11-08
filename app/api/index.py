@@ -72,12 +72,12 @@ def same_origin(env):
 
 
 # ── pages ──
-def auth_page(title, sub, fields, button, error='', action=''):
+def auth_page(title, sub, fields, button, error='', action='', foot=''):
     inputs = ''.join(f'<label>{html.escape(l)}<input name="{n}" type="{t}" autocomplete="{ac}" required{" autofocus" if i == 0 else ""}></label>'
                      for i, (l, n, t, ac) in enumerate(fields))
     return read_static('auth.html').replace('{{TITLE}}', html.escape(title)).replace('{{SUB}}', sub).replace('{{FIELDS}}', inputs) \
         .replace('{{BUTTON}}', html.escape(button)).replace('{{ERROR}}', f'<p class="err" role="alert">{html.escape(error)}</p>' if error else '') \
-        .replace('{{ACTION}}', action)
+        .replace('{{ACTION}}', action).replace('{{FOOT}}', f'<p class="foot">{foot}</p>' if foot else '')
 
 
 def dashboard_page(user):
@@ -89,6 +89,14 @@ def dashboard_page(user):
     me = json.dumps({'id': user['id'], 'email': user['email'], 'name': user['name'], 'role': user['role']}).replace('</', '<\\/')
     head = read_static('head.html')
     return head + f'<script>window.NUTRA_HOSTED=true;window.NUTRA_ME={me};</script><script>{read_static("shim.js")}</script>\n' + page + '\n</body></html>'
+
+
+FORGOT = '<a href="/forgot">Forgot your password?</a>'
+FORGOT_TEXT = ('<b>Team members:</b> ask the dashboard owner to press <b>Reset login</b> next to your name in Settings → Users. '
+               'They send you a new link and you choose a new password.<br><br>'
+               '<b>Owner:</b> in Vercel → nutra-dashboard → Settings → Environment Variables, add <b>OWNER_RESET_CODE</b> '
+               '(any code you make up, 8+ characters) and redeploy. Then open <b>/reset</b>, type that code and a new password. '
+               'Delete the variable afterwards.')
 
 
 # ── /api/db: the Settings tab's documents ──
@@ -335,8 +343,34 @@ def route(env):
             m = auth.login(p.get('email'), p.get('password'))
             if m:
                 return redirect('/', [cookie_header(auth.make_cookie(m['email']), auth.DAYS * 86400)])
-            return Resp(401, auth_page('NUTRA', 'Sign in to the dashboard.', fields, 'Sign in', 'Wrong email or password.', '/login'))
-        return Resp(200, auth_page('NUTRA', 'Sign in to the dashboard.', fields, 'Sign in', action='/login'))
+            return Resp(401, auth_page('NUTRA', 'Sign in to the dashboard.', fields, 'Sign in', 'Wrong email or password.', '/login', FORGOT))
+        return Resp(200, auth_page('NUTRA', 'Sign in to the dashboard.', fields, 'Sign in', action='/login', foot=FORGOT))
+
+    if path == '/forgot':
+        return Resp(200, auth_page('Forgot your password?', FORGOT_TEXT, [], 'Back to sign in', action='/login', foot=''))
+
+    # owner password reset: only while OWNER_RESET_CODE is set in Vercel, and the code must be typed in
+    if path == '/reset':
+        code = auth.reset_code()
+        if not code or not auth.owner_email():
+            return Resp(403, auth_page('Reset is switched off', FORGOT_TEXT, [], 'Back to sign in', action='/login'))
+        sub = 'Choose a new owner password for <b>' + html.escape(auth.owner_email()) + '</b>. Type the reset code you put in Vercel.'
+        fields = [('Reset code', 'code', 'password', 'off'), ('New password (10+ characters)', 'password', 'password', 'new-password')]
+        if method == 'POST' and same_origin(env):
+            pw = str(p.get('password') or '')
+            if not hmac.compare_digest(str(p.get('code') or '').strip(), code):
+                return Resp(401, auth_page('Reset the owner password', sub, fields, 'Save new password', 'That reset code is wrong.', '/reset'))
+            if len(pw) < 10:
+                return Resp(400, auth_page('Reset the owner password', sub, fields, 'Save new password', 'Use at least 10 characters.', '/reset'))
+            ms = auth.find_all(auth.owner_email())
+            for m in ms[1:]:  # merge duplicate owner docs into one
+                db.kv_delete(f"team/{m['id']}")
+            m = ms[0] if ms else None
+            base = {k: v for k, v in (m or {}).items() if k not in ('id', 'inviteToken', 'inviteAt')}
+            db.kv_set(f"team/{m['id']}" if m else 'team/owner', {'name': base.get('name') or 'Owner', 'note': base.get('note') or 'Owner', **base,
+                      'email': auth.owner_email(), 'role': 'editor', 'pwHash': auth.hash_pw(pw)})
+            return redirect('/', [cookie_header(auth.make_cookie(auth.owner_email()), auth.DAYS * 86400)])
+        return Resp(200, auth_page('Reset the owner password', sub, fields, 'Save new password', action='/reset'))
 
     if path == '/logout':
         return redirect('/login', [cookie_header('', 0)])

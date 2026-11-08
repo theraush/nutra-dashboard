@@ -23,6 +23,7 @@ label{display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;
 input{font:inherit;font-size:15px;color:var(--fg);background:var(--card);border:1px solid var(--border);border-radius:10px;padding:11px 12px}
 input:focus{outline:2px solid #2563EB;outline-offset:1px;border-color:transparent}
 button{font:inherit;font-weight:600;font-size:15px;border:0;border-radius:10px;padding:12px;background:var(--accent);color:var(--accent-fg);cursor:pointer;margin-top:4px}
+.foot{margin:18px 0 0;font-size:13px;text-align:center}.foot a{color:var(--fg2)}
 .err{background:var(--err-bg);color:var(--err);border-radius:8px;padding:9px 11px;margin:0;font-size:13px}
 </style>
 </head>
@@ -36,6 +37,7 @@ button{font:inherit;font-weight:600;font-size:15px;border:0;border-radius:10px;p
     {{FIELDS}}
     <button type="submit">{{BUTTON}}</button>
   </form>
+  {{FOOT}}
 </main>
 </body>
 </html>
