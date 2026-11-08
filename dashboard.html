@@ -532,6 +532,7 @@ body.noscroll{overflow:hidden;}
 .nt-auto p{margin:0;font-size:13.5px;color:var(--fg2);line-height:1.5;}
 .nt-key{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
 .nt-key code{flex:1 1 280px;min-width:0;overflow-wrap:anywhere;padding:10px 12px;border-radius:8px;background:var(--surface2);font-size:12.5px;user-select:all;}
+.nt-problem{background:var(--amber-lt);color:var(--amber);}
 .nt-hint{font-weight:400;font-size:12px;color:var(--fg2);}
 .nt-pay{border:1px solid var(--border);border-radius:12px;padding:14px;margin:0;display:flex;flex-direction:column;gap:12px;min-width:0;}
 .nt-pay legend{font-weight:700;font-size:13px;padding:0 6px;}
@@ -2083,7 +2084,7 @@ async function uploadFiles(files){for(const file of [...files].slice(0,10-pendin
   renderThumbs();}}
 function panel(t,n){const x=t?st(t,n):'you',S=(t&&t.steps&&t.steps[n])||{},cls=x==='you'?'card nt-panel you':'card nt-panel';
   const eb=`<span class="nt-eyebrow" style="color:${x==='you'?'var(--amber)':x==='done'?'var(--green)':x==='claude'?'var(--accent)':'var(--fg2)'}">STEP ${n} · ${LBL[x]}</span>`;
-  const wait=m=>S.working?`<div class="nt-wait">⏳ Claude is working on this now${S.startedAt?' (started '+new Date(S.startedAt).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})+')':''}: ${m.replace(/^Claude is /,'').replace(/\.$/,'')}. This page updates when it's done.</div>`
+  const wait=m=>S.problem&&!S.working?`<div class="nt-wait nt-problem">⚠️ Claude needs you: ${e(S.problem)}<br><span class="nt-hint">Fix it here or tell Claude in chat. The next hourly check tries again.</span></div>`:S.working?`<div class="nt-wait">⏳ Claude is working on this now${S.startedAt?' (started '+new Date(S.startedAt).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})+')':''}: ${m.replace(/^Claude is /,'').replace(/\.$/,'')}. This page updates when it's done.</div>`
     :`<div class="nt-wait">Saved. This is Claude's turn. With Automatic mode on, Claude picks it up within the hour and this page updates. To start right now, send Claude <b>"continue my product tests"</b>. <button type="button" class="nt-link" data-copy="continue my product tests">Copy the message</button></div>`;
   if(n===1){if(!t)return`<form class="${cls}" id="ntForm" autocomplete="off">${eb}<h2>Add the product</h2>
     <p>Paste the product link and your payout. A research agent reads the sales and checkout pages, competitor ads and real buyer reviews, then Claude writes the advertorial. Everything else is optional.</p>
