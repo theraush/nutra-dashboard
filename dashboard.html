@@ -527,6 +527,21 @@ body.noscroll{overflow:hidden;}
 .st-off-h i{width:10px;height:10px;border-radius:50%;display:inline-block;}
 .st-off-h span{font-weight:500;font-size:12px;color:var(--fg3);}
 @media(max-width:900px){.st-off{grid-template-columns:repeat(2,minmax(0,1fr));}.st-off>.st-row{grid-column:1/-1;}}
+.nt-hint{font-weight:400;font-size:12px;color:var(--fg2);}
+.nt-pay{border:1px solid var(--border);border-radius:12px;padding:14px;margin:0;display:flex;flex-direction:column;gap:12px;min-width:0;}
+.nt-pay legend{font-weight:700;font-size:13px;padding:0 6px;}
+.nt-pay p.nt-hint{margin:0;}
+.nt-f input:disabled{opacity:.5;}
+.nt-drop{display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
+.nt-filebtn{display:inline-flex;align-items:center;}
+.nt-thumbs{display:flex;flex-wrap:wrap;gap:8px;}
+.nt-thumbs:empty{display:none;}
+.nt-thumbs img{width:76px;height:76px;object-fit:cover;border-radius:8px;border:1px solid var(--border);display:block;}
+.nt-thumb{position:relative;display:inline-flex;}
+.nt-thumb button{position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:999px;border:0;background:var(--fg);color:var(--surface);cursor:pointer;line-height:1;}
+.nt-busy{width:76px;height:76px;border-radius:8px;background:var(--surface2);font-size:11px;color:var(--fg2);align-items:center;justify-content:center;text-align:center;padding:4px;}
+.nt-research{padding:14px 16px;border-radius:10px;background:var(--surface2);font-size:13.5px;display:flex;flex-direction:column;gap:6px;}
+.nt-research p{margin:0;}.nt-research ol,.nt-research ul{margin:0;padding-left:20px;color:var(--fg2);}
 .nt-wrap{display:flex;flex-direction:column;gap:16px;}
 .nt-sub{font-size:13px;color:var(--fg2);margin-top:4px;}
 .nt-primary{min-height:46px;padding:0 20px;border:0;border-radius:10px;background:var(--fg);color:var(--surface);font:inherit;font-size:14px;font-weight:700;cursor:pointer;}
@@ -2043,24 +2058,53 @@ function renderList(){const tb=g('ntRows');if(!tb)return;
 function stepList(t){const cur=viewStep;return STEPS.map(s=>{const x=t?st(t,s.n):(s.n===1?'you':'next');const mark=x==='done'?'✓':s.n;
   return`<li><button type="button" class="nt-step" data-step="${s.n}" ${cur===s.n?'aria-current="step"':''} ${!t&&s.n>1?'disabled':''}>
   <span class="nt-dot ${x}">${mark}</span><span><span class="nt-stepname">${s.t}</span><span class="nt-who">${s.who}</span><span class="nt-tag nt-${x}">${LBL[x]}</span></span></button></li>`;}).join('');}
+function payoutText(t){const P=t.payout||{},f=P.front||{},sb=P.sub||{};const one=(m,v,what)=>m==='rev'&&v?v+'% '+what:m==='cpa'&&v?fmt(v,0)+' '+what:'';
+  const front=one(f.mode,f.value,'per sale')||(t.cps?fmt(t.cps,0)+' per sale':''),sub=sb.mode&&sb.mode!=='none'?one(sb.mode,sb.value,'of rebills').replace('of rebills',sb.mode==='cpa'?'per rebill':'of rebills'):'';
+  return [front&&'earn '+front,sub&&'+ '+sub].filter(Boolean).join(' ')+(f.mode==='rev'&&t.cps?' (≈ '+fmt(t.cps,0)+' per sale)':'');}
+function researchHtml(R){if(!R)return'';const li=a=>(a||[]).map(x=>`<li>${e(typeof x==='string'?x:((x.name?x.name+': ':'')+(x.hook||x.text||'')))}</li>`).join('');
+  return`<div class="nt-research"><b>What the research found</b>${R.audience?`<p><b>Audience:</b> ${e(R.audience)}</p>`:''}
+  ${(R.angles||[]).length?`<p><b>Angles for the ads</b></p><ol>${li(R.angles)}</ol>`:''}${(R.pains||[]).length?`<p><b>Pains in buyers' words</b></p><ul>${li(R.pains)}</ul>`:''}
+  ${(R.objections||[]).length?`<p><b>Objections</b></p><ul>${li(R.objections)}</ul>`:''}</div>`;}
+let pendingUploads=[],lastSig='';
+async function shrink(file){const isPng=file.type==='image/png';if(file.size<=3500000&&(isPng||file.size<=1500000))return file;
+  const bmp=await createImageBitmap(file),k=Math.min(1,2000/Math.max(bmp.width,bmp.height)),c=document.createElement('canvas');c.width=Math.round(bmp.width*k);c.height=Math.round(bmp.height*k);
+  c.getContext('2d').drawImage(bmp,0,0,c.width,c.height);const out=t=>new Promise(r=>c.toBlob(r,t,.88));
+  let b=isPng?await out('image/png'):null;if(!b||b.size>3900000)b=await out('image/jpeg');return b;}
+function renderThumbs(){const box=g('ntThumbs');if(!box)return;box.innerHTML=pendingUploads.map((u,i)=>u.url?`<span class="nt-thumb"><img src="${e(u.url)}" alt="Upload ${i+1}"><button type="button" data-unup="${i}" aria-label="Remove image">×</button></span>`:`<span class="nt-thumb nt-busy">${u.err?e(u.err):'Uploading…'}</span>`).join('');}
+async function uploadFiles(files){for(const file of [...files].slice(0,10-pendingUploads.length)){const item={};pendingUploads.push(item);renderThumbs();
+  try{const blob=await shrink(file);const r=await fetch('/api/upload',{method:'POST',headers:{'Content-Type':blob.type||file.type},credentials:'same-origin',body:blob});
+    const j=await r.json().catch(()=>({}));if(!r.ok||!j.url)throw new Error(j.error||'Upload failed');item.url=j.url;}catch(err){item.err=(err.message||'Upload failed');}
+  renderThumbs();}}
 function panel(t,n){const x=t?st(t,n):'you',S=(t&&t.steps&&t.steps[n])||{},cls=x==='you'?'card nt-panel you':'card nt-panel';
   const eb=`<span class="nt-eyebrow" style="color:${x==='you'?'var(--amber)':x==='done'?'var(--green)':x==='claude'?'var(--accent)':'var(--fg2)'}">STEP ${n} · ${LBL[x]}</span>`;
   const wait=m=>`<div class="nt-wait">⏳ ${m} Tell Claude <b>"continue my product tests"</b> if it isn't already on it.</div>`;
   if(n===1){if(!t)return`<form class="${cls}" id="ntForm" autocomplete="off">${eb}<h2>Add the product</h2>
-    <p>Paste the product's sales page or JVZoo listing. Claude reads it, checks every price on the checkout pages and writes the advertorial. Only the link is required.</p>
-    <label class="nt-f">Product page link *<input type="url" name="url" required placeholder="https://…"></label>
-    <div class="nt-g2"><label class="nt-f">Product name<input name="name" placeholder="e.g. Synaptril"></label>
-    <label class="nt-f">Network<select name="network"><option value="jvzoo">JVZoo</option><option value="clickbank">ClickBank</option><option value="digistore">Digistore24</option><option value="other">Other</option></select></label></div>
-    <label class="nt-f">Your affiliate buy links (one per line, e.g. 2 / 3 / 6 bottles)<textarea name="buy" rows="3" placeholder="https://www.jvzoo.com/b/…"></textarea></label>
-    <div class="nt-g2"><label class="nt-f">You earn per sale ($)<input name="cps" inputmode="decimal" placeholder="e.g. 220"></label>
-    <label class="nt-f">Image links (optional, one per line)<textarea name="imgs" rows="2" placeholder="Or attach images in the Claude chat"></textarea></label></div>
-    <label class="nt-f">Notes for Claude (angle ideas, audience, what to avoid)<textarea name="notes" rows="3" placeholder="e.g. Women 45+, keep claims mild, 6-bottle default"></textarea></label>
+    <p>Paste the product link and your payout. A research agent reads the sales and checkout pages, competitor ads and real buyer reviews, then Claude writes the advertorial. Everything else is optional.</p>
+    <label class="nt-f">Product link * <span class="nt-hint">sales page, VSL or your affiliate checkout link</span><input type="url" name="url" required placeholder="https://…"></label>
+    <div class="nt-g2"><label class="nt-f">Product name<input name="name" placeholder="Claude fills it in if empty"></label>
+    <label class="nt-f">Network<select name="network"><option value="jvzoo">JVZoo</option><option value="clickbank">ClickBank</option><option value="digistore">Digistore24</option><option value="buygoods">BuyGoods</option><option value="wealthpay">WealthPay</option><option value="other">Other</option></select></label></div>
+    <fieldset class="nt-pay"><legend>Your payout</legend>
+      <div class="nt-g2"><label class="nt-f">Front sale<select name="frontMode"><option value="cpa">CPA: fixed $ per sale</option><option value="rev">Revenue share: % of the sale</option></select></label>
+      <label class="nt-f"><span id="ntFrontLbl">Amount ($)</span><input name="frontVal" inputmode="decimal" placeholder="e.g. 120"></label></div>
+      <div class="nt-g2"><label class="nt-f">Subscription / rebills<select name="subMode"><option value="none">None</option><option value="rev">Revenue share: % of each rebill</option><option value="cpa">CPA: fixed $ per rebill</option></select></label>
+      <label class="nt-f"><span id="ntSubLbl">Amount</span><input name="subVal" inputmode="decimal" placeholder="e.g. 15" disabled></label></div>
+      <p class="nt-hint">Break-even and the pause rules use the front payout only. Rebill money is a bonus on top.</p>
+    </fieldset>
+    <label class="nt-f">Affiliate buy links per bundle (optional, one per line)<textarea name="buy" rows="3" placeholder="Leave empty if the link above is your affiliate link. Claude finds the bundles."></textarea></label>
+    <div class="nt-f">Product images (optional)
+      <div class="nt-drop"><label class="nt-second nt-filebtn">Upload images<input type="file" id="ntFiles" accept="image/jpeg,image/png,image/webp" multiple hidden></label><span class="nt-hint">JPG, PNG or WebP, up to 10. Packshots work best.</span></div>
+      <div class="nt-thumbs" id="ntThumbs"></div>
+      <textarea name="imgs" rows="2" placeholder="Or paste image links, one per line"></textarea></div>
+    <label class="nt-f">Notes for Claude (optional)<textarea name="notes" rows="2" placeholder="Claude researches the audience and angles itself. Add anything you already know."></textarea></label>
     <div class="nt-row"><button type="submit" class="nt-primary" ${canWrite?'':'disabled'}>Start: build the advertorial</button><button type="button" class="nt-link" data-back>Cancel</button></div></form>`;
     const F=t.facts||{};const b=(F.bundles||[]);
     return`<div class="${cls}">${eb}<h2>Add the product</h2>${x==='claude'?wait('Claude is reading the product page and checking prices.'):`<p>Claude read the sales page and checked every price on the checkout pages.</p>`}
     <p><a href="${e(t.url)}" target="_blank" rel="noopener">${e(t.url)}</a></p>
     ${b.length?`<div class="nt-g3">${b.map(x=>`<div class="nt-stat">${e(x.label)}<b>${e(x.total)}</b></div>`).join('')}</div>`:''}
-    ${F.returnDays?`<p>Return policy: ${e(F.returnDays)} days, handled by the vendor.${F.avoid?' Claims to avoid: '+e(F.avoid):''}</p>`:''}</div>`;}
+    ${F.returnDays?`<p>Return policy: ${e(F.returnDays)} days, handled by the vendor.${F.avoid?' Claims to avoid: '+e(F.avoid):''}</p>`:''}
+    <p>Payout: ${e(payoutText(t))}</p>
+    ${(t.uploads||[]).length?`<div class="nt-thumbs">${t.uploads.map(u=>`<a href="${e(u)}" target="_blank" rel="noopener"><img src="${e(u)}" alt="Product image"></a>`).join('')}</div>`:''}
+    ${researchHtml(t.research)}</div>`;}
   if(n===2){if(x==='next')return`<div class="${cls}">${eb}<h2>Review the advertorial</h2><p>Starts after step 1.</p></div>`;
     if(x==='claude')return`<div class="${cls}">${eb}<h2>Review the advertorial</h2>${wait('Claude is building the story page in Lovable (about 10 minutes).')}${S.changes?`<p>Your last changes: “${e(S.changes)}”</p>`:''}</div>`;
     return`<div class="${cls}">${eb}<h2>Review the advertorial</h2><p>Claude built the story page. Its buttons go straight to checkout. Read it on desktop and phone, then approve it or say what to change.</p>
@@ -2097,7 +2141,7 @@ function renderGuide(){const box=g('ntGuide');if(!box)return;const t=openId?test
   const cur=t?(t.step||1):1;if(!viewStep)viewStep=cur;
   const done=t?STEPS.filter(s=>st(t,s.n)==='done').length:0;
   box.innerHTML=`<div class="nt-head"><button type="button" class="nt-link" data-back>← All tests</button><div style="flex:1 1 260px;min-width:0"><h1>Product test: ${e(t?(t.name||'New product'):'New product')}</h1>
-    <div class="nt-sub">${t?e((t.network||'jvzoo').toUpperCase())+(t.cps?' · you earn '+fmt(t.cps,0)+' per sale':''):'Fill in step 1 to start'}</div></div>
+    <div class="nt-sub">${t?e((t.network||'jvzoo').toUpperCase())+(payoutText(t)?' · '+e(payoutText(t)):''):'Fill in step 1 to start'}</div></div>
     <div style="min-width:200px"><b style="font-size:13px">${done} of 6 steps done</b><div class="nt-bar"><i style="width:${Math.round(done/6*100)}%"></i></div></div></div>
     <div class="nt-cols"><ol class="card nt-steps" aria-label="Steps">${stepList(t)}</ol><section class="nt-main">${panel(t,viewStep)}
     <div class="nt-upnext"><span>UP NEXT</span>${e(NEXT[viewStep])}</div></section></div>`;
@@ -2105,13 +2149,23 @@ function renderGuide(){const box=g('ntGuide');if(!box)return;const t=openId?test
   if(bi&&ai){const upd=fromBudget=>{const b=parseFloat(bi.value)||0;if(fromBudget)ai.value=recommend(b).ads;const n=Math.max(3,Math.round((parseInt(ai.value,10)||3)/3)*3);
     g('ntRAds').textContent=n;g('ntRAng').textContent='3 × '+(n/3);g('ntRPer').textContent='≈ '+fmt(b/n,0);};
     bi.addEventListener('input',()=>upd(true));ai.addEventListener('input',()=>upd(false));}
-  const f=g('ntForm');if(f)f.addEventListener('submit',create);}
+  const f=g('ntForm');if(f){f.addEventListener('submit',create);
+    const fm=f.elements.frontMode,sm=f.elements.subMode,sv=f.elements.subVal;
+    const lbl=()=>{g('ntFrontLbl').textContent=fm.value==='rev'?'Share (%)':'Amount ($)';f.elements.frontVal.placeholder=fm.value==='rev'?'e.g. 50':'e.g. 120';
+      sv.disabled=sm.value==='none';g('ntSubLbl').textContent=sm.value==='rev'?'Share (%)':sm.value==='cpa'?'Amount ($)':'Amount';sv.placeholder=sm.value==='cpa'?'e.g. 30':'e.g. 15';if(sv.disabled)sv.value='';};
+    fm.addEventListener('change',lbl);sm.addEventListener('change',lbl);lbl();
+    g('ntFiles').addEventListener('change',ev=>{uploadFiles(ev.target.files);ev.target.value='';});
+    g('ntThumbs').addEventListener('click',ev=>{const b=ev.target.closest('[data-unup]');if(b){pendingUploads.splice(+b.dataset.unup,1);renderThumbs();}});renderThumbs();}}
 async function create(ev){ev.preventDefault();const f=ev.target,v=n=>(f.elements[n].value||'').trim();
   if(!db||!canWrite){note('View only: ask the owner for Editor access.');return;}
   const id='t'+Date.now().toString(36);const lines=x=>x.split(/\s*\n\s*/).filter(Boolean);
-  const doc={name:v('name')||'',url:v('url'),network:v('network'),buyLinks:lines(v('buy')),cps:parseFloat(v('cps'))||null,imageLinks:lines(v('imgs')),notes:v('notes'),
+  if(pendingUploads.some(u=>!u.url&&!u.err)){note('Wait until the images finish uploading.');return;}
+  const num=n=>{const x=parseFloat(v(n).replace(/[$%,\s]/g,''));return isFinite(x)&&x>0?x:null;};
+  const payout={front:{mode:v('frontMode'),value:num('frontVal')},sub:{mode:v('subMode'),value:v('subMode')==='none'?null:num('subVal')}};
+  const doc={name:v('name')||'',url:v('url'),network:v('network'),buyLinks:lines(v('buy')),payout,cps:payout.front.mode==='cpa'?payout.front.value:null,
+    imageLinks:lines(v('imgs')),uploads:pendingUploads.filter(u=>u.url).map(u=>u.url),notes:v('notes'),
     step:1,steps:{1:{state:'claude'}},requests:[{at:now(),step:1,action:'start',by:(window.NUTRA_ME&&window.NUTRA_ME.email)||''}],createdAt:now(),updatedAt:now()};
-  try{await db.doc('tests/'+id).set(doc);draft=false;openId=id;viewStep=1;toast('Saved. Tell Claude "continue my product tests" to start.');}catch(err){note('Could not save: '+(err.message||err));}}
+  try{await db.doc('tests/'+id).set(doc);draft=false;pendingUploads=[];openId=id;viewStep=1;lastSig=JSON.stringify(tests.find(x=>x.id===id)||null);renderGuide();toast('Saved. Tell Claude "continue my product tests" to start.');}catch(err){note('Could not save: '+(err.message||err));}}
 async function act(a){const t=tests.find(x=>x.id===openId);if(!t)return;
   if(a==='approve2'){const c=(g('ntChanges').value||'').trim();if(c)return act('changes2');
     if(await save(t,{step:3,steps:{2:{state:'done'},3:{state:'you'}}},{step:2,action:'approve'}))viewStep=3;}
@@ -2127,7 +2181,7 @@ async function act(a){const t=tests.find(x=>x.id===openId);if(!t)return;
   else if(a==='live6'){await save(t,{steps:{6:{state:'claude'}}},{step:6,action:'live'});}
   renderGuide();}
 function showList(){openId=null;draft=false;viewStep=null;g('ntList').hidden=false;g('ntGuide').hidden=true;renderList();}
-function showGuide(id){openId=id;draft=!id;viewStep=null;g('ntList').hidden=true;g('ntGuide').hidden=false;renderGuide();window.scrollTo(0,0);}
+function showGuide(id){openId=id;draft=!id;pendingUploads=[];lastSig=JSON.stringify(tests.find(x=>x.id===id)||null);viewStep=null;g('ntList').hidden=true;g('ntGuide').hidden=false;renderGuide();window.scrollTo(0,0);}
 window.ntShow=()=>{if(g('ntGuide').hidden)renderList();else renderGuide();};
 window.ntInit=async()=>{
   g('testsView').addEventListener('click',ev=>{const o=ev.target.closest('[data-open]'),s=ev.target.closest('[data-step]'),b=ev.target.closest('[data-back]'),a=ev.target.closest('[data-act]'),c=ev.target.closest('[data-copy]');
@@ -2137,7 +2191,7 @@ window.ntInit=async()=>{
   const C=window.claude;if(!C||!C.use){g('ntRows').innerHTML='<tr><td colspan="4" class="nt-empty">New Tests works on nutra.palmtreemedia.co.</td></tr>';g('ntStart').disabled=true;return;}
   try{const u=await C.use('user');if(u){const me=await u.me();canWrite=!!(me&&(me.canEdit||me.isOwner));}
     db=await C.use('db');if(!db)return;g('ntStart').disabled=!canWrite;
-    db.collection('tests').onSnapshot(s=>{tests=s.docs.map(d=>({id:d.id,...d.data()}));if(typeof activeTab!=='undefined'&&activeTab==='tests'){if(g('ntGuide').hidden)renderList();else if(!document.activeElement||!g('ntGuide').contains(document.activeElement)||document.activeElement.tagName==='BUTTON')renderGuide();}},err=>note('Tests stopped updating. Reload the page.'));
+    db.collection('tests').onSnapshot(s=>{tests=s.docs.map(d=>({id:d.id,...d.data()}));if(typeof activeTab!=='undefined'&&activeTab==='tests'){if(g('ntGuide').hidden)renderList();else if(!draft){const cur=JSON.stringify(tests.find(x=>x.id===openId)||null);if(cur!==lastSig){lastSig=cur;renderGuide();}}}},err=>note('Tests stopped updating. Reload the page.'));
   }catch(err){note('Tests could not load: '+(err.message||err));}};
 })();
 window.stShow=s=>{if(s)setSub(s);};

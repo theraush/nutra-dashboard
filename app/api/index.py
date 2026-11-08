@@ -36,7 +36,7 @@ def cookie_header(value, max_age):
 
 
 STATUS = {200: '200 OK', 302: '302 Found', 400: '400 Bad Request', 401: '401 Unauthorized', 403: '403 Forbidden',
-          404: '404 Not Found', 405: '405 Method Not Allowed', 409: '409 Conflict', 410: '410 Gone', 500: '500 Internal Server Error', 503: '503 Service Unavailable'}
+          404: '404 Not Found', 405: '405 Method Not Allowed', 409: '409 Conflict', 410: '410 Gone', 413: '413 Payload Too Large', 500: '500 Internal Server Error', 503: '503 Service Unavailable'}
 
 
 # ── request parsing ──
@@ -51,7 +51,7 @@ def params_of(env, body):
                     out.update({k: v for k, v in j.items()})
             except ValueError:
                 pass
-        else:
+        elif not ct.startswith('image/'):
             out.update({k: v for k, v in urllib.parse.parse_qsl(body.decode(errors='replace'), keep_blank_values=True)})
     out.update({k: v for k, v in urllib.parse.parse_qsl(env.get('QUERY_STRING', ''), keep_blank_values=True)})
     return out
@@ -249,6 +249,10 @@ def cron_ok(env, p):
     return hmac.compare_digest(got, want)
 
 
+UPLOAD_MAX = 4_000_000  # Vercel allows ~4.5 MB request bodies; the page shrinks images first
+UPLOAD_TYPES = {'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp'}
+
+
 # ── router ──
 def route(env):
     method, path = env['REQUEST_METHOD'], env.get('PATH_INFO') or '/'
@@ -261,7 +265,10 @@ def route(env):
         n = int(env.get('CONTENT_LENGTH') or 0)
     except ValueError:
         n = 0
-    body = env['wsgi.input'].read(min(n, 1_000_000)) if n else b''
+    limit = UPLOAD_MAX if path == '/api/upload' else 1_000_000
+    if n > limit:
+        return jresp({'ok': False, 'error': 'File too big'}, 413)
+    body = env['wsgi.input'].read(n) if n else b''
     p = params_of(env, body)
     host = env.get('HTTP_HOST', '')
 
@@ -382,6 +389,28 @@ def route(env):
         if method != 'POST' or not same_origin(env):
             return jresp({'ok': False}, 405)
         return api_db(user, p)
+
+    # product images for New Tests: editors upload, anyone with the (unguessable) link can view,
+    # because Higgsfield and Lovable need to download them
+    if path == '/api/upload':
+        if not user or user['role'] not in ('owner', 'editor'):
+            return jresp({'ok': False, 'error': 'Editors only'}, 403)
+        if method != 'POST' or not same_origin(env):
+            return jresp({'ok': False}, 405)
+        mime = (env.get('CONTENT_TYPE') or '').split(';')[0].strip().lower()
+        if mime not in UPLOAD_TYPES or not body:
+            return jresp({'ok': False, 'error': 'Only JPG, PNG or WebP images'}, 400)
+        uid = secrets.token_urlsafe(18)
+        db.q('insert into uploads (id, mime, data, bytes, by_email) values (%s, %s, %s, %s, %s)', (uid, mime, body, len(body), user['email']))
+        base = ('https://' if SECURE else 'http://') + env.get('HTTP_HOST', '')
+        return jresp({'ok': True, 'url': f"{base}/u/{uid}.{UPLOAD_TYPES[mime]}"})
+
+    m_up = re.fullmatch(r'/u/([A-Za-z0-9_-]{20,40})(?:\.(?:jpg|png|webp))?', path)
+    if m_up and method in ('GET', 'HEAD'):
+        r = db.q1('select mime, data from uploads where id = %s', (m_up.group(1),))
+        if not r:
+            return Resp(404, 'Not found', 'text/plain')
+        return Resp(200, bytes(r['data']), r['mime'], [('Cache-Control', 'public, max-age=31536000, immutable')])
 
     if path == '/api/admin/import':
         if not user or user['role'] != 'owner' or method != 'POST' or not same_origin(env):

@@ -27,6 +27,8 @@ create table if not exists notes (id bigserial primary key, day date not null, p
 create table if not exists budget_events (id bigserial primary key, at timestamptz default now(), product text, event text,
   detail text, amount numeric);
 create table if not exists snapshot (id integer primary key, data jsonb not null, at timestamptz default now());
+create table if not exists uploads (id text primary key, mime text not null, data bytea not null, bytes integer,
+  by_email text, created_at timestamptz default now());
 """
 
 _conn = None
