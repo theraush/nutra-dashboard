@@ -10,6 +10,9 @@ create table if not exists pages (
   started_at timestamptz, finished_at timestamptz, checked_at timestamptz, published boolean not null default false,
   created_by text, created_at timestamptz not null default now(), updated_at timestamptz not null default now(),
   revisions jsonb not null default '[]', log jsonb not null default '[]');
+alter table pages add column if not exists notes jsonb not null default '[]';
+alter table pages add column if not exists delivered_at timestamptz;
+alter table pages add column if not exists summary text;
 """
 
 # phase -> (label, typical minutes). The dashboard's countdown sums the phases still ahead.
@@ -44,7 +47,8 @@ def public(row, full=False):
     out.update({'input': row.get('input') or {}, 'started_at': iso(row.get('started_at')), 'finished_at': iso(row.get('finished_at')),
                 'updated_at': iso(row.get('updated_at')), 'created_at': iso(row.get('created_at')),
                 'phases': [{'id': p, 'label': l, 'minutes': m} for p, l, m in phases], 'revisions': len(row.get('revisions') or []),
-                'log': (row.get('log') or [])[-12:], 'has_content': bool(row.get('content'))})
+                'log': (row.get('log') or [])[-12:], 'has_content': bool(row.get('content')),
+                'notes': row.get('notes') or [], 'summary': row.get('summary')})
     if full:
         out['content'] = row.get('content')
     return out
@@ -58,6 +62,55 @@ def get(pid):
 def list_pages():
     setup()
     return db.q('select * from pages order by created_at desc limit 200')
+
+
+def plain(s):
+    """Strip markdown so Claude's words read cleanly on the dashboard."""
+    s = re.sub(r'\*\*|__|`', '', str(s or ''))
+    s = re.sub(r'^\s*#+\s*', '', s, flags=re.M)
+    return re.sub(r'\n{3,}', '\n\n', s).strip()
+
+
+def note(pid, text, kind='warning', fix='', action=''):
+    """Something the team should know about the page (shown on the dashboard). Same text is kept once."""
+    text = plain(text)[:500]
+    row = db.q1('select notes from pages where id = %s', (pid,))
+    notes = (row or {}).get('notes') or []
+    if any(n.get('text') == text for n in notes):
+        return
+    notes.append({'at': iso(now()), 'kind': kind if kind in ('warning', 'info') else 'info', 'text': text,
+                  'fix': plain(fix)[:300], 'action': action if action in ('redo_images',) else ''})
+    db.q('update pages set notes = %s where id = %s', (db.J(notes[-20:]), pid))
+
+
+def friendly(err):
+    """Turn a technical failure into what happened + what to do."""
+    e = str(err or '')
+    low = e.lower()
+    if 'anthropic' in low and ('credit' in low or 'billing' in low or 'balance' in low):
+        return 'Your Anthropic account is out of credits. Add credits at console.anthropic.com → Billing, then press Try again.'
+    if 'anthropic_api_key' in low or 'authentication' in low or ' 401' in low:
+        return 'The Anthropic API key in Vercel is missing or wrong. Check ANTHROPIC_API_KEY in Vercel, then press Try again.'
+    if 'budget' in low:
+        return 'The build hit its spending cap before finishing. Press Try again, or ask for a higher cap.'
+    if 'unreachable' in low or 'timed out' in low:
+        return 'Claude could not be reached just now. Press Try again in a minute.'
+    return plain(e)[:500] or 'The build stopped. Press Try again.'
+
+
+def image_problem(pid, err):
+    low = str(err).lower()
+    if 'openai_api_key' in low:
+        note(pid, 'AI images are off because no OpenAI key is set, so the page uses only uploaded and vendor photos.',
+             fix='Add OPENAI_API_KEY in Vercel, then press Redo images.', action='redo_images')
+    elif any(w in low for w in ('billing', 'quota', 'credit', 'insufficient', 'hard limit')):
+        note(pid, 'AI images failed: your OpenAI account has no image credits left, so the page uses only the vendor photos.',
+             fix='Add credits at platform.openai.com → Settings → Billing, then press Redo images.', action='redo_images')
+    elif 'safety' in low or 'moderation' in low or 'rejected' in low:
+        note(pid, 'One image prompt was blocked by OpenAI\'s safety filter; Claude used another image instead.', kind='info')
+    else:
+        note(pid, 'Some AI images failed (' + plain(err)[:120] + '), so a few spots reuse other photos.',
+             fix='Press Redo images to try again.', action='redo_images')
 
 
 def log(pid, text):
@@ -113,6 +166,10 @@ message; put it in an env var once and never print it). Base URL: $BASE (also in
   AI images are off, use the uploaded/vendor images instead and carry on.
 - Current content (for change requests): GET $BASE/api/agent/$PAGE/content
 - Deliver: POST $BASE/api/agent/$PAGE/content  with the full content JSON → {"ok": true, "url": "..."} or a list of problems to fix.
+- Tell the team something (one call per issue): POST $BASE/api/agent/$PAGE/note {"text": "plain sentence: what you found", "fix": "plain sentence: what the team should do", "kind": "warning|info"}
+  Use it for anything a media buyer must know before running ads: the offer is a subscription, a price differs from the sales
+  page, a bundle link is missing or broken, the vendor's claims you left out, a product name mismatch, no product photo found.
+  Do NOT use it for image-credit errors (the server reports those itself).
 - Give up (only if truly impossible, e.g. the product page is gone): POST $BASE/api/agent/$PAGE/fail {"reason": "plain sentence"}
 
 STEPS
@@ -134,7 +191,9 @@ STEPS
    per "More from" card. Prompts: candid editorial photos, natural light, realistic, "no added text or logos; keep the product label
    exactly as in the reference". Never mention Facebook/Meta/ads in prompts. pack_image must be a clean packshot on a light background.
 4. building: write the content JSON (schema below) and POST it. Fix every problem the server reports and POST again.
-5. checking: when the server says ok, re-read your facts against the bundles once more, then reply with one line: "DONE".
+5. checking: when the server says ok, re-read your facts against the bundles once more (POST notes for anything off), then reply
+   with a short plain-text summary for the team (3–6 short lines, no markdown): the angle and character, the prices you verified,
+   and anything still open. Never write "DONE" alone.
 
 COMPLIANCE (ad platforms review these pages; non-negotiable)
 - No disease claims (treat, cure, prevent, reverse), no weight-loss amounts, no guaranteed results or timelines, no invented stats,
@@ -144,8 +203,9 @@ COMPLIANCE (ad platforms review these pages; non-negotiable)
   purchases made through links on this page. These statements have not been evaluated by the Food and Drug Administration. This
   product is not intended to diagnose, treat, cure, or prevent any disease. Individual results vary. Consult your healthcare provider
   before starting any supplement, especially if you are pregnant, nursing, take medication or have a medical condition."
-- offer.disclosure states the real terms: one-time purchase via the network, the return policy handled by the vendor, shipping shown
-  at checkout. Bundle URLs exactly as found (affiliate id intact). Badges: 6 = "Best value", 3 = "Most popular".
+- offer.billing must match the checkout: "one-time" or "subscription". If it rebills, set billing_note to the exact terms (amount,
+  interval, cancel) and say so in offer.disclosure and the FAQ; never call a subscription a one-time purchase.
+- offer.disclosure states the real terms: how it's billed, the return policy handled by the vendor, shipping shown at checkout. Bundle URLs exactly as found (affiliate id intact). Badges: 6 = "Best value", 3 = "Most popular".
 
 CHANGE REQUESTS: a later message starting "CHANGES:" asks for edits to a page you built. GET the current content, apply only what
 was asked (keep everything else), make new images only if needed, POST the full content again, then reply "DONE".
@@ -205,11 +265,12 @@ def create(inp, user, base):
         db.q('update pages set session_id = %s, checked_at = now() where id = %s', (s.get('id'), pid))
         log(pid, 'Claude started')
     except Exception as e:
-        db.q("update pages set status = 'failed', error = %s, finished_at = now() where id = %s", (str(e)[:500], pid))
+        db.q("update pages set status = 'failed', error = %s, finished_at = now() where id = %s", (friendly(e), pid))
     return get(pid)
 
 
 def request_changes(row, text, user, base):
+    db.q("update pages set notes = (select coalesce(jsonb_agg(n), '[]'::jsonb) from jsonb_array_elements(notes) n where n->>'kind' = 'info') where id = %s", (row['id'],))
     tok = secrets.token_urlsafe(24)
     revs = (row.get('revisions') or []) + [{'at': iso(now()), 'by': user['email'], 'text': text[:2000]}]
     db.q("""update pages set status = 'building', phase = 'starting', error = null, token_hash = %s, revisions = %s,
@@ -230,7 +291,7 @@ def request_changes(row, text, user, base):
             db.q('update pages set session_id = %s where id = %s', (s.get('id'), row['id']))
         log(row['id'], 'Changes requested: ' + text[:120])
     except Exception as e:
-        db.q("update pages set status = 'failed', error = %s, finished_at = now() where id = %s", (str(e)[:500], row['id']))
+        db.q("update pages set status = 'failed', error = %s, finished_at = now() where id = %s", (friendly(e), row['id']))
     return get(row['id'])
 
 
@@ -248,15 +309,17 @@ def check(row):
         return get(row['id'])
     status = s.get('status') or ''
     started = row.get('started_at') or now()
-    if status == 'terminated':
-        reason = agent.last_words(row['session_id']) or 'Claude stopped unexpectedly.'
-        db.q("update pages set status = 'failed', error = %s, finished_at = now() where id = %s", (reason[:500], row['id']))
-    elif status == 'idle' and (now() - started).total_seconds() > 90:
-        # idle + not delivered = it gave up or hit its budget
+    delivered = row.get('delivered_at') and row['delivered_at'] >= started
+    if status in ('idle', 'terminated') and delivered:
+        finish(row)  # delivered this round, then finished talking: that's success
+    elif status == 'terminated':
         reason = agent.last_words(row['session_id'])
-        if row['status'] == 'building':
-            db.q("update pages set status = 'failed', error = %s, finished_at = now() where id = %s and status = 'building'",
-                 (('Claude stopped before finishing: ' + reason)[:500] if reason else 'Claude stopped before finishing.', row['id']))
+        db.q("update pages set status = 'failed', error = %s, summary = %s, finished_at = now() where id = %s",
+             (friendly(reason) if reason else 'Claude stopped unexpectedly. Press Try again.', plain(reason)[:3000] or None, row['id']))
+    elif status == 'idle' and (now() - started).total_seconds() > 90:
+        reason = agent.last_words(row['session_id'])
+        db.q("update pages set status = 'failed', error = %s, summary = %s, finished_at = now() where id = %s and status = 'building'",
+             ('Claude stopped before delivering the page. ' + (friendly(reason) if reason else 'Press Try again.'), plain(reason)[:3000] or None, row['id']))
     elif (now() - (row.get('updated_at') or started)).total_seconds() > STALE_MIN * 60:
         agent.stop(row['session_id'])
         db.q("update pages set status = 'failed', error = 'No progress for over an hour, so the build was stopped.', finished_at = now() where id = %s", (row['id'],))
@@ -272,12 +335,13 @@ def agent_row(pid, auth_header):
     return row
 
 
-def set_phase(row, phase, note=''):
+def set_phase(row, phase, text=''):
     if phase not in {p for p, _, _ in PHASES}:
         return False
-    db.q("update pages set phase = %s, status = 'building', updated_at = now() where id = %s", (phase, row['id']))
-    if note:
-        log(row['id'], note)
+    # only moves the countdown; a delivered (ready) page stays ready
+    db.q("update pages set phase = %s, updated_at = now() where id = %s and status = 'building'", (phase, row['id']))
+    if text:
+        log(row['id'], text)
     return True
 
 
@@ -303,6 +367,9 @@ def validate(c):
                 float(b.get(k))
             except (TypeError, ValueError):
                 probs.append(f"bundle {b.get('label')}: {k} must be a number")
+    o = c.get('offer') or {}
+    if str(o.get('billing') or '').lower().startswith('sub') and not (o.get('billing_note') or all(b.get('billing_note') for b in bundles)):
+        probs.append('offer.billing is subscription, so offer.billing_note must state the exact rebill terms from the checkout')
     if 'not intended to diagnose' not in (c.get('footer_disclosure') or ''):
         probs.append('footer_disclosure must contain the full FDA/commission text')
     text = json.dumps(c).lower()
@@ -312,14 +379,30 @@ def validate(c):
     return probs
 
 
+def finish(row):
+    """Mark ready and keep Claude's closing message as the summary."""
+    words = agent.last_words(row['session_id']) if row.get('session_id') else ''
+    db.q("update pages set status = 'ready', phase = 'done', error = null, summary = coalesce(%s, summary), finished_at = now() where id = %s",
+         (plain(words)[:3000] or None, row['id']))
+
+
+def reopen(row):
+    if row.get('content'):
+        db.q("update pages set status = 'ready', phase = 'done', error = null where id = %s", (row['id'],))
+
+
 def deliver(row, content, base):
     probs = validate(content)
     if probs:
         log(row['id'], 'Claude fixing: ' + '; '.join(probs)[:200])
         return {'ok': False, 'problems': probs}
     name = row.get('name') or (content.get('publication') or {}).get('name')
-    db.q("""update pages set content = %s, status = 'ready', phase = 'done', error = null, name = coalesce(name, %s),
-            finished_at = now(), updated_at = now() where id = %s""", (db.J(content), name, row['id']))
+    # stays 'building' (phase checking) until Claude finishes its last check; the dashboard already shows the page
+    db.q("""update pages set content = %s, phase = 'checking', error = null, name = coalesce(name, %s), delivered_at = now(),
+            updated_at = now() where id = %s""", (db.J(content), name, row['id']))
+    sub = str((content.get('offer') or {}).get('billing') or '').lower().startswith('sub')
+    if sub:
+        note(row['id'], 'This offer is a subscription (it rebills), so the page says so next to each bundle.', kind='info')
     log(row['id'], 'Page delivered')
     return {'ok': True, 'url': f"{base}/p/{row['slug']}?preview=1"}
 

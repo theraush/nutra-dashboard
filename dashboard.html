@@ -549,6 +549,12 @@ body.noscroll{overflow:hidden;}
 .nt-busy{width:76px;height:76px;border-radius:8px;background:var(--surface2);font-size:11px;color:var(--fg2);align-items:center;justify-content:center;text-align:center;padding:4px;}
 .nt-research{padding:14px 16px;border-radius:10px;background:var(--surface2);font-size:13.5px;display:flex;flex-direction:column;gap:6px;}
 .nt-research p{margin:0;}.nt-research ol,.nt-research ul{margin:0;padding-left:20px;color:var(--fg2);}
+.pg-notes{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.pg-note{display:flex;gap:10px;align-items:flex-start;justify-content:space-between;padding:12px 14px;border-radius:10px;font-size:14px}
+.pg-note>div{display:flex;flex-direction:column;gap:6px;align-items:flex-start;min-width:0}.pg-note span{color:var(--fg2)}
+.pg-note.warn{background:var(--amber-lt)}.pg-note.info{background:var(--accent-lt)}
+.pg-x{border:0;background:transparent;font-size:20px;line-height:1;cursor:pointer;color:var(--fg2);padding:0 4px}
+.pg-sum summary{cursor:pointer;font-weight:600;font-size:14px}.pg-sum p{white-space:pre-wrap;font-size:13.5px;color:var(--fg2);margin:8px 0 0}
 .pg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
 .pg-card{padding:18px;display:flex;flex-direction:column;gap:10px;cursor:pointer;text-align:left;border:1px solid var(--border);border-radius:14px;background:var(--surface);font:inherit;color:inherit;min-width:0}
 .pg-card:hover{border-color:var(--fg2)}.pg-card h3{margin:0;font-size:16px;overflow-wrap:anywhere}.pg-card .nt-sub{margin:0;overflow-wrap:anywhere}
@@ -2067,7 +2073,10 @@ async function api(path,body){const r=await fetch(path,body?{method:'POST',heade
 function left(p){if(p.status!=='building')return null;const ph=p.phases||[],i=Math.max(0,ph.findIndex(x=>x.id===p.phase));
   const total=ph.reduce((s,x)=>s+x.minutes,0),after=ph.slice(i+1).reduce((s,x)=>s+x.minutes,0);
   const el=(Date.now()-new Date(p.started_at||Date.now()))/60000;return Math.max(1,Math.round(Math.max(after+0.5,total-el)));}
-function chip(p){if(p.status==='building'){const m=left(p);return`<span class="nt-tag nt-claude">BUILDING · ~${m} MIN LEFT</span>`;}
+function chip(p){const w=(p.notes||[]).filter(n=>n.kind==='warning').length;
+  if(p.status!=='building'&&p.status!=='failed'&&w)return`<span class="nt-tag nt-you">READY · ${w} TO CHECK</span>`;
+  if(p.status==='building'&&p.has_content&&p.phase==='checking')return'<span class="nt-tag nt-claude">FINAL CHECK</span>';
+  if(p.status==='building'){const m=left(p);return`<span class="nt-tag nt-claude">BUILDING · ~${m} MIN LEFT</span>`;}
   if(p.status==='failed')return'<span class="nt-tag nt-you">NEEDS ATTENTION</span>';if(p.published)return'<span class="nt-tag nt-done">LIVE</span>';return'<span class="nt-tag nt-next">READY · NOT PUBLISHED</span>';}
 function cardsHtml(){if(!list.length)return`<div class="pg-empty">No pages yet. Press <b>Build a new page</b> and paste a product link.</div>`;
   return list.map(p=>`<button type="button" class="pg-card" data-pg="${e(p.id)}">${chip(p)}<h3>${e(p.name||p.input.name||p.input.url)}</h3>
@@ -2093,22 +2102,34 @@ async function shrinkImg(file){if(file.size<=3500000)return file;const bmp=await
 async function upload(files){for(const f of [...files].slice(0,10-ups.length)){const it={};ups.push(it);thumbs();
   try{const blob=await shrinkImg(f);const r=await fetch('/api/upload',{method:'POST',headers:{'Content-Type':blob.type||f.type},credentials:'same-origin',body:blob});const j=await r.json();if(!r.ok||!j.url)throw new Error(j.error||'Upload failed');it.url=j.url;}
   catch(err){it.err=err.message||'Upload failed';}thumbs();}}
+function notesHtml(p){const ns=p.notes||[];if(!ns.length&&!p.summary)return'';
+  const warn=ns.map((n,i)=>({...n,i})).filter(n=>n.kind==='warning'),info=ns.map((n,i)=>({...n,i})).filter(n=>n.kind!=='warning');
+  const item=n=>`<li class="pg-note ${n.kind==='warning'?'warn':'info'}"><div><b>${e(n.text)}</b>${n.fix?`<span>${e(n.fix)}</span>`:''}
+    ${n.action==='redo_images'&&canEdit?'<button type="button" class="nt-second" data-pgact="redo_images">Redo images</button>':''}</div>
+    ${canEdit?`<button type="button" class="pg-x" data-dismiss="${n.i}" aria-label="Dismiss">×</button>`:''}</li>`;
+  return`<section class="card nt-panel">${warn.length?`<b>⚠️ Check before running ads (${warn.length})</b><ul class="pg-notes">${warn.map(item).join('')}</ul>`:''}
+    ${info.length?`<b>Good to know</b><ul class="pg-notes">${info.map(item).join('')}</ul>`:''}
+    ${p.summary?`<details class="pg-sum"><summary>Claude's summary</summary><p>${e(p.summary)}</p></details>`:''}</section>`;}
 function detailHtml(p){const head=`<div class="nt-head"><button type="button" class="nt-link" data-pgback>← All pages</button><div style="flex:1 1 260px;min-width:0"><h1>${e(p.name||p.input.name||'New page')}</h1>
   <div class="nt-sub"><a href="${e(p.input.url)}" target="_blank" rel="noopener">${e(p.input.url)}</a></div></div>${chip(p)}</div>`;
   const url=location.origin+'/p/'+p.slug;
   if(p.status==='building'){const ph=p.phases||[],i=Math.max(0,ph.findIndex(x=>x.id===p.phase)),m=left(p),at=new Date(Date.now()+m*60000);
+    if(p.has_content&&p.phase==='checking')return head+`<section class="card nt-panel"><span class="nt-eyebrow" style="color:var(--accent)">ALMOST DONE</span><div class="pg-count">~1 min <small>Claude is doing a final check</small></div>
+      <p class="nt-hint" style="margin:0">The page is built. <a href="/p/${e(p.slug)}" target="_blank" rel="noopener">Peek at it ↗</a></p></section>`+notesHtml(p);
     return head+`<div class="nt-cols"><section class="card nt-panel" style="flex:1 1 320px"><span class="nt-eyebrow" style="color:var(--accent)">${p.revisions?'MAKING YOUR CHANGES':'CLAUDE IS BUILDING YOUR PAGE'}</span>
     <div class="pg-count">~${m} min <small>left · ready around ${at.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</small></div>
     <ol class="pg-steps">${ph.map((x,k)=>`<li class="${k<i?'done':k===i?'on':''}"><span class="pg-dot">${k<i?'✓':k+1}</span>${e(x.label)}</li>`).join('')}</ol>
     <p class="nt-hint" style="margin:0">You can close this tab. The page appears here when it's ready.</p>
     ${canEdit?'<div class="nt-row"><button type="button" class="nt-link nt-del" data-pgact="stop">Stop this build</button></div>':''}</section>
     <section class="card nt-panel" style="flex:1 1 260px"><b>What Claude is doing</b><div class="pg-log">${(p.log||[]).slice().reverse().map(l=>`<div>${new Date(l.at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})} · ${e(l.text)}</div>`).join('')||'<div>Starting…</div>'}</div></section></div>`;}
-  if(p.status==='failed')return head+`<section class="card nt-panel"><div class="nt-wait nt-problem">⚠️ ${e(p.error||'The build stopped.')}</div>
-    ${canEdit?`<div class="nt-row">${p.has_content?'<button type="button" class="nt-second" data-pgact="reopen">Show the last version</button>':''}<button type="button" class="nt-primary" data-pgact="retry">Try again from scratch</button><button type="button" class="nt-link nt-del" data-pgact="delete">Delete</button></div>`:''}</section>`;
+  if(p.status==='failed')return head+`<section class="card nt-panel"><span class="nt-eyebrow" style="color:var(--amber)">THE BUILD STOPPED</span><h2 style="margin:0;font-size:19px">${e(p.error||'The build stopped. Press Try again.')}</h2>
+    ${p.has_content?'<p style="margin:0">An earlier version of the page exists. You can open it, or start over.</p>':''}
+    ${p.summary?`<details class="pg-sum"><summary>What Claude said</summary><p>${e(p.summary)}</p></details>`:''}
+    ${canEdit?`<div class="nt-row">${p.has_content?'<button type="button" class="nt-primary" data-pgact="reopen">Open the page</button><button type="button" class="nt-second" data-pgact="retry">Start over</button>':'<button type="button" class="nt-primary" data-pgact="retry">Try again</button>'}<button type="button" class="nt-link nt-del" data-pgact="delete">Delete</button></div>`:''}</section>`;
   return head+`<div class="nt-row" style="justify-content:space-between"><div class="pg-seg" role="group" aria-label="Preview size"><button type="button" data-view="desktop" aria-pressed="${view==='desktop'}">Desktop</button><button type="button" data-view="phone" aria-pressed="${view==='phone'}">Phone</button></div>
     <div class="nt-row"><a class="nt-second" style="display:inline-flex;align-items:center;text-decoration:none" href="/p/${e(p.slug)}" target="_blank" rel="noopener">Open page ↗</a>
     ${canEdit?`<button type="button" class="${p.published?'nt-second':'nt-primary'}" data-pgact="${p.published?'unpublish':'publish'}">${p.published?'Unpublish':'Publish'}</button>`:''}</div></div>
-    <iframe class="pg-frame ${view==='phone'?'phone':''}" src="/p/${e(p.slug)}?v=${encodeURIComponent(p.updated_at||'')}" title="Page preview"></iframe>
+    ${notesHtml(p)}<iframe class="pg-frame ${view==='phone'?'phone':''}" src="/p/${e(p.slug)}?v=${encodeURIComponent(p.updated_at||'')}" title="Page preview"></iframe>
     <section class="card nt-panel"><b>${p.published?'Live link':'Link (works once published)'}</b><div class="pg-link"><code>${e(url)}</code><button type="button" class="nt-second" data-copy="${e(url)}">Copy link</button></div>
     <p class="nt-hint" style="margin:0">Use it as the ad's website URL. Add <b>?utm_content={{ad.id}}</b> so sales show per ad. Clicks on the buy buttons are tracked once the page is published.</p></section>
     ${canEdit?`<section class="card nt-panel"><b>Request changes</b><textarea id="pgChanges" rows="3" placeholder="e.g. Make the headline about memory, shorter opening, use the second uploaded photo as hero"></textarea>
@@ -2129,7 +2150,8 @@ async function act(a){const p=list.find(x=>x.id===openId);if(!p)return;
   else if(a==='retry'){const j=await api('/api/pages/'+p.id+'/retry',{});list=list.filter(x=>x.id!==p.id);list.unshift(j.page);openId=j.page.id;toast('Started again');}
   else if(a==='stop'||a==='delete'){const b=document.querySelector(`[data-pgact="${a}"]`);if(b&&b.dataset.sure!=='1'){b.dataset.sure='1';b.textContent=a==='stop'?'Click again to stop':'Click again to delete for good';return;}
     if(a==='stop'){const j=await api('/api/pages/'+p.id+'/stop',{});Object.assign(p,j.page);}else{await api('/api/pages/'+p.id+'/delete',{});list=list.filter(x=>x.id!==p.id);mode='list';toast('Deleted');}}
-  else if(a==='reopen'){p.status='ready';}
+  else if(a==='reopen'){const j=await api('/api/pages/'+p.id+'/reopen',{});Object.assign(p,j.page);}
+  else if(a==='redo_images'){const j=await api('/api/pages/'+p.id+'/redo_images',{});Object.assign(p,j.page);toast('Claude is making new images');}
   g('pgDetail').dataset.sig='';render();}catch(err){toast(err.message);}}
 async function submit(ev){ev.preventDefault();const f=ev.target,v=n=>(f.elements[n].value||'').trim();
   if(ups.some(u=>!u.url&&!u.err)){toast('Wait until the images finish uploading');return;}
@@ -2143,7 +2165,8 @@ window.pgInit=()=>{canEdit=['owner','editor'].includes(me().role)||!window.NUTRA
     if(c){openId=c.dataset.pg;mode='detail';g('pgDetail').dataset.sig='';render();refreshOpen().then(render);window.scrollTo(0,0);}
     else if(b){mode='list';load().then(render);}else if(a)act(a.dataset.pgact);else if(vw){view=vw.dataset.view;g('pgDetail').dataset.sig='';render();}
     else if(un){ups.splice(+un.dataset.unpg,1);thumbs();}
-    else if(cp){try{navigator.clipboard.writeText(cp.dataset.copy).then(()=>toast('Copied'),()=>{});}catch(err){}}});
+    else if(cp){try{navigator.clipboard.writeText(cp.dataset.copy).then(()=>toast('Copied'),()=>{});}catch(err){}}
+    const dm=ev.target.closest('[data-dismiss]');if(dm){const p=list.find(x=>x.id===openId);api('/api/pages/'+openId+'/dismiss',{index:+dm.dataset.dismiss}).then(j=>{Object.assign(p,j.page);g('pgDetail').dataset.sig='';render();}).catch(err=>toast(err.message));}});
   g('pagesView').addEventListener('change',ev=>{if(ev.target.id==='pgFiles'){upload(ev.target.files);ev.target.value='';}});
   g('pagesView').addEventListener('submit',ev=>{if(ev.target.id==='pgForm')submit(ev);});
   g('pgNew').addEventListener('click',()=>{mode='new';ups=[];render();window.scrollTo(0,0);});};

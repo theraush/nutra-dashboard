@@ -128,7 +128,7 @@ def api_pages(env, path, method, p, user):
                'network': str(p.get('network') or '').strip()[:30], 'buy_links': lst('buy_links'), 'images': lst('images'),
                'notes': str(p.get('notes') or '').strip()[:3000]}
         return jresp({'ok': True, 'page': pages.public(pages.create(inp, user, base_url(env)))})
-    m = re.fullmatch(r'/api/pages/(pg_[A-Za-z0-9]{8,20})(?:/(status|changes|publish|delete|retry|stop))?', path)
+    m = re.fullmatch(r'/api/pages/(pg_[A-Za-z0-9]{8,20})(?:/(status|changes|publish|delete|retry|stop|reopen|redo_images|dismiss))?', path)
     if not m:
         return jresp({'ok': False}, 404)
     row = pages.get(m.group(1))
@@ -139,6 +139,22 @@ def api_pages(env, path, method, p, user):
         return jresp({'ok': True, 'page': pages.public(pages.check(row))})
     if not editor:
         return jresp({'ok': False, 'error': 'View only'}, 403)
+    if act == 'reopen':
+        pages.reopen(row)
+        return jresp({'ok': True, 'page': pages.public(pages.get(row['id']))})
+    if act == 'dismiss':
+        i = p.get('index')
+        notes = list(row.get('notes') or [])
+        if isinstance(i, int) and 0 <= i < len(notes):
+            notes.pop(i)
+            db.q('update pages set notes = %s where id = %s', (db.J(notes), row['id']))
+        return jresp({'ok': True, 'page': pages.public(pages.get(row['id']))})
+    if act == 'redo_images':
+        if row['status'] == 'building':
+            return jresp({'ok': False, 'error': 'Claude is still working on this page.'}, 409)
+        if not images.configured():
+            return jresp({'ok': False, 'error': 'Add OPENAI_API_KEY in Vercel first.'}, 400)
+        return jresp({'ok': True, 'page': pages.public(pages.request_changes(row, 'Make new AI images for every illustrative image (hero, section figures, expectations, closing and the three More from cards), using the product photo as a reference where the product appears. Keep all the text and prices exactly as they are.', user, base_url(env)))})
     if act == 'changes':
         text = str(p.get('text') or '').strip()
         if len(text) < 3:
@@ -170,7 +186,7 @@ def api_pages(env, path, method, p, user):
 
 
 def api_agent(env, path, method, body):
-    m = re.fullmatch(r'/api/agent/(pg_[A-Za-z0-9]{8,20})/(progress|image|content|fail)', path)
+    m = re.fullmatch(r'/api/agent/(pg_[A-Za-z0-9]{8,20})/(progress|image|content|fail|note)', path)
     if not m:
         return jresp({'ok': False}, 404)
     row = pages.agent_row(m.group(1), env.get('HTTP_AUTHORIZATION'))
@@ -194,12 +210,16 @@ def api_agent(env, path, method, body):
                                   [str(x) for x in (data.get('refs') or [])][:4], 'claude:' + row['id'])
         except Exception as e:
             pages.log(row['id'], 'Image failed: ' + str(e)[:150])
-            return jresp({'ok': False, 'error': str(e)[:300]}, 200)
+            pages.image_problem(row['id'], e)
+            return jresp({'ok': False, 'error': str(e)[:300] + ' (the team has been told; use uploaded or vendor photos and carry on)'}, 200)
         return jresp({'ok': True, 'url': f"{base_url(env)}/u/{uid}.png"})
     if act == 'content':
         return jresp(pages.deliver(row, data, base_url(env)))
+    if act == 'note':
+        pages.note(row['id'], str(data.get('text') or ''), str(data.get('kind') or 'warning'), str(data.get('fix') or ''))
+        return jresp({'ok': True})
     if act == 'fail':
-        pages.fail(row, str(data.get('reason') or 'Claude could not finish.'))
+        pages.fail(row, pages.plain(str(data.get('reason') or 'Claude could not finish.')))
         return jresp({'ok': True})
 
 

@@ -31,7 +31,9 @@ SCHEMA_DOC = r"""{
        {"type": "faq", "items": [{"q": "Is Linda a real person?", "a": "Linda is a composite character..."}]}
      ]}
   ],
-  "offer": {"eyebrow": "COMPARE THE ONE-TIME BUNDLES", "h2": "Which bundle fits your plan?", "intro": "...",
+  "offer": {"eyebrow": "COMPARE THE BUNDLES", "h2": "Which bundle fits your plan?", "intro": "...",
+            "billing": "one-time" or "subscription",   // what the checkout really says
+            "billing_note": "Renews every 30 days at $69 until cancelled",   // required for subscription: exact terms from the checkout
             "unit": "bottle", "pack_image": "https://... (clean packshot, light background)",
             "bundles": [ {"quantity": 2, "label": "2 Bottles", "supply_days": 60, "per_unit": 69, "total": 138,
                           "url": "https://www.jvzoo.com/b/...?aid=...", "badge": "Smaller commitment"}, ... 3, 6 ],
@@ -130,6 +132,7 @@ def bundles_html(o):
     if not bs:
         return ''
     base = float(bs[0].get('per_unit') or 0)
+    sub = str(o.get('billing') or '').lower().startswith('sub')
     unit = o.get('unit') or 'unit'
     pack = safe_url(o.get('pack_image'))
     cards = []
@@ -142,7 +145,7 @@ def bundles_html(o):
         cards.append(f'''<div class="bundle-card bundle-{q}"><div class="bundle-badge">{t(badge)}</div><h3>{t(b.get("label") or f"{q} {unit}s")}</h3>
 <p class="bundle-supply">{t(b.get("supply_days") or "")}{"-day supply" if b.get("supply_days") else ""}</p>
 <div class="bundle-products units-{min(q, 6)}" role="img" aria-label="{q} {a(unit)}s">{imgs}</div>
-<div class="bundle-price">${money(per)}<span> per {t(unit)}</span></div><p class="bundle-total">${money(b.get("total"))} total · One-time purchase</p>
+<div class="bundle-price">${money(per)}<span> per {t(unit)}</span></div><p class="bundle-total">${money(b.get("total"))} {"today · " + t(b.get("billing_note") or o.get("billing_note") or "Subscription") if sub else "total · One-time purchase"}</p>
 <span class="bundle-savings">{f"Save ${money(save)} per {t(unit)}" if save > 0 else f"Standard per-{t(unit)} price"}</span>
 <a class="button" href="{a(safe_url(b["url"]))}" rel="sponsored nofollow" data-bundle="{q}">Choose {t(b.get("label") or q)}{ARROW}</a></div>''')
     return '<div class="bundle-grid">' + ''.join(cards) + '</div>'
@@ -195,7 +198,7 @@ def render(c, page_id='', preview=False):
 {figure(c.get("hero"), True)}{rail_html(False)}<blockquote class="standfirst">{t(c.get("standfirst"))}</blockquote>
 <nav class="contents" aria-label="In this story"><div class="contents-title"><span class="contents-rule"></span><em>In this story</em><span class="contents-rule"></span></div><ul>{contents}</ul><span class="contents-finish" aria-hidden="true"></span></nav>
 {"".join(sections)}
-<section id="offer" class="offer-section"><div class="eyebrow">{t(o.get("eyebrow") or "COMPARE THE ONE-TIME BUNDLES")}</div><h2>{t(o.get("h2"))}</h2><p>{t(o.get("intro"))}</p>
+<section id="offer" class="offer-section"><div class="eyebrow">{t(o.get("eyebrow") or "COMPARE THE BUNDLES")}</div><h2>{t(o.get("h2"))}</h2><p>{t(o.get("intro"))}</p>
 {bundles_html(o)}<p class="bundle-terms">Shipping and any applicable taxes are shown at checkout.{f"<br>{a(rd)}-day return policy handled by the product vendor. Confirm terms before ordering." if rd else ""}</p>
 <div class="disclosure"><strong>Know the full commitment.</strong><p>{t(o.get("disclosure"))}</p></div></section>
 <section class="closing">{figure(cl)}<h2>{t(cl.get("h2"))}</h2><p>{t(cl.get("text"))}</p></section>
