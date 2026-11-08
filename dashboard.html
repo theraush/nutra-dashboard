@@ -862,7 +862,7 @@ body.noscroll{overflow:hidden;}
       <li><b>4 Ads</b>Claude → you approve</li><li><b>5 Facebook</b>Built paused</li><li><b>6 Go live</b>You switch on</li>
     </ol>
     <div class="card nt-tablewrap"><table class="nt-table"><thead><tr><th>Product</th><th>Progress</th><th>Next step</th><th></th></tr></thead><tbody id="ntRows"></tbody></table></div>
-    <p class="nt-help"><b>How Claude picks up your tests:</b> this page saves your choices. With <b>Automatic mode</b> on, Claude checks every hour and does every step marked CLAUDE'S TURN. To start it sooner, send Claude <b>"continue my product tests"</b>. <button type="button" class="nt-link" data-copy="continue my product tests">Copy the message</button></p>
+    <p class="nt-help">Claude checks for new work every hour (at :25) and updates this page by itself. You'll get a phone notification when it's your turn.</p>
   </div>
   <div class="card nt-auto" id="ntAuto" hidden></div>
   <div id="ntGuide" hidden></div>
@@ -2072,7 +2072,8 @@ function researchHtml(R){if(!R)return'';const li=a=>(a||[]).map(x=>`<li>${e(type
   return`<div class="nt-research"><b>What the research found</b>${R.audience?`<p><b>Audience:</b> ${e(R.audience)}</p>`:''}
   ${(R.angles||[]).length?`<p><b>Angles for the ads</b></p><ol>${li(R.angles)}</ol>`:''}${(R.pains||[]).length?`<p><b>Pains in buyers' words</b></p><ul>${li(R.pains)}</ul>`:''}
   ${(R.objections||[]).length?`<p><b>Objections</b></p><ul>${li(R.objections)}</ul>`:''}</div>`;}
-let pendingUploads=[],lastSig='';
+let pendingUploads=[],lastSig='',editing=false;
+function nextCheck(){const d=new Date();d.setSeconds(0,0);if(d.getMinutes()>=25)d.setHours(d.getHours()+1);d.setMinutes(25);return d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});}
 async function shrink(file){const isPng=file.type==='image/png';if(file.size<=3500000&&(isPng||file.size<=1500000))return file;
   const bmp=await createImageBitmap(file),k=Math.min(1,2000/Math.max(bmp.width,bmp.height)),c=document.createElement('canvas');c.width=Math.round(bmp.width*k);c.height=Math.round(bmp.height*k);
   c.getContext('2d').drawImage(bmp,0,0,c.width,c.height);const out=t=>new Promise(r=>c.toBlob(r,t,.88));
@@ -2084,9 +2085,9 @@ async function uploadFiles(files){for(const file of [...files].slice(0,10-pendin
   renderThumbs();}}
 function panel(t,n){const x=t?st(t,n):'you',S=(t&&t.steps&&t.steps[n])||{},cls=x==='you'?'card nt-panel you':'card nt-panel';
   const eb=`<span class="nt-eyebrow" style="color:${x==='you'?'var(--amber)':x==='done'?'var(--green)':x==='claude'?'var(--accent)':'var(--fg2)'}">STEP ${n} · ${LBL[x]}</span>`;
-  const wait=m=>S.problem&&!S.working?`<div class="nt-wait nt-problem">⚠️ Claude needs you: ${e(S.problem)}<br><span class="nt-hint">Fix it here or tell Claude in chat. The next hourly check tries again.</span></div>`:S.working?`<div class="nt-wait">⏳ Claude is working on this now${S.startedAt?' (started '+new Date(S.startedAt).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})+')':''}: ${m.replace(/^Claude is /,'').replace(/\.$/,'')}. This page updates when it's done.</div>`
-    :`<div class="nt-wait">Saved. This is Claude's turn. With Automatic mode on, Claude picks it up within the hour and this page updates. To start right now, send Claude <b>"continue my product tests"</b>. <button type="button" class="nt-link" data-copy="continue my product tests">Copy the message</button></div>`;
-  if(n===1){if(!t)return`<form class="${cls}" id="ntForm" autocomplete="off">${eb}<h2>Add the product</h2>
+  const wait=m=>S.problem&&!S.working?`<div class="nt-wait nt-problem">⚠️ Claude needs you: ${e(S.problem)}<br><span class="nt-hint">Fix it on this page. The next hourly check (about ${nextCheck()}) tries again.</span></div>`:S.working?`<div class="nt-wait">⏳ Claude is working on this now${S.startedAt?' (started '+new Date(S.startedAt).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})+')':''}: ${m.replace(/^Claude is /,'').replace(/\.$/,'')}. This page updates when it's done.</div>`
+    :`<div class="nt-wait">In the queue. Claude starts automatically at the next check, about <b>${nextCheck()}</b>. This page updates by itself.</div>`;
+  if(n===1){if(!t||editing)return`<form class="${cls}" id="ntForm" autocomplete="off">${eb}<h2>${editing?'Edit the product details':'Add the product'}</h2>
     <p>Paste the product link and your payout. A research agent reads the sales and checkout pages, competitor ads and real buyer reviews, then Claude writes the advertorial. Everything else is optional.</p>
     <label class="nt-f">Product link * <span class="nt-hint">sales page, VSL or your affiliate checkout link</span><input type="url" name="url" required placeholder="https://…"></label>
     <div class="nt-g2"><label class="nt-f">Product name<input name="name" placeholder="Claude fills it in if empty"></label>
@@ -2104,13 +2105,14 @@ function panel(t,n){const x=t?st(t,n):'you',S=(t&&t.steps&&t.steps[n])||{},cls=x
       <div class="nt-thumbs" id="ntThumbs"></div>
       <textarea name="imgs" rows="2" placeholder="Or paste image links, one per line"></textarea></div>
     <label class="nt-f">Notes for Claude (optional)<textarea name="notes" rows="2" placeholder="Claude researches the audience and angles itself. Add anything you already know."></textarea></label>
-    <div class="nt-row"><button type="submit" class="nt-primary" ${canWrite?'':'disabled'}>Start: build the advertorial</button><button type="button" class="nt-link" data-back>Cancel</button></div></form>`;
+    <div class="nt-row"><button type="submit" class="nt-primary" ${canWrite?'':'disabled'}>${editing?'Save changes':'Start: build the advertorial'}</button><button type="button" class="nt-link" ${editing?'data-act="canceledit"':'data-back'}>Cancel</button></div></form>`;
     const F=t.facts||{};const b=(F.bundles||[]);
     return`<div class="${cls}">${eb}<h2>Add the product</h2>${x==='claude'?wait('Claude is reading the product page and checking prices.'):`<p>Claude read the sales page and checked every price on the checkout pages.</p>`}
     <p><a href="${e(t.url)}" target="_blank" rel="noopener">${e(t.url)}</a></p>
     ${b.length?`<div class="nt-g3">${b.map(x=>`<div class="nt-stat">${e(x.label)}<b>${e(x.total)}</b></div>`).join('')}</div>`:''}
     ${F.returnDays?`<p>Return policy: ${e(F.returnDays)} days, handled by the vendor.${F.avoid?' Claims to avoid: '+e(F.avoid):''}</p>`:''}
     <p>Payout: ${e(payoutText(t))}</p>
+    ${x==='claude'&&!S.working&&canWrite?'<div class="nt-row"><button type="button" class="nt-second" data-act="edit1">Edit details (payout, links, images, notes)</button></div>':''}
     ${(t.uploads||[]).length?`<div class="nt-thumbs">${t.uploads.map(u=>`<a href="${e(u)}" target="_blank" rel="noopener"><img src="${e(u)}" alt="Product image"></a>`).join('')}</div>`:''}
     ${researchHtml(t.research)}</div>`;}
   if(n===2){if(x==='next')return`<div class="${cls}">${eb}<h2>Review the advertorial</h2><p>Starts after step 1.</p></div>`;
@@ -2162,11 +2164,15 @@ function renderGuide(){const box=g('ntGuide');if(!box)return;const t=openId?test
     const lbl=()=>{g('ntFrontLbl').textContent=fm.value==='rev'?'Share (%)':'Amount ($)';f.elements.frontVal.placeholder=fm.value==='rev'?'e.g. 50':'e.g. 120';
       sv.disabled=sm.value==='none';g('ntSubLbl').textContent=sm.value==='rev'?'Share (%)':sm.value==='cpa'?'Amount ($)':'Amount';sv.placeholder=sm.value==='cpa'?'e.g. 30':'e.g. 15';if(sv.disabled)sv.value='';};
     fm.addEventListener('change',lbl);sm.addEventListener('change',lbl);lbl();
+    if(editing){const t=tests.find(x=>x.id===openId)||{},P=t.payout||{},fr=P.front||{},sb=P.sub||{},el=f.elements;
+      el.url.value=t.url||'';el.name.value=t.name||'';el.network.value=t.network||'other';el.buy.value=(t.buyLinks||[]).join('\n');el.imgs.value=(t.imageLinks||[]).join('\n');el.notes.value=t.notes||'';
+      el.frontMode.value=fr.mode||(t.cps?'cpa':'cpa');el.frontVal.value=fr.value??t.cps??'';el.subMode.value=sb.mode||'none';el.subVal.value=sb.value??'';lbl();
+      if(!pendingUploads.length)pendingUploads=(t.uploads||[]).map(url=>({url}));}
     g('ntFiles').addEventListener('change',ev=>{uploadFiles(ev.target.files);ev.target.value='';});
     g('ntThumbs').addEventListener('click',ev=>{const b=ev.target.closest('[data-unup]');if(b){pendingUploads.splice(+b.dataset.unup,1);renderThumbs();}});renderThumbs();}}
 async function create(ev){ev.preventDefault();const f=ev.target,v=n=>(f.elements[n].value||'').trim();
   if(!db||!canWrite){note('View only: ask the owner for Editor access.');return;}
-  const id='t'+Date.now().toString(36);const lines=x=>x.split(/\s*\n\s*/).filter(Boolean);
+  const id=editing?openId:'t'+Date.now().toString(36);const lines=x=>x.split(/\s*\n\s*/).filter(Boolean);
   if(pendingUploads.some(u=>!u.url&&!u.err)){note('Wait until the images finish uploading.');return;}
   const num=n=>{const x=parseFloat(v(n).replace(/[$%,\s]/g,''));return isFinite(x)&&x>0?x:null;};
   if(v('frontMode')==='rev'&&num('frontVal')>100){note('A revenue share can\'t be over 100%. Did you mean a fixed $ CPA? Change "Front sale" to CPA.');return;}
@@ -2175,8 +2181,13 @@ async function create(ev){ev.preventDefault();const f=ev.target,v=n=>(f.elements
   const doc={name:v('name')||'',url:v('url'),network:v('network'),buyLinks:lines(v('buy')),payout,cps:payout.front.mode==='cpa'?payout.front.value:null,
     imageLinks:lines(v('imgs')),uploads:pendingUploads.filter(u=>u.url).map(u=>u.url),notes:v('notes'),
     step:1,steps:{1:{state:'claude'}},requests:[{at:now(),step:1,action:'start',by:(window.NUTRA_ME&&window.NUTRA_ME.email)||''}],createdAt:now(),updatedAt:now()};
-  try{await db.doc('tests/'+id).set(doc);draft=false;pendingUploads=[];openId=id;viewStep=1;lastSig=JSON.stringify(tests.find(x=>x.id===id)||null);renderGuide();toast('Saved. Tell Claude "continue my product tests" to start.');}catch(err){note('Could not save: '+(err.message||err));}}
+  if(editing){const t=tests.find(x=>x.id===openId);if(!t){editing=false;return;}
+    const {step,steps,requests,createdAt,...fields}=doc;
+    if(await save(t,{...fields,steps:{1:{problem:null}}},{step:1,action:'edit',text:'Details edited'})){editing=false;pendingUploads=[];lastSig='';toast('Saved');renderGuide();}return;}
+  try{await db.doc('tests/'+id).set(doc);draft=false;pendingUploads=[];openId=id;viewStep=1;lastSig=JSON.stringify(tests.find(x=>x.id===id)||null);renderGuide();toast('Saved. Claude starts at the next check, about '+nextCheck()+'.');}catch(err){note('Could not save: '+(err.message||err));}}
 async function act(a){const t=tests.find(x=>x.id===openId);if(!t)return;
+  if(a==='edit1'){editing=true;pendingUploads=[];renderGuide();return;}
+  if(a==='canceledit'){editing=false;pendingUploads=[];renderGuide();return;}
   if(a==='approve2'){const c=(g('ntChanges').value||'').trim();if(c)return act('changes2');
     if(await save(t,{step:3,steps:{2:{state:'done'},3:{state:'you'}}},{step:2,action:'approve'}))viewStep=3;}
   else if(a==='changes2'){const c=(g('ntChanges').value||'').trim();if(!c){note('Write what should change first.');return;}await save(t,{steps:{2:{state:'claude',changes:c}}},{step:2,action:'changes',text:c});}
@@ -2190,9 +2201,9 @@ async function act(a){const t=tests.find(x=>x.id===openId);if(!t)return;
     await save(t,{account:acct,steps:{5:{state:'claude',account:acct}}},{step:5,action:'build',text:'Ad account '+acct});}
   else if(a==='live6'){await save(t,{steps:{6:{state:'claude'}}},{step:6,action:'live'});}
   renderGuide();}
-function showList(){openId=null;draft=false;viewStep=null;g('ntList').hidden=false;g('ntGuide').hidden=true;g('ntAuto').hidden=!(window.NUTRA_ME&&window.NUTRA_ME.role==='owner');renderList();}
+function showList(){openId=null;draft=false;editing=false;viewStep=null;g('ntList').hidden=false;g('ntGuide').hidden=true;g('ntAuto').hidden=!(window.NUTRA_ME&&window.NUTRA_ME.role==='owner');renderList();}
 function hideAuto(){const a=g('ntAuto');if(a)a.hidden=true;}
-function showGuide(id){hideAuto();openId=id;draft=!id;pendingUploads=[];lastSig=JSON.stringify(tests.find(x=>x.id===id)||null);viewStep=null;g('ntList').hidden=true;g('ntGuide').hidden=false;renderGuide();window.scrollTo(0,0);}
+function showGuide(id){hideAuto();editing=false;openId=id;draft=!id;pendingUploads=[];lastSig=JSON.stringify(tests.find(x=>x.id===id)||null);viewStep=null;g('ntList').hidden=true;g('ntGuide').hidden=false;renderGuide();window.scrollTo(0,0);}
 let autoKey='',autoBusy=false;
 async function autoApi(op){const r=await fetch('/api/agent-key',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify({op})});return r.json();}
 async function renderAuto(){const box=g('ntAuto');if(!box||!window.NUTRA_ME||window.NUTRA_ME.role!=='owner'){if(box)box.hidden=true;return;}
@@ -2218,7 +2229,7 @@ window.ntInit=async()=>{
   const C=window.claude;if(!C||!C.use){g('ntRows').innerHTML='<tr><td colspan="4" class="nt-empty">New Tests works on nutra.palmtreemedia.co.</td></tr>';g('ntStart').disabled=true;return;}
   try{const u=await C.use('user');if(u){const me=await u.me();canWrite=!!(me&&(me.canEdit||me.isOwner));}
     db=await C.use('db');if(!db)return;g('ntStart').disabled=!canWrite;
-    db.collection('tests').onSnapshot(s=>{tests=s.docs.map(d=>({id:d.id,...d.data()}));if(typeof activeTab!=='undefined'&&activeTab==='tests'){if(g('ntGuide').hidden)renderList();else if(!draft){const cur=JSON.stringify(tests.find(x=>x.id===openId)||null);if(cur!==lastSig){lastSig=cur;renderGuide();}}}},err=>note('Tests stopped updating. Reload the page.'));
+    db.collection('tests').onSnapshot(s=>{tests=s.docs.map(d=>({id:d.id,...d.data()}));if(typeof activeTab!=='undefined'&&activeTab==='tests'){if(g('ntGuide').hidden)renderList();else if(!draft&&!editing){const cur=JSON.stringify(tests.find(x=>x.id===openId)||null);if(cur!==lastSig){lastSig=cur;renderGuide();}}}},err=>note('Tests stopped updating. Reload the page.'));
   }catch(err){note('Tests could not load: '+(err.message||err));}};
 })();
 window.stShow=s=>{if(s)setSub(s);};
