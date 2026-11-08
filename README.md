@@ -1,7 +1,9 @@
 # NUTRA dashboard
 
-The dashboard lives in Claude: https://claude.ai/artifact/J532xrrPfBJKFUzn2htdg8 (its Settings tab saves to the
-artifact's own database). **https://nutra.palmtreemedia.co** (GitHub Pages, `index.html`) just forwards there.
+**Live: https://nutra.palmtreemedia.co** — the Vercel app in `app/` (see `app/README.md` and `CLAUDE.md`).
+
+The sections below describe the retired Claude-artifact version (https://claude.ai/artifact/J532xrrPfBJKFUzn2htdg8),
+kept for reference.
 
 ## Files
 
