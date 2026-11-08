@@ -2030,13 +2030,13 @@ const STEPS=[
 const NEXT={1:'Step 2 · Claude builds the advertorial and asks you to review it.',2:'Step 3 · You set the ad budget. Claude recommends how many ads to make.',
   3:'Step 4 · Claude makes the ads and asks you to approve them.',4:'Step 5 · You pick the ad account. Claude builds everything paused.',
   5:'Step 6 · You switch it on in Ads Manager. The test appears in Test Budgets.',6:'Nothing more to do. If the test looks promising, ask Claude for a full landing page as a second variant.'};
-const LBL={you:'YOUR TURN',claude:'CLAUDE WORKING',done:'DONE',next:'UP NEXT'};
+const LBL={you:'YOUR TURN',claude:"CLAUDE'S TURN",done:'DONE',next:'UP NEXT'};
 const g=id=>document.getElementById(id), e=s=>esc(s==null?'':s);
 let db=null,canWrite=false,tests=[],openId=null,viewStep=null,draft=false;
 const now=()=>new Date().toISOString();
 const st=(t,n)=>((t.steps||{})[n]||{}).state||(n<(t.step||1)?'done':n===(t.step||1)?'claude':'next');
 function recommend(budget){const b=+budget||0;const ads=Math.max(9,Math.floor(b/33/3)*3);return{ads,angles:3,per:ads/3,perAd:b?b/ads:0};}
-function note(m){const n=g('ntNote');n.textContent=m;n.hidden=!m;}
+function note(m){const n=g('ntNote');n.textContent=m;n.hidden=!m;if(m&&typeof toast==='function')toast(m);}
 async function save(t,patch,req){if(!db||!canWrite){note('View only: ask the owner for Editor access.');return false;}
   const steps={...(t.steps||{})};for(const[k,v]of Object.entries(patch.steps||{}))steps[k]={...(steps[k]||{}),...v};
   const reqs=[...(t.requests||[])];if(req)reqs.push({at:now(),...req,by:(window.NUTRA_ME&&window.NUTRA_ME.email)||''});
@@ -2044,7 +2044,7 @@ async function save(t,patch,req){if(!db||!canWrite){note('View only: ask the own
   try{await db.doc('tests/'+t.id).set(next);note('');return true;}catch(err){note('Could not save: '+(err.message||err));return false;}}
 function whoNext(t){const s=t.step||1,x=st(t,s);
   if(x==='you')return{cls:'nt-you',lbl:'YOUR TURN',txt:STEPS[s-1].t,btn:'Open',strong:true};
-  if(x==='claude')return{cls:'nt-claude',lbl:'CLAUDE WORKING',txt:{1:'Reading the product page and checking prices',2:'Building the advertorial',3:'Planning the ads',4:'Making the ads',5:'Building the campaign (paused)',6:'Adding the test to Test Budgets'}[s],btn:'View'};
+  if(x==='claude')return{cls:'nt-claude',lbl:((t.steps||{})[s]||{}).working?'CLAUDE WORKING':"CLAUDE'S TURN",txt:{1:'Reading the product page and checking prices',2:'Building the advertorial',3:'Planning the ads',4:'Making the ads',5:'Building the campaign (paused)',6:'Adding the test to Test Budgets'}[s],btn:'View'};
   if(s===6&&x==='done')return{cls:'nt-done',lbl:'LIVE',txt:'Running · see results in Test Budgets',btn:'View'};
   return{cls:'nt-next',lbl:'UP NEXT',txt:STEPS[s-1].t,btn:'View'};}
 function renderList(){const tb=g('ntRows');if(!tb)return;
@@ -2077,7 +2077,8 @@ async function uploadFiles(files){for(const file of [...files].slice(0,10-pendin
   renderThumbs();}}
 function panel(t,n){const x=t?st(t,n):'you',S=(t&&t.steps&&t.steps[n])||{},cls=x==='you'?'card nt-panel you':'card nt-panel';
   const eb=`<span class="nt-eyebrow" style="color:${x==='you'?'var(--amber)':x==='done'?'var(--green)':x==='claude'?'var(--accent)':'var(--fg2)'}">STEP ${n} · ${LBL[x]}</span>`;
-  const wait=m=>`<div class="nt-wait">⏳ ${m} Tell Claude <b>"continue my product tests"</b> if it isn't already on it.</div>`;
+  const wait=m=>S.working?`<div class="nt-wait">⏳ Claude is working on this now${S.startedAt?' (started '+new Date(S.startedAt).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})+')':''}: ${m.replace(/^Claude is /,'').replace(/\.$/,'')}. This page updates when it's done.</div>`
+    :`<div class="nt-wait">Saved. This is Claude's turn, but nothing runs on its own yet. Open Claude and send <b>"continue my product tests"</b>, and Claude starts on it. <button type="button" class="nt-link" data-copy="continue my product tests">Copy the message</button></div>`;
   if(n===1){if(!t)return`<form class="${cls}" id="ntForm" autocomplete="off">${eb}<h2>Add the product</h2>
     <p>Paste the product link and your payout. A research agent reads the sales and checkout pages, competitor ads and real buyer reviews, then Claude writes the advertorial. Everything else is optional.</p>
     <label class="nt-f">Product link * <span class="nt-hint">sales page, VSL or your affiliate checkout link</span><input type="url" name="url" required placeholder="https://…"></label>
@@ -2161,6 +2162,8 @@ async function create(ev){ev.preventDefault();const f=ev.target,v=n=>(f.elements
   const id='t'+Date.now().toString(36);const lines=x=>x.split(/\s*\n\s*/).filter(Boolean);
   if(pendingUploads.some(u=>!u.url&&!u.err)){note('Wait until the images finish uploading.');return;}
   const num=n=>{const x=parseFloat(v(n).replace(/[$%,\s]/g,''));return isFinite(x)&&x>0?x:null;};
+  if(v('frontMode')==='rev'&&num('frontVal')>100){note('A revenue share can\'t be over 100%. Did you mean a fixed $ CPA? Change "Front sale" to CPA.');return;}
+  if(v('subMode')==='rev'&&num('subVal')>100){note('A rebill share can\'t be over 100%.');return;}
   const payout={front:{mode:v('frontMode'),value:num('frontVal')},sub:{mode:v('subMode'),value:v('subMode')==='none'?null:num('subVal')}};
   const doc={name:v('name')||'',url:v('url'),network:v('network'),buyLinks:lines(v('buy')),payout,cps:payout.front.mode==='cpa'?payout.front.value:null,
     imageLinks:lines(v('imgs')),uploads:pendingUploads.filter(u=>u.url).map(u=>u.url),notes:v('notes'),
