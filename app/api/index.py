@@ -58,6 +58,8 @@ def params_of(env, body):
 
 
 def current_user(env):
+    if (env.get('HTTP_AUTHORIZATION') or '').startswith('Bearer nk_'):
+        return auth.agent_from_bearer(env['HTTP_AUTHORIZATION'])
     c = SimpleCookie(env.get('HTTP_COOKIE', ''))
     m = c.get(auth.COOKIE)
     return auth.read_cookie(m.value) if m else None
@@ -100,9 +102,15 @@ FORGOT_TEXT = ('<b>Team members:</b> ask the dashboard owner to press <b>Reset l
 
 
 # ── /api/db: the Settings tab's documents ──
+AGENT_READ = ('tests/', 'offers/', 'notes/', 'rules/', 'networks/', 'config/')
+AGENT_WRITE = ('tests/', 'offers/')
+
+
 def visible(path, role):
     if path.startswith('_system/'):
         return False
+    if role == 'agent':
+        return path.startswith(AGENT_READ)
     if path.startswith('private/') and role not in ('owner', 'editor'):
         return False
     return True
@@ -129,7 +137,10 @@ def api_db(user, p):
                     d.pop('inviteToken', None)
             docs.append({'path': r['path'], 'data': d, 'version': r['version']})
         return jresp({'ok': True, 'docs': docs})
-    if user['role'] not in ('owner', 'editor'):
+    if user['role'] == 'agent':
+        if not (isinstance(path, str) and path.startswith(AGENT_WRITE)):
+            return jresp({'ok': False, 'error': 'The Claude key can only change tests and offers'}, 403)
+    elif user['role'] not in ('owner', 'editor'):
         return jresp({'ok': False, 'error': 'View only: ask the owner for Editor access', 'code': 'forbidden'}, 403)
     if not isinstance(path, str) or not PATH_RE.match(path) or not visible(path, user['role']) or path.startswith('snapshot'):
         return jresp({'ok': False, 'error': 'Not allowed'}, 403)
@@ -393,7 +404,7 @@ def route(env):
     # product images for New Tests: editors upload, anyone with the (unguessable) link can view,
     # because Higgsfield and Lovable need to download them
     if path == '/api/upload':
-        if not user or user['role'] not in ('owner', 'editor'):
+        if not user or user['role'] not in ('owner', 'editor', 'agent'):
             return jresp({'ok': False, 'error': 'Editors only'}, 403)
         if method != 'POST' or not same_origin(env):
             return jresp({'ok': False}, 405)
@@ -411,6 +422,17 @@ def route(env):
         if not r:
             return Resp(404, 'Not found', 'text/plain')
         return Resp(200, bytes(r['data']), r['mime'], [('Cache-Control', 'public, max-age=31536000, immutable')])
+
+    # owner: create / replace / remove the access key the Claude scheduled task uses
+    if path == '/api/agent-key':
+        if not user or user['role'] != 'owner' or method != 'POST' or not same_origin(env):
+            return jresp({'ok': False}, 403)
+        op = p.get('op')
+        if op == 'create':
+            return jresp({'ok': True, 'key': auth.new_agent_key(), **auth.agent_key_status()})
+        if op == 'revoke':
+            db.kv_delete('_system/agent_key')
+        return jresp({'ok': True, **auth.agent_key_status()})
 
     if path == '/api/admin/import':
         if not user or user['role'] != 'owner' or method != 'POST' or not same_origin(env):

@@ -1,5 +1,5 @@
 """Login: team members live in kv team/<id> {name, email, role, note, pwHash}. Sessions are signed cookies."""
-import os, hmac, hashlib, base64, json, time, secrets
+import os, hmac, hashlib, base64, json, time, secrets, datetime
 from . import db
 
 COOKIE = 'nutra_session'
@@ -95,3 +95,36 @@ def reset_code():
     """Owner password reset is only open while OWNER_RESET_CODE (8+ chars) is set in Vercel."""
     c = (os.environ.get('OWNER_RESET_CODE') or '').strip()
     return c if len(c) >= 8 else ''
+
+
+# ── Claude scheduled-task access key (Bearer nk_...). Only its hash is stored. ──
+AGENT = {'email': 'claude-task@nutra', 'name': 'Claude (scheduled task)', 'id': '_agent', 'role': 'agent'}
+
+
+def new_agent_key():
+    key = 'nk_' + secrets.token_urlsafe(32)
+    now = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    db.kv_set('_system/agent_key', {'hash': hashlib.sha256(key.encode()).hexdigest(), 'createdAt': now, 'lastUsed': None})
+    return key
+
+
+def agent_key_status():
+    d = db.kv_data('_system/agent_key') or {}
+    return {'exists': bool(d.get('hash')), 'createdAt': d.get('createdAt'), 'lastUsed': d.get('lastUsed')}
+
+
+def agent_from_bearer(header):
+    if not header or not header.startswith('Bearer nk_'):
+        return None
+    d = db.kv_data('_system/agent_key') or {}
+    h = hashlib.sha256(header[7:].strip().encode()).hexdigest()
+    if not d.get('hash') or not hmac.compare_digest(h, d['hash']):
+        return None
+    now = datetime.datetime.now(datetime.timezone.utc)
+    try:
+        stale = not d.get('lastUsed') or (now - datetime.datetime.fromisoformat(d['lastUsed'])).total_seconds() > 600
+    except ValueError:
+        stale = True
+    if stale:
+        db.kv_set('_system/agent_key', {**d, 'lastUsed': now.isoformat()})
+    return dict(AGENT)

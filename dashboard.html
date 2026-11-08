@@ -527,6 +527,11 @@ body.noscroll{overflow:hidden;}
 .st-off-h i{width:10px;height:10px;border-radius:50%;display:inline-block;}
 .st-off-h span{font-weight:500;font-size:12px;color:var(--fg3);}
 @media(max-width:900px){.st-off{grid-template-columns:repeat(2,minmax(0,1fr));}.st-off>.st-row{grid-column:1/-1;}}
+.nt-auto{padding:18px 20px;display:flex;flex-direction:column;gap:10px;}
+.nt-auto h3{margin:0;font-size:15px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.nt-auto p{margin:0;font-size:13.5px;color:var(--fg2);line-height:1.5;}
+.nt-key{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+.nt-key code{flex:1 1 280px;min-width:0;overflow-wrap:anywhere;padding:10px 12px;border-radius:8px;background:var(--surface2);font-size:12.5px;user-select:all;}
 .nt-hint{font-weight:400;font-size:12px;color:var(--fg2);}
 .nt-pay{border:1px solid var(--border);border-radius:12px;padding:14px;margin:0;display:flex;flex-direction:column;gap:12px;min-width:0;}
 .nt-pay legend{font-weight:700;font-size:13px;padding:0 6px;}
@@ -856,8 +861,9 @@ body.noscroll{overflow:hidden;}
       <li><b>4 Ads</b>Claude → you approve</li><li><b>5 Facebook</b>Built paused</li><li><b>6 Go live</b>You switch on</li>
     </ol>
     <div class="card nt-tablewrap"><table class="nt-table"><thead><tr><th>Product</th><th>Progress</th><th>Next step</th><th></th></tr></thead><tbody id="ntRows"></tbody></table></div>
-    <p class="nt-help"><b>How Claude picks up your tests:</b> this page only saves your choices. Claude doesn't start by itself yet. After you press a button here, open Claude and send <b>"continue my product tests"</b>. Claude then does every step marked CLAUDE WORKING and puts the results back here. <button type="button" class="nt-link" data-copy="continue my product tests">Copy the message</button></p>
+    <p class="nt-help"><b>How Claude picks up your tests:</b> this page saves your choices. With <b>Automatic mode</b> on, Claude checks every hour and does every step marked CLAUDE'S TURN. To start it sooner, send Claude <b>"continue my product tests"</b>. <button type="button" class="nt-link" data-copy="continue my product tests">Copy the message</button></p>
   </div>
+  <div class="card nt-auto" id="ntAuto" hidden></div>
   <div id="ntGuide" hidden></div>
   <div class="st-note bad" id="ntNote" hidden></div>
 </div>
@@ -2078,7 +2084,7 @@ async function uploadFiles(files){for(const file of [...files].slice(0,10-pendin
 function panel(t,n){const x=t?st(t,n):'you',S=(t&&t.steps&&t.steps[n])||{},cls=x==='you'?'card nt-panel you':'card nt-panel';
   const eb=`<span class="nt-eyebrow" style="color:${x==='you'?'var(--amber)':x==='done'?'var(--green)':x==='claude'?'var(--accent)':'var(--fg2)'}">STEP ${n} · ${LBL[x]}</span>`;
   const wait=m=>S.working?`<div class="nt-wait">⏳ Claude is working on this now${S.startedAt?' (started '+new Date(S.startedAt).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})+')':''}: ${m.replace(/^Claude is /,'').replace(/\.$/,'')}. This page updates when it's done.</div>`
-    :`<div class="nt-wait">Saved. This is Claude's turn, but nothing runs on its own yet. Open Claude and send <b>"continue my product tests"</b>, and Claude starts on it. <button type="button" class="nt-link" data-copy="continue my product tests">Copy the message</button></div>`;
+    :`<div class="nt-wait">Saved. This is Claude's turn. With Automatic mode on, Claude picks it up within the hour and this page updates. To start right now, send Claude <b>"continue my product tests"</b>. <button type="button" class="nt-link" data-copy="continue my product tests">Copy the message</button></div>`;
   if(n===1){if(!t)return`<form class="${cls}" id="ntForm" autocomplete="off">${eb}<h2>Add the product</h2>
     <p>Paste the product link and your payout. A research agent reads the sales and checkout pages, competitor ads and real buyer reviews, then Claude writes the advertorial. Everything else is optional.</p>
     <label class="nt-f">Product link * <span class="nt-hint">sales page, VSL or your affiliate checkout link</span><input type="url" name="url" required placeholder="https://…"></label>
@@ -2183,11 +2189,28 @@ async function act(a){const t=tests.find(x=>x.id===openId);if(!t)return;
     await save(t,{account:acct,steps:{5:{state:'claude',account:acct}}},{step:5,action:'build',text:'Ad account '+acct});}
   else if(a==='live6'){await save(t,{steps:{6:{state:'claude'}}},{step:6,action:'live'});}
   renderGuide();}
-function showList(){openId=null;draft=false;viewStep=null;g('ntList').hidden=false;g('ntGuide').hidden=true;renderList();}
-function showGuide(id){openId=id;draft=!id;pendingUploads=[];lastSig=JSON.stringify(tests.find(x=>x.id===id)||null);viewStep=null;g('ntList').hidden=true;g('ntGuide').hidden=false;renderGuide();window.scrollTo(0,0);}
-window.ntShow=()=>{if(g('ntGuide').hidden)renderList();else renderGuide();};
+function showList(){openId=null;draft=false;viewStep=null;g('ntList').hidden=false;g('ntGuide').hidden=true;g('ntAuto').hidden=!(window.NUTRA_ME&&window.NUTRA_ME.role==='owner');renderList();}
+function hideAuto(){const a=g('ntAuto');if(a)a.hidden=true;}
+function showGuide(id){hideAuto();openId=id;draft=!id;pendingUploads=[];lastSig=JSON.stringify(tests.find(x=>x.id===id)||null);viewStep=null;g('ntList').hidden=true;g('ntGuide').hidden=false;renderGuide();window.scrollTo(0,0);}
+let autoKey='',autoBusy=false;
+async function autoApi(op){const r=await fetch('/api/agent-key',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify({op})});return r.json();}
+async function renderAuto(){const box=g('ntAuto');if(!box||!window.NUTRA_ME||window.NUTRA_ME.role!=='owner'){if(box)box.hidden=true;return;}
+  box.hidden=false;let st={};try{st=await autoApi('status');}catch(err){}
+  const when=x=>x?new Date(x).toLocaleString([], {dateStyle:'medium',timeStyle:'short'}):'never';
+  const on=st.exists;
+  box.innerHTML=`<h3>Automatic mode <span class="nt-tag ${on?'nt-done':'nt-next'}">${on?'ON':'OFF'}</span></h3>
+  <p>${on?`Claude checks this page every hour by itself and does every step marked CLAUDE'S TURN. You get a phone notification when it's your turn. Key made ${e(when(st.createdAt))} · Claude last checked in: ${e(when(st.lastUsed))}.`
+    :`Turn this on and Claude checks this page every hour by itself, so you never have to message Claude. It needs a key: create it here, then paste it once into the Claude scheduled task.`}</p>
+  ${autoKey?`<div class="nt-key"><code>${e(autoKey)}</code><button type="button" class="nt-second" data-autocopy>Copy key</button></div>
+    <p><b>Shown only once.</b> Paste it into the scheduled task “NUTRA product tests autopilot” where it says PASTE_KEY_HERE. Don't share it anywhere else.</p>`:''}
+  <div class="nt-row"><button type="button" class="${on?'nt-second':'nt-primary'}" data-auto="create">${on?'Make a new key':'Create the Claude key'}</button>${on?'<button type="button" class="nt-link" data-auto="revoke">Turn off (delete key)</button>':''}</div>`;}
+window.ntShow=()=>{renderAuto();if(g('ntGuide').hidden)renderList();else renderGuide();};
 window.ntInit=async()=>{
   g('testsView').addEventListener('click',ev=>{const o=ev.target.closest('[data-open]'),s=ev.target.closest('[data-step]'),b=ev.target.closest('[data-back]'),a=ev.target.closest('[data-act]'),c=ev.target.closest('[data-copy]');
+    const au=ev.target.closest('[data-auto]'),ac=ev.target.closest('[data-autocopy]');
+    if(au&&!autoBusy){autoBusy=true;(async()=>{try{if(au.dataset.auto==='revoke'&&au.dataset.sure!=='1'){au.dataset.sure='1';au.textContent='Click again to turn off';return;}
+      const j=await autoApi(au.dataset.auto);autoKey=j.key||'';await renderAuto();}catch(err){note('Could not change the key');}finally{autoBusy=false;}})();return;}
+    if(ac){try{navigator.clipboard.writeText(autoKey).then(()=>toast('Key copied'),()=>{});}catch(err){}return;}
     if(o)showGuide(o.dataset.open);else if(b)showList();else if(s&&!s.disabled){viewStep=+s.dataset.step;renderGuide();}else if(a)act(a.dataset.act);
     else if(c){try{navigator.clipboard.writeText(c.dataset.copy).then(()=>toast('Copied'),()=>{});}catch(err){}}});
   g('ntStart').addEventListener('click',()=>showGuide(null));
