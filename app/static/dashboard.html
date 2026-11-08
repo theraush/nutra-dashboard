@@ -549,6 +549,22 @@ body.noscroll{overflow:hidden;}
 .nt-busy{width:76px;height:76px;border-radius:8px;background:var(--surface2);font-size:11px;color:var(--fg2);align-items:center;justify-content:center;text-align:center;padding:4px;}
 .nt-research{padding:14px 16px;border-radius:10px;background:var(--surface2);font-size:13.5px;display:flex;flex-direction:column;gap:6px;}
 .nt-research p{margin:0;}.nt-research ol,.nt-research ul{margin:0;padding-left:20px;color:var(--fg2);}
+.pg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.pg-card{padding:18px;display:flex;flex-direction:column;gap:10px;cursor:pointer;text-align:left;border:1px solid var(--border);border-radius:14px;background:var(--surface);font:inherit;color:inherit;min-width:0}
+.pg-card:hover{border-color:var(--fg2)}.pg-card h3{margin:0;font-size:16px;overflow-wrap:anywhere}.pg-card .nt-sub{margin:0;overflow-wrap:anywhere}
+.pg-empty{padding:36px 18px;text-align:center;color:var(--fg2);border:1px dashed var(--border);border-radius:14px;grid-column:1/-1}
+.pg-count{font-size:40px;font-weight:800;line-height:1;letter-spacing:-.02em}.pg-count small{font-size:15px;font-weight:600;color:var(--fg2);letter-spacing:0}
+.pg-steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.pg-steps li{display:flex;gap:10px;align-items:center;font-size:14px;color:var(--fg2)}.pg-steps li.on{color:var(--fg);font-weight:700}.pg-steps li.done{color:var(--fg)}
+.pg-dot{width:22px;height:22px;border-radius:999px;flex:none;display:flex;align-items:center;justify-content:center;font-size:12px;background:var(--surface2);color:var(--fg2)}
+.pg-steps li.done .pg-dot{background:var(--green);color:#fff}.pg-steps li.on .pg-dot{background:var(--accent);color:#fff;animation:pgpulse 1.4s ease-in-out infinite}
+@keyframes pgpulse{50%{opacity:.55}}@media(prefers-reduced-motion:reduce){.pg-steps li.on .pg-dot{animation:none}}
+.pg-log{font-size:12.5px;color:var(--fg2);display:flex;flex-direction:column;gap:4px;max-height:160px;overflow:auto}
+.pg-frame{width:100%;height:72vh;min-height:420px;border:1px solid var(--border);border-radius:12px;background:#fff;display:block}
+.pg-frame.phone{width:390px;max-width:100%;margin:0 auto}
+.pg-seg{display:inline-flex;border:1px solid var(--border);border-radius:10px;overflow:hidden}.pg-seg button{border:0;background:var(--surface);padding:8px 14px;font:inherit;font-size:13px;cursor:pointer;color:var(--fg2)}
+.pg-seg button[aria-pressed="true"]{background:var(--fg);color:var(--surface)}
+.pg-link{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.pg-link code{flex:1 1 220px;min-width:0;overflow-wrap:anywhere;padding:9px 11px;border-radius:8px;background:var(--surface2);font-size:12.5px}
 .nt-wrap{display:flex;flex-direction:column;gap:16px;}
 .nt-sub{font-size:13px;color:var(--fg2);margin-top:4px;}
 .nt-primary{min-height:46px;padding:0 20px;border:0;border-radius:10px;background:var(--fg);color:var(--surface);font:inherit;font-size:14px;font-weight:700;cursor:pointer;}
@@ -681,9 +697,9 @@ body.noscroll{overflow:hidden;}
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1" y="4" width="14" height="10" rx="1.5"/><path d="M5 4V3a2 2 0 0 1 4 0v1"/><circle cx="8" cy="9" r="1.5"/></svg>
       Test Budgets
     </button>
-    <button class="nav-pill" id="tab-tests" onclick="switchTab('tests')">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 1.5h4M6.8 1.5v4.2L2.6 13a1.2 1.2 0 0 0 1 1.8h8.8a1.2 1.2 0 0 0 1-1.8L9.2 5.7V1.5"/><path d="M4.4 10h7.2"/></svg>
-      New Tests
+    <button class="nav-pill" id="tab-pages" onclick="switchTab('pages')">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2.5" y="1.5" width="11" height="13" rx="1.5"/><path d="M5 5h6M5 8h6M5 11h3.5"/></svg>
+      Pages
     </button>
     <button class="nav-pill" id="tab-settings" onclick="switchTab('settings')">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="2.2"/><path d="M8 1.5v1.8M8 12.7v1.8M14.5 8h-1.8M3.3 8H1.5M12.6 3.4l-1.3 1.3M4.7 11.3l-1.3 1.3M12.6 12.6l-1.3-1.3M4.7 4.7L3.4 3.4"/></svg>
@@ -851,6 +867,21 @@ body.noscroll{overflow:hidden;}
 
 <!-- ══ SETTINGS ══ -->
 <!-- ══ NEW TESTS ══ -->
+<!-- ══ PAGES (Claude page builder) ══ -->
+<div id="pagesView" hidden>
+<div class="page nt-wrap">
+  <div id="pgList">
+    <div class="ph">
+      <div><div class="ph-title">Pages</div><div class="nt-sub">Paste a product link and Claude builds the advertorial: research, story, images and checkout buttons. About 20 minutes.</div></div>
+      <button type="button" class="nt-primary" id="pgNew">+ Build a new page</button>
+    </div>
+    <div class="st-note bad" id="pgSetup" hidden></div>
+    <div class="pg-grid" id="pgRows"></div>
+  </div>
+  <div id="pgDetail" hidden></div>
+</div>
+</div>
+
 <div id="testsView" hidden>
 <div class="page nt-wrap">
   <div id="ntList">
@@ -1682,9 +1713,9 @@ function switchTab(tab){
   $('overviewView').hidden=tab!=='overview';
   $('budgetView').hidden=tab!=='budgets';
   $('settingsView').hidden=tab!=='settings';
-  $('testsView').hidden=tab!=='tests';
-  ['overview','budgets','tests','settings'].forEach(t=>$('tab-'+t).classList.toggle('active',t===tab));
-  if(tab==='tests'&&window.ntShow)window.ntShow();
+  $('testsView').hidden=true;$('pagesView').hidden=tab!=='pages';
+  ['overview','budgets','pages','settings'].forEach(t=>$('tab-'+t).classList.toggle('active',t===tab));
+  if(tab==='pages'&&window.pgShow)window.pgShow();
   document.querySelector('.settings-btn').classList.toggle('on',tab==='settings');
   if(tab==='overview')renderOverview();else if(tab==='budgets')renderBudgets();
 }
@@ -1721,7 +1752,7 @@ function initBadge(){
   b.title=warn.length?warn.join('\n'):(hrs>3?'The hourly sync hasn’t updated this page for a while':'Meta and JVZoo numbers, refreshed hourly');
 }
 document.addEventListener('DOMContentLoaded',()=>{
-  initDP();initMenus();initBadge();initAds();initBudgets();stInit();if(window.ntInit)window.ntInit();
+  initDP();initMenus();initBadge();initAds();initBudgets();stInit();if(window.pgInit)window.pgInit();
   $('focusChip').addEventListener('click',()=>{view.focus=null;fProd='all';rerenderAll();});
   renderOverview();
   let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{if(activeTab==='overview')redrawSparks();},150);});
@@ -2026,6 +2057,97 @@ function init(){
   boot();   // start listening right away so the sync status and rules are live
 }
 window.stInit=init;
+// ── Pages: Claude builds advertorials through the API; this tab starts builds, shows the countdown and the result ──
+(function(){
+const g=id=>document.getElementById(id),e=s=>esc(s==null?'':s);
+let list=[],ready={claude:true,images:true},openId=null,mode='list',timer=null,ups=[],view='desktop',canEdit=false;
+const me=()=>window.NUTRA_ME||{};
+async function api(path,body){const r=await fetch(path,body?{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify(body)}:{credentials:'same-origin'});
+  const j=await r.json().catch(()=>({ok:false,error:'Server error'}));if(!r.ok||j.ok===false)throw new Error(j.error||('Error '+r.status));return j;}
+function left(p){if(p.status!=='building')return null;const ph=p.phases||[],i=Math.max(0,ph.findIndex(x=>x.id===p.phase));
+  const total=ph.reduce((s,x)=>s+x.minutes,0),after=ph.slice(i+1).reduce((s,x)=>s+x.minutes,0);
+  const el=(Date.now()-new Date(p.started_at||Date.now()))/60000;return Math.max(1,Math.round(Math.max(after+0.5,total-el)));}
+function chip(p){if(p.status==='building'){const m=left(p);return`<span class="nt-tag nt-claude">BUILDING · ~${m} MIN LEFT</span>`;}
+  if(p.status==='failed')return'<span class="nt-tag nt-you">NEEDS ATTENTION</span>';if(p.published)return'<span class="nt-tag nt-done">LIVE</span>';return'<span class="nt-tag nt-next">READY · NOT PUBLISHED</span>';}
+function cardsHtml(){if(!list.length)return`<div class="pg-empty">No pages yet. Press <b>Build a new page</b> and paste a product link.</div>`;
+  return list.map(p=>`<button type="button" class="pg-card" data-pg="${e(p.id)}">${chip(p)}<h3>${e(p.name||p.input.name||p.input.url)}</h3>
+  <p class="nt-sub">${p.status==='building'?e(((p.phases||[]).find(x=>x.id===p.phase)||{}).label||'Starting'):p.status==='failed'?e(p.error||'Stopped'):'/p/'+e(p.slug)}</p>
+  <p class="nt-sub">${e(p.created_by||'')} · ${new Date(p.created_at).toLocaleDateString([], {month:'short',day:'numeric'})}</p></button>`).join('');}
+function renderList(){g('pgRows').innerHTML=cardsHtml();
+  const s=g('pgSetup');const miss=[!ready.claude&&'the Anthropic API key (ANTHROPIC_API_KEY)',!ready.images&&'the OpenAI key for AI images (OPENAI_API_KEY; optional, pages then use your uploaded and vendor images)'].filter(Boolean);
+  s.hidden=!miss.length;s.textContent=miss.length?'Not set up yet in Vercel: '+miss.join(' and ')+'.':'';g('pgNew').disabled=!canEdit||!ready.claude;}
+function formHtml(){return`<div class="nt-head"><button type="button" class="nt-link" data-pgback>← All pages</button><div style="flex:1 1 260px;min-width:0"><h1>Build a new page</h1><div class="nt-sub">Claude researches the product, writes the story, makes the images and builds the page. About 20 minutes; you can close this tab.</div></div></div>
+  <form class="card nt-panel" id="pgForm" autocomplete="off">
+  <label class="nt-f">Product link * <span class="nt-hint">sales page, VSL or your affiliate checkout link</span><input type="url" name="url" required placeholder="https://…"></label>
+  <div class="nt-g2"><label class="nt-f">Product name <span class="nt-hint">optional</span><input name="name" placeholder="e.g. CardioFlush LT"></label>
+  <label class="nt-f">Network<select name="network"><option value="jvzoo">JVZoo</option><option value="clickbank">ClickBank</option><option value="digistore">Digistore24</option><option value="buygoods">BuyGoods</option><option value="wealthpay">WealthPay</option><option value="other">Other</option></select></label></div>
+  <label class="nt-f">Affiliate buy links per bundle <span class="nt-hint">optional, one per line; leave empty if the link above is your affiliate link</span><textarea name="buy" rows="3"></textarea></label>
+  <div class="nt-f">Product images <span class="nt-hint">optional; the product photo first</span>
+    <div class="nt-drop"><label class="nt-second nt-filebtn">Upload images<input type="file" id="pgFiles" accept="image/jpeg,image/png,image/webp" multiple hidden></label><span class="nt-hint">JPG, PNG or WebP, up to 10</span></div>
+    <div class="nt-thumbs" id="pgThumbs"></div></div>
+  <label class="nt-f">Notes for Claude <span class="nt-hint">optional: audience, angle, claims to avoid</span><textarea name="notes" rows="2"></textarea></label>
+  <div class="nt-row"><button type="submit" class="nt-primary">Build advertorial</button><span class="nt-hint">Ready in about 20 minutes</span></div></form>`;}
+function thumbs(){const b=g('pgThumbs');if(!b)return;b.innerHTML=ups.map((u,i)=>u.url?`<span class="nt-thumb"><img src="${e(u.url)}" alt="Upload ${i+1}"><button type="button" data-unpg="${i}" aria-label="Remove image">×</button></span>`:`<span class="nt-thumb nt-busy">${u.err?e(u.err):'Uploading…'}</span>`).join('');}
+async function shrinkImg(file){if(file.size<=3500000)return file;const bmp=await createImageBitmap(file),k=Math.min(1,2000/Math.max(bmp.width,bmp.height)),c=document.createElement('canvas');
+  c.width=Math.round(bmp.width*k);c.height=Math.round(bmp.height*k);c.getContext('2d').drawImage(bmp,0,0,c.width,c.height);return new Promise(r=>c.toBlob(r,'image/jpeg',.88));}
+async function upload(files){for(const f of [...files].slice(0,10-ups.length)){const it={};ups.push(it);thumbs();
+  try{const blob=await shrinkImg(f);const r=await fetch('/api/upload',{method:'POST',headers:{'Content-Type':blob.type||f.type},credentials:'same-origin',body:blob});const j=await r.json();if(!r.ok||!j.url)throw new Error(j.error||'Upload failed');it.url=j.url;}
+  catch(err){it.err=err.message||'Upload failed';}thumbs();}}
+function detailHtml(p){const head=`<div class="nt-head"><button type="button" class="nt-link" data-pgback>← All pages</button><div style="flex:1 1 260px;min-width:0"><h1>${e(p.name||p.input.name||'New page')}</h1>
+  <div class="nt-sub"><a href="${e(p.input.url)}" target="_blank" rel="noopener">${e(p.input.url)}</a></div></div>${chip(p)}</div>`;
+  const url=location.origin+'/p/'+p.slug;
+  if(p.status==='building'){const ph=p.phases||[],i=Math.max(0,ph.findIndex(x=>x.id===p.phase)),m=left(p),at=new Date(Date.now()+m*60000);
+    return head+`<div class="nt-cols"><section class="card nt-panel" style="flex:1 1 320px"><span class="nt-eyebrow" style="color:var(--accent)">${p.revisions?'MAKING YOUR CHANGES':'CLAUDE IS BUILDING YOUR PAGE'}</span>
+    <div class="pg-count">~${m} min <small>left · ready around ${at.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</small></div>
+    <ol class="pg-steps">${ph.map((x,k)=>`<li class="${k<i?'done':k===i?'on':''}"><span class="pg-dot">${k<i?'✓':k+1}</span>${e(x.label)}</li>`).join('')}</ol>
+    <p class="nt-hint" style="margin:0">You can close this tab. The page appears here when it's ready.</p>
+    ${canEdit?'<div class="nt-row"><button type="button" class="nt-link nt-del" data-pgact="stop">Stop this build</button></div>':''}</section>
+    <section class="card nt-panel" style="flex:1 1 260px"><b>What Claude is doing</b><div class="pg-log">${(p.log||[]).slice().reverse().map(l=>`<div>${new Date(l.at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})} · ${e(l.text)}</div>`).join('')||'<div>Starting…</div>'}</div></section></div>`;}
+  if(p.status==='failed')return head+`<section class="card nt-panel"><div class="nt-wait nt-problem">⚠️ ${e(p.error||'The build stopped.')}</div>
+    ${canEdit?`<div class="nt-row">${p.has_content?'<button type="button" class="nt-second" data-pgact="reopen">Show the last version</button>':''}<button type="button" class="nt-primary" data-pgact="retry">Try again from scratch</button><button type="button" class="nt-link nt-del" data-pgact="delete">Delete</button></div>`:''}</section>`;
+  return head+`<div class="nt-row" style="justify-content:space-between"><div class="pg-seg" role="group" aria-label="Preview size"><button type="button" data-view="desktop" aria-pressed="${view==='desktop'}">Desktop</button><button type="button" data-view="phone" aria-pressed="${view==='phone'}">Phone</button></div>
+    <div class="nt-row"><a class="nt-second" style="display:inline-flex;align-items:center;text-decoration:none" href="/p/${e(p.slug)}" target="_blank" rel="noopener">Open page ↗</a>
+    ${canEdit?`<button type="button" class="${p.published?'nt-second':'nt-primary'}" data-pgact="${p.published?'unpublish':'publish'}">${p.published?'Unpublish':'Publish'}</button>`:''}</div></div>
+    <iframe class="pg-frame ${view==='phone'?'phone':''}" src="/p/${e(p.slug)}?v=${encodeURIComponent(p.updated_at||'')}" title="Page preview"></iframe>
+    <section class="card nt-panel"><b>${p.published?'Live link':'Link (works once published)'}</b><div class="pg-link"><code>${e(url)}</code><button type="button" class="nt-second" data-copy="${e(url)}">Copy link</button></div>
+    <p class="nt-hint" style="margin:0">Use it as the ad's website URL. Add <b>?utm_content={{ad.id}}</b> so sales show per ad. Clicks on the buy buttons are tracked once the page is published.</p></section>
+    ${canEdit?`<section class="card nt-panel"><b>Request changes</b><textarea id="pgChanges" rows="3" placeholder="e.g. Make the headline about memory, shorter opening, use the second uploaded photo as hero"></textarea>
+    <div class="nt-row"><button type="button" class="nt-primary" data-pgact="changes">Send changes</button><span class="nt-hint">Claude updates the page in about 7 minutes.</span><span style="flex:1"></span><button type="button" class="nt-link nt-del" data-pgact="delete">Delete page</button></div></section>`:''}`;}
+function render(){if(mode==='list'){g('pgList').hidden=false;g('pgDetail').hidden=true;renderList();return;}
+  g('pgList').hidden=true;g('pgDetail').hidden=false;
+  if(mode==='new'){g('pgDetail').innerHTML=formHtml();thumbs();return;}
+  const p=list.find(x=>x.id===openId);if(!p){mode='list';render();return;}
+  const keep=g('pgChanges')&&g('pgChanges').value;const hadFrame=document.querySelector('#pgDetail iframe');const sig=p.status+p.updated_at+view+p.published;
+  if(hadFrame&&g('pgDetail').dataset.sig===sig)return;g('pgDetail').dataset.sig=sig;g('pgDetail').innerHTML=detailHtml(p);if(keep&&g('pgChanges'))g('pgChanges').value=keep;}
+async function load(){try{const j=await api('/api/pages');list=j.pages||[];ready=j.ready||ready;}catch(err){g('pgSetup').hidden=false;g('pgSetup').textContent='Pages could not load: '+err.message;}}
+async function refreshOpen(){if(mode!=='detail'||!openId)return;try{const j=await api('/api/pages/'+openId+'/status',{});const i=list.findIndex(x=>x.id===openId);if(i>=0)list[i]=j.page;else list.unshift(j.page);}catch(err){}}
+async function tick(){if(typeof activeTab==='undefined'||activeTab!=='pages')return;if(mode==='detail')await refreshOpen();else if(mode==='list')await load();if(mode!=='new')render();}
+function startTimer(){clearInterval(timer);timer=setInterval(()=>{if(!document.hidden)tick();},10000);}
+async function act(a){const p=list.find(x=>x.id===openId);if(!p)return;
+  try{if(a==='changes'){const t=(g('pgChanges').value||'').trim();if(t.length<3){toast('Write what should change');return;}const j=await api('/api/pages/'+p.id+'/changes',{text:t});Object.assign(p,j.page);toast('Sent. Claude is on it.');}
+  else if(a==='publish'||a==='unpublish'){const j=await api('/api/pages/'+p.id+'/publish',{published:a==='publish'});Object.assign(p,j.page);toast(a==='publish'?'Published':'Unpublished');}
+  else if(a==='retry'){const j=await api('/api/pages/'+p.id+'/retry',{});list=list.filter(x=>x.id!==p.id);list.unshift(j.page);openId=j.page.id;toast('Started again');}
+  else if(a==='stop'||a==='delete'){const b=document.querySelector(`[data-pgact="${a}"]`);if(b&&b.dataset.sure!=='1'){b.dataset.sure='1';b.textContent=a==='stop'?'Click again to stop':'Click again to delete for good';return;}
+    if(a==='stop'){const j=await api('/api/pages/'+p.id+'/stop',{});Object.assign(p,j.page);}else{await api('/api/pages/'+p.id+'/delete',{});list=list.filter(x=>x.id!==p.id);mode='list';toast('Deleted');}}
+  else if(a==='reopen'){p.status='ready';}
+  g('pgDetail').dataset.sig='';render();}catch(err){toast(err.message);}}
+async function submit(ev){ev.preventDefault();const f=ev.target,v=n=>(f.elements[n].value||'').trim();
+  if(ups.some(u=>!u.url&&!u.err)){toast('Wait until the images finish uploading');return;}
+  const btn=f.querySelector('button[type=submit]');btn.disabled=true;btn.textContent='Starting Claude…';
+  try{const j=await api('/api/pages',{url:v('url'),name:v('name'),network:v('network'),buy_links:v('buy').split(/\s*\n\s*/).filter(Boolean),images:ups.filter(u=>u.url).map(u=>u.url),notes:v('notes')});
+    list.unshift(j.page);ups=[];openId=j.page.id;mode=j.page.status==='failed'?'detail':'detail';render();}
+  catch(err){toast(err.message);btn.disabled=false;btn.textContent='Build advertorial';}}
+window.pgShow=async()=>{await load();render();startTimer();};
+window.pgInit=()=>{canEdit=['owner','editor'].includes(me().role)||!window.NUTRA_HOSTED;
+  g('pagesView').addEventListener('click',ev=>{const c=ev.target.closest('[data-pg]'),b=ev.target.closest('[data-pgback]'),a=ev.target.closest('[data-pgact]'),vw=ev.target.closest('[data-view]'),un=ev.target.closest('[data-unpg]'),cp=ev.target.closest('[data-copy]');
+    if(c){openId=c.dataset.pg;mode='detail';g('pgDetail').dataset.sig='';render();refreshOpen().then(render);window.scrollTo(0,0);}
+    else if(b){mode='list';load().then(render);}else if(a)act(a.dataset.pgact);else if(vw){view=vw.dataset.view;g('pgDetail').dataset.sig='';render();}
+    else if(un){ups.splice(+un.dataset.unpg,1);thumbs();}
+    else if(cp){try{navigator.clipboard.writeText(cp.dataset.copy).then(()=>toast('Copied'),()=>{});}catch(err){}}});
+  g('pagesView').addEventListener('change',ev=>{if(ev.target.id==='pgFiles'){upload(ev.target.files);ev.target.value='';}});
+  g('pagesView').addEventListener('submit',ev=>{if(ev.target.id==='pgForm')submit(ev);});
+  g('pgNew').addEventListener('click',()=>{mode='new';ups=[];render();window.scrollTo(0,0);});};
+})();
 // ── New Tests: the 6-step product-test guide. Docs live in tests/<id>; Claude does the work and writes back. ──
 (function(){
 const STEPS=[

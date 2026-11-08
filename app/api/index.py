@@ -4,7 +4,7 @@ from http.cookies import SimpleCookie
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
-from lib import db, auth, postback, sync  # noqa: E402
+from lib import db, auth, postback, sync, pages, images, advertorial, agent  # noqa: E402
 
 STATIC = os.path.join(ROOT, 'static')
 PATH_RE = re.compile(r'^[A-Za-z0-9_\-.~:@+]{1,200}/[A-Za-z0-9_\-.~:@+]{1,200}$')
@@ -99,6 +99,140 @@ FORGOT_TEXT = ('<b>Team members:</b> ask the dashboard owner to press <b>Reset l
                '<b>Owner:</b> in Vercel → nutra-dashboard → Settings → Environment Variables, add <b>OWNER_RESET_CODE</b> '
                '(any code you make up, 8+ characters) and redeploy. Then open <b>/reset</b>, type that code and a new password. '
                'Delete the variable afterwards.')
+
+
+# ── page builder ──
+def base_url(env):
+    return ('https://' if SECURE else 'http://') + env.get('HTTP_HOST', '')
+
+
+def api_pages(env, path, method, p, user):
+    if not user or user['role'] == 'agent':
+        return jresp({'ok': False, 'error': 'signed out'}, 401)
+    if path == '/api/pages' and method == 'GET':
+        return jresp({'ok': True, 'pages': [pages.public(r) for r in pages.list_pages()],
+                      'ready': {'claude': agent.configured(), 'images': images.configured()}})
+    if method != 'POST' or not same_origin(env):
+        return jresp({'ok': False}, 405)
+    editor = user['role'] in ('owner', 'editor')
+    if path == '/api/pages':
+        if not editor:
+            return jresp({'ok': False, 'error': 'View only: ask the owner for Editor access'}, 403)
+        if not agent.configured():
+            return jresp({'ok': False, 'error': 'ANTHROPIC_API_KEY is not set in Vercel yet.'}, 400)
+        url = str(p.get('url') or '').strip()
+        if not re.match(r'^https?://[^\s]+$', url):
+            return jresp({'ok': False, 'error': 'Paste the product link (starting with https://).'}, 400)
+        lst = lambda k: [str(x).strip()[:1000] for x in (p.get(k) or []) if re.match(r'^https?://', str(x).strip())][:12]
+        inp = {'url': url[:1000], 'kind': 'advertorial', 'name': str(p.get('name') or '').strip()[:80],
+               'network': str(p.get('network') or '').strip()[:30], 'buy_links': lst('buy_links'), 'images': lst('images'),
+               'notes': str(p.get('notes') or '').strip()[:3000]}
+        return jresp({'ok': True, 'page': pages.public(pages.create(inp, user, base_url(env)))})
+    m = re.fullmatch(r'/api/pages/(pg_[A-Za-z0-9]{8,20})(?:/(status|changes|publish|delete|retry|stop))?', path)
+    if not m:
+        return jresp({'ok': False}, 404)
+    row = pages.get(m.group(1))
+    if not row:
+        return jresp({'ok': False, 'error': 'Page not found'}, 404)
+    act = m.group(2) or 'status'
+    if act == 'status':
+        return jresp({'ok': True, 'page': pages.public(pages.check(row))})
+    if not editor:
+        return jresp({'ok': False, 'error': 'View only'}, 403)
+    if act == 'changes':
+        text = str(p.get('text') or '').strip()
+        if len(text) < 3:
+            return jresp({'ok': False, 'error': 'Write what should change.'}, 400)
+        if row['status'] == 'building':
+            return jresp({'ok': False, 'error': 'Claude is still working on this page. Wait until it is ready.'}, 409)
+        if not row.get('content'):
+            return jresp({'ok': False, 'error': 'This page has no content yet. Use Try again instead.'}, 409)
+        return jresp({'ok': True, 'page': pages.public(pages.request_changes(row, text, user, base_url(env)))})
+    if act == 'retry':
+        if row['status'] == 'building':
+            return jresp({'ok': False, 'error': 'Already building.'}, 409)
+        db.q('delete from pages where id = %s', (row['id'],))
+        return jresp({'ok': True, 'page': pages.public(pages.create(row['input'] or {}, user, base_url(env)))})
+    if act == 'stop':
+        if row.get('session_id'):
+            agent.stop(row['session_id'])
+        pages.fail(row, 'Stopped by ' + user['email'])
+        return jresp({'ok': True, 'page': pages.public(pages.get(row['id']))})
+    if act == 'publish':
+        db.q('update pages set published = %s, updated_at = now() where id = %s', (bool(p.get('published')), row['id']))
+        return jresp({'ok': True, 'page': pages.public(pages.get(row['id']))})
+    if act == 'delete':
+        if row['status'] == 'building' and row.get('session_id'):
+            agent.stop(row['session_id'])
+        db.q('delete from pages where id = %s', (row['id'],))
+        return jresp({'ok': True})
+    return jresp({'ok': False}, 404)
+
+
+def api_agent(env, path, method, body):
+    m = re.fullmatch(r'/api/agent/(pg_[A-Za-z0-9]{8,20})/(progress|image|content|fail)', path)
+    if not m:
+        return jresp({'ok': False}, 404)
+    row = pages.agent_row(m.group(1), env.get('HTTP_AUTHORIZATION'))
+    if not row:
+        return jresp({'ok': False, 'error': 'bad page or token'}, 401)
+    act = m.group(2)
+    if act == 'content' and method == 'GET':
+        return jresp({'ok': True, 'content': row.get('content'), 'slug': row['slug']})
+    if method != 'POST':
+        return jresp({'ok': False}, 405)
+    try:
+        data = json.loads(body or b'{}')
+    except ValueError:
+        return jresp({'ok': False, 'error': 'body must be JSON'}, 400)
+    if act == 'progress':
+        ok = pages.set_phase(row, str(data.get('phase') or ''), str(data.get('note') or ''))
+        return jresp({'ok': ok} if ok else {'ok': False, 'error': 'phase must be research, writing, images, building or checking'}, 200 if ok else 400)
+    if act == 'image':
+        try:
+            uid = images.generate(str(data.get('prompt') or '')[:6000], str(data.get('shape') or 'landscape'),
+                                  [str(x) for x in (data.get('refs') or [])][:4], 'claude:' + row['id'])
+        except Exception as e:
+            pages.log(row['id'], 'Image failed: ' + str(e)[:150])
+            return jresp({'ok': False, 'error': str(e)[:300]}, 200)
+        return jresp({'ok': True, 'url': f"{base_url(env)}/u/{uid}.png"})
+    if act == 'content':
+        return jresp(pages.deliver(row, data, base_url(env)))
+    if act == 'fail':
+        pages.fail(row, str(data.get('reason') or 'Claude could not finish.'))
+        return jresp({'ok': True})
+
+
+def serve_page(slug, user):
+    pages.setup()
+    row = db.q1('select id, slug, content, published from pages where slug = %s', (slug,))
+    if not row or not row.get('content'):
+        return Resp(404, 'Not found', 'text/plain')
+    if not row['published'] and not user:
+        return Resp(404, 'Not found', 'text/plain')
+    hdrs = [('Cache-Control', 'no-store' if not row['published'] else 'public, max-age=60')]
+    return Resp(200, advertorial.render(row['content'], row['id'], preview=not row['published']), headers=hdrs)
+
+
+def page_click(env, body):
+    src = env.get('HTTP_ORIGIN') or env.get('HTTP_REFERER') or ''
+    if urllib.parse.urlparse(src).netloc != env.get('HTTP_HOST'):
+        return Resp(204, b'', 'text/plain')
+    try:
+        d = json.loads(body[:4000] or b'{}')
+        row = pages.get(str(d.get('page') or ''))
+        if row and row['published']:
+            i = row['input'] or {}
+            prod = re.search(r'/b/\d+/(\d{1,12})/', str(d.get('href') or ''))
+            c = lambda k: (str(d.get(k) or '').strip()[:200] or None)
+            db.q("""insert into events (network, event, product_id, product_key, offer, pack, utm_source, utm_campaign, utm_content, fbclid, raw)
+                    values (%s,'click',%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
+                 (i.get('network') or 'jvzoo', prod.group(1) if prod else None, i.get('offer_key') or None, row.get('name') or row['slug'],
+                  f"Bundle {c('bundle')}" if c('bundle') else None, c('utm_source'), c('utm_campaign'), c('utm_content'), c('fbclid'),
+                  db.J({'page': row['slug']})))
+    except Exception:
+        pass
+    return Resp(204, b'', 'text/plain')
 
 
 # ── /api/db: the Settings tab's documents ──
@@ -433,6 +567,26 @@ def route(env):
         if op == 'revoke':
             db.kv_delete('_system/agent_key')
         return jresp({'ok': True, **auth.agent_key_status()})
+
+    # ── page builder ──
+    if path.startswith('/api/agent/'):
+        return api_agent(env, path, method, body)
+    if path == '/api/public/page-click':
+        return page_click(env, body)
+    m_p = re.fullmatch(r'/p/([a-z0-9-]{1,60})', path)
+    if m_p and method in ('GET', 'HEAD'):
+        return serve_page(m_p.group(1), user)
+    if path == '/api/pages-selftest':
+        if not user or user['role'] != 'owner' or method != 'POST' or not same_origin(env):
+            return jresp({'ok': False}, 403)
+        try:
+            st = agent.ensure(pages.system_prompt())
+            return jresp({'ok': True, 'agent': st.get('agent_id'), 'environment': st.get('environment_id'), 'model': st.get('model'),
+                          'images': images.configured(), 'skills': pages.skill_text()[1]})
+        except Exception as e:
+            return jresp({'ok': False, 'error': str(e)[:500]})
+    if path == '/api/pages' or path.startswith('/api/pages/'):
+        return api_pages(env, path, method, p, user)
 
     if path == '/api/admin/import':
         if not user or user['role'] != 'owner' or method != 'POST' or not same_origin(env):

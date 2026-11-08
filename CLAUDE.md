@@ -13,6 +13,10 @@ https://nutra-dashboard-taupe.vercel.app). Pushing to `main` deploys automatical
   - `lib/sync.py` — the hourly job: Meta numbers + postback events → `snapshot`, then budget pauses, pause rules, alerts.
   - `lib/engine.py` — the maths (merging data, budget alerts, pause rules, offer check, new-ads alerts).
   - `lib/meta.py` — Meta Graph API with `META_TOKEN` (system user). `lib/postback.py`, `lib/auth.py`, `lib/notify.py`, `lib/db.py`.
+  - `lib/pages.py`, `lib/agent.py`, `lib/advertorial.py`, `lib/images.py` — the **Pages** tab: Claude (Managed Agents API,
+    `ANTHROPIC_API_KEY`) researches a product and posts page content JSON to `/api/agent/<page>/...` (per-page token); the server
+    renders it with the advertorial template and hosts it at `/p/<slug>`. Images via OpenAI (`OPENAI_API_KEY`, optional).
+    Skills come from the private repo in `SKILLS_REPO` (+ `SKILLS_GITHUB_TOKEN`), else the built-in brief in `lib/pages.py`.
   - `static/dashboard.html` — the page. `static/shim.js` gives it `window.claude.use('db'|'user')` backed by `/api/db`.
   - `app/README.md` — env vars and routes.
 - `dashboard.html` (repo root) — same page, used by the old Claude artifact. **After editing the page, copy it to
