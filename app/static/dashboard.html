@@ -533,6 +533,7 @@ body.noscroll{overflow:hidden;}
 .nt-key{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
 .nt-key code{flex:1 1 280px;min-width:0;overflow-wrap:anywhere;padding:10px 12px;border-radius:8px;background:var(--surface2);font-size:12.5px;user-select:all;}
 .nt-problem{background:var(--amber-lt);color:var(--amber);}
+.nt-del{color:var(--red,#DC2626);font-size:13px;}
 .nt-hint{font-weight:400;font-size:12px;color:var(--fg2);}
 .nt-pay{border:1px solid var(--border);border-radius:12px;padding:14px;margin:0;display:flex;flex-direction:column;gap:12px;min-width:0;}
 .nt-pay legend{font-weight:700;font-size:13px;padding:0 6px;}
@@ -2154,7 +2155,8 @@ function renderGuide(){const box=g('ntGuide');if(!box)return;const t=openId?test
     <div class="nt-sub">${t?e((t.network||'jvzoo').toUpperCase())+(payoutText(t)?' · '+e(payoutText(t)):''):'Fill in step 1 to start'}</div></div>
     <div style="min-width:200px"><b style="font-size:13px">${done} of 6 steps done</b><div class="nt-bar"><i style="width:${Math.round(done/6*100)}%"></i></div></div></div>
     <div class="nt-cols"><ol class="card nt-steps" aria-label="Steps">${stepList(t)}</ol><section class="nt-main">${panel(t,viewStep)}
-    <div class="nt-upnext"><span>UP NEXT</span>${e(NEXT[viewStep])}</div></section></div>`;
+    <div class="nt-upnext"><span>UP NEXT</span>${e(NEXT[viewStep])}</div>
+    ${t&&canWrite?'<div class="nt-row" style="justify-content:flex-end"><button type="button" class="nt-link nt-del" data-act="delete">Delete this test</button></div>':''}</section></div>`;
   const bi=g('ntBudget'),ai=g('ntAds');
   if(bi&&ai){const upd=fromBudget=>{const b=parseFloat(bi.value)||0;if(fromBudget)ai.value=recommend(b).ads;const n=Math.max(3,Math.round((parseInt(ai.value,10)||3)/3)*3);
     g('ntRAds').textContent=n;g('ntRAng').textContent='3 × '+(n/3);g('ntRPer').textContent='≈ '+fmt(b/n,0);};
@@ -2186,6 +2188,9 @@ async function create(ev){ev.preventDefault();const f=ev.target,v=n=>(f.elements
     if(await save(t,{...fields,steps:{1:{problem:null}}},{step:1,action:'edit',text:'Details edited'})){editing=false;pendingUploads=[];lastSig='';toast('Saved');renderGuide();}return;}
   try{await db.doc('tests/'+id).set(doc);draft=false;pendingUploads=[];openId=id;viewStep=1;lastSig=JSON.stringify(tests.find(x=>x.id===id)||null);renderGuide();toast('Saved. Claude starts at the next check, about '+nextCheck()+'.');}catch(err){note('Could not save: '+(err.message||err));}}
 async function act(a){const t=tests.find(x=>x.id===openId);if(!t)return;
+  if(a==='delete'){const btn=document.querySelector('[data-act="delete"]');
+    if(btn&&btn.dataset.sure!=='1'){btn.dataset.sure='1';btn.textContent='Click again to delete "'+(t.name||'this test')+'" for good';return;}
+    try{await db.doc('tests/'+t.id).delete();toast('Test deleted');showList();}catch(err){note('Could not delete: '+(err.message||err));}return;}
   if(a==='edit1'){editing=true;pendingUploads=[];renderGuide();return;}
   if(a==='canceledit'){editing=false;pendingUploads=[];renderGuide();return;}
   if(a==='approve2'){const c=(g('ntChanges').value||'').trim();if(c)return act('changes2');
