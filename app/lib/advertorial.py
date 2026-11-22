@@ -28,7 +28,10 @@ SCHEMA_DOC = r"""{
        {"type": "offer_link", "text": "See the bundle comparison"},
        {"type": "expectations", "good_title": "Things to look for", "good": ["..."], "bad_title": "Promises to question", "bad": ["..."]},
        {"type": "journal", "kicker": "KEEP THE NOTEBOOK", "h": "Notice, don't grade.", "text": "..."},
-       {"type": "faq", "items": [{"q": "Is Linda a real person?", "a": "Linda is a composite character..."}]}
+       {"type": "faq", "items": [{"q": "Is Linda a real person?", "a": "Linda is a composite character..."}]},
+       {"type": "ingredients", "title": "What's inside", "items": [{"name": "Berberine", "amount": "150 mg", "note": "what the seller says it's for"}],
+        "source": "seller's label" | "seller's sales page" | "label photo on Amazon" | "other retailer listing" | "not published",
+        "source_url": "https://...", "checked": "2026-11-22"}   // REQUIRED once, in the closer-look section (05)
      ]}
   ],
   "offer": {"eyebrow": "COMPARE THE BUNDLES", "h2": "Which bundle fits your plan?", "intro": "...",
@@ -113,6 +116,19 @@ def block(b):
                 f'<div><h3>{t(b.get("bad_title") or "Promises to question")}</h3><ul>{li(b.get("bad"))}</ul></div></div>')
     if k == 'journal':
         return f'<aside class="journal"><small>{t(b.get("kicker"))}</small><h3>{t(b.get("h"))}</h3><p>{t(b.get("text"))}</p></aside>'
+    if k == 'ingredients':
+        items = [i for i in b.get('items') or [] if i.get('name')]
+        src = t(b.get('source') or 'not published')
+        url = safe_url(b.get('source_url'))
+        title = t(b.get('title') or "What's inside")
+        src_html = f'<a href="{a(url)}" target="_blank" rel="nofollow noopener">{src}</a>' if url else src
+        if not items:
+            return (f'<div class="ingredients"><h3>{title}</h3><p class="ing-empty">The seller has not published '
+                    f'the ingredient list. Read the full label before use, and ask the seller if you need it before ordering.</p></div>')
+        cards = ''.join(f'<li><b>{t(i.get("name"))}</b>' + (f'<span class="ing-amt">{t(i.get("amount"))}</span>' if i.get('amount') else '')
+                        + (f'<span class="ing-note">{t(i.get("note"))}</span>' if i.get('note') else '') + '</li>' for i in items[:16])
+        return (f'<div class="ingredients"><h3>{title}</h3><ul>{cards}</ul>'
+                f'<p class="ing-src">Source: {src_html}{" · checked " + t(b.get("checked")) if b.get("checked") else ""}. Always read the full label before use.</p></div>')
     if k == 'faq':
         return '<div class="faq">' + ''.join(f'<details><summary>{t(f.get("q"))}</summary><div><p>{t(f.get("a"))}</p></div></details>'
                                              for f in b.get('items') or []) + '</div>'
@@ -275,6 +291,11 @@ figure{margin:27px 0 30px}figure img{aspect-ratio:16/9}.hero-figure{margin:0 0 3
 .expectations{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin:30px 0}.expectations>div{padding:23px 21px;background:color-mix(in oklab,var(--sage) 70%,white)}
 .expectations>div+div{background:color-mix(in oklab,var(--gold) 14%,white)}.expectations h3{font-family:Arial,sans-serif;font-size:16px;font-weight:700}
 .expectations ul{list-style:disc;padding-left:18px;margin:16px 0 0}.expectations li{font-size:15px;line-height:1.65;margin-bottom:10px}
+.ingredients{margin:28px 0 34px}.ingredients ul{list-style:none;margin:16px 0 12px;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.ingredients li{background:color-mix(in oklab,var(--sage) 70%,white);border:1px solid var(--line);border-radius:6px;padding:14px 16px;display:flex;flex-direction:column;gap:3px;line-height:1.4;min-width:0}
+.ingredients li b{color:var(--teal);font-family:Georgia,serif;font-size:18px}.ing-amt{font-size:14px;font-weight:700;color:var(--ink)}.ing-note{font-size:13px;color:var(--muted)}
+.ing-src,.ing-empty{font-size:13px;color:var(--muted);margin:0}
+@media(max-width:620px){.ingredients ul{grid-template-columns:1fr}}
 .faq{margin:25px 0 33px}.faq details{border-bottom:1px solid var(--line)}.faq details:first-child{border-top:1px solid var(--line)}
 .faq summary{cursor:pointer;list-style:none;font-size:16px;line-height:1.5;font-weight:600;padding:20px 35px 20px 0;position:relative}.faq summary::-webkit-details-marker{display:none}
 .faq summary:after{content:'+';position:absolute;right:4px;top:17px;font-size:23px;color:var(--teal);font-weight:400}.faq details[open] summary:after{content:'−'}

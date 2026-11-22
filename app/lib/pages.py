@@ -177,11 +177,20 @@ STEPS
    front-label wording, real bundle totals and per-unit prices, shipping, the return/guarantee days stated at checkout (checkout wins
    over the sales page), and claims to avoid. If the given link is the affiliate checkout link, find the 2/3/6 (or similar) bundle
    links from it, keeping the affiliate id/parameters exactly. Use web_search for real buyer language (reviews, forums) about the
-   problem the product addresses. Never invent ingredients, studies, doses or numbers.
+   problem the product addresses. Never invent studies, doses or numbers.
+   INGREDIENTS (every page needs them): search in this order and stop at the first good source:
+     a) the seller's sales page / VSL page / checkout (look for "ingredients", "supplement facts", "formula", label images),
+     b) label photos: the vendor's images, Amazon/Walmart/eBay listings of the same product (same name, same pack design),
+     c) other stores or review pages selling the same product.
+   Record each ingredient's name and amount exactly as written, the source type and URL, and today's date. If sources
+   disagree, use the highest one in the list and POST a note. If only (c) or nothing was found, still build the page:
+   use the ingredients block with what you found (or an empty items list) and POST a warning note:
+   {"text": "Ingredients came from <source>, not the seller's own label", "fix": "Confirm the ingredient list with the vendor before running ads."}
+   Cost per day: if the checkout shows shipping, include it (say so in the bundle intro).
 2. writing: plan the publication (neutral name, never a real outlet), a composite character the buyer recognises, and the 7 sections:
    01 incident, 02 struggle (with pull quote), 03 the turn (a doctor or family member may talk about habits but never recommends the
    product), 04 what they did next (practical non-product steps + note), 05 a closer look at the options (the product, facts only,
-   3–5 numbered checks: label, directions, evidence, cost per day, return terms + an offer_link), 06 realistic expectations
+   3–5 numbered checks: label, directions, evidence, cost per day, return terms + an ingredients block + an offer_link), 06 realistic expectations
    (expectations block + note + journal), 07 FAQ (keep "Is <name> a real person?" → composite; is it a treatment (no); timeline (none
    guaranteed); medications (ask a pharmacist/doctor); one-time or subscription; returns). ~1,400–1,800 words, warm editorial voice,
    short paragraphs, a few bolded key lines.
@@ -367,6 +376,8 @@ def validate(c):
                 float(b.get(k))
             except (TypeError, ValueError):
                 probs.append(f"bundle {b.get('label')}: {k} must be a number")
+    if not any(b.get('type') == 'ingredients' for s in secs for b in (s.get('blocks') or [])):
+        probs.append('add an ingredients block (section 05), with the items you found and their source, or an empty items list if none was found')
     o = c.get('offer') or {}
     if str(o.get('billing') or '').lower().startswith('sub') and not (o.get('billing_note') or all(b.get('billing_note') for b in bundles)):
         probs.append('offer.billing is subscription, so offer.billing_note must state the exact rebill terms from the checkout')
