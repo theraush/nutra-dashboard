@@ -593,6 +593,9 @@ def route(env):
         return api_agent(env, path, method, body)
     if path == '/api/public/page-click':
         return page_click(env, body)
+    m_demo = re.fullmatch(r'/demo/([a-z0-9-]{1,60})', path)
+    if m_demo and method in ('GET', 'HEAD') and os.path.isfile(os.path.join(STATIC, 'demo', m_demo.group(1) + '.html')):
+        return Resp(200, read_static('demo/' + m_demo.group(1) + '.html'), headers=[('X-Robots-Tag', 'noindex'), ('Cache-Control', 'public, max-age=60')])
     m_p = re.fullmatch(r'/p/([a-z0-9-]{1,60})', path)
     if m_p and method in ('GET', 'HEAD'):
         return serve_page(m_p.group(1), user)

@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>The 3 P.M. Mistake | The Everyday Wellness Desk</title>
+<meta name="description" content="Three small changes to the afternoon routine, and where a wellness patch fits.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Instrument+Sans:wght@500;600&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one 680px serif reading column on near-black, 880px animated figure cards between sections. */
+:root{
+  --bg:#121513; --card:#1c201e; --card2:#232826; --line:#2c322f;
+  --head:#eceFed; --text:#b9c0bc; --dim:#7d8782;
+  --green:#3fbf8f; --green-deep:#0e7c57; --gold:#4a4116; --gold-text:#f1e6b8; --coral:#e0705a; --white:#ffffff;
+  --serif:"Source Serif 4","Tiempos Text",Georgia,"Times New Roman",serif;
+  --sans:"Instrument Sans","Helvetica Neue",Arial,system-ui,sans-serif;
+  --mono:"Geist Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--serif);font-size:21px;line-height:1.45;-webkit-font-smoothing:antialiased;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+a{color:var(--green);text-underline-offset:3px}
+a:focus-visible,button:focus-visible{outline:2px solid var(--green);outline-offset:3px}
+img{max-width:100%}
+.progress{position:fixed;inset:0 0 auto;height:3px;z-index:20;background:transparent}
+.progress i{display:block;height:100%;width:0;background:var(--green)}
+.col{max-width:680px;margin:0 auto}
+.top{display:flex;justify-content:space-between;align-items:center;gap:16px;padding-block:28px 52px;font-family:var(--sans);font-size:14px}
+.top b{font-family:var(--serif);font-size:17px;color:var(--head);font-weight:600}
+.top span{color:var(--dim)}
+.tag{font-family:var(--sans);font-size:13px;font-weight:600;color:var(--green);margin:0 0 14px}
+h1{font-size:clamp(36px,6vw,52px);line-height:1.04;letter-spacing:-.02em;font-weight:600;color:var(--head);margin:0 0 22px;text-wrap:balance}
+.sub{font-family:var(--sans);font-size:17px;font-weight:600;color:var(--head);background:var(--card);border-left:3px solid var(--green-deep);padding:12px 16px;margin:0 0 30px}
+p{margin:0 0 22px}
+strong{color:var(--head);font-weight:600}
+mark{background:var(--gold);color:var(--gold-text);border-radius:3px;padding:0 3px;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.byline{display:flex;align-items:center;gap:12px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:14px 0;margin:30px 0 40px;font-family:var(--sans);font-size:13px}
+.byline .av,.bio .av{width:40px;height:40px;border-radius:50%;background:var(--green-deep);color:var(--white);display:grid;place-items:center;font-family:var(--serif);font-weight:600;font-size:17px;flex:none}
+.byline div{display:flex;flex-direction:column;line-height:1.35}
+.byline b{color:var(--head)}.byline span{color:var(--dim)}
+.byline .when{margin-left:auto;text-align:right}
+ol.preview{margin:0 0 30px;padding-left:26px}
+ol.preview li{margin-bottom:12px}
+h2{font-size:30px;line-height:1.2;letter-spacing:-.01em;font-weight:600;color:var(--white);background:var(--green-deep);border-radius:8px;padding:12px 16px;margin:56px 0 26px;text-wrap:balance}
+h3{font-size:23px;line-height:1.3;font-weight:600;color:var(--head);margin:34px 0 14px}
+.quote{border-left:3px solid var(--green-deep);padding-left:18px;margin:0 0 22px}
+/* figures */
+figure{margin:40px auto 44px;max-width:880px}
+.fig{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;position:relative}
+.fig svg{display:block;width:100%;height:auto}
+.replay{position:absolute;top:14px;right:16px;font-family:var(--sans);font-size:12px;font-weight:600;color:var(--dim);background:transparent;border:1px solid var(--line);border-radius:999px;padding:4px 10px;cursor:pointer}
+.replay:hover{color:var(--head)}
+figcaption{max-width:680px;margin:12px 0 0;font-family:var(--sans);font-size:15px;font-weight:600;line-height:1.45;color:var(--gold-text);background:var(--gold);border-radius:4px;padding:8px 12px}
+@media(min-width:960px){figcaption{margin-left:0}}
+/* svg text + motion */
+svg text{font-family:var(--sans)}
+svg .mono{font-family:var(--mono)}
+svg .serif{font-family:var(--serif)}
+.s{opacity:0;transition:opacity .5s ease,transform .5s cubic-bezier(.2,.8,.2,1.2)}
+.s.on{opacity:1}
+.pop{transform-box:fill-box;transform-origin:center;transform:scale(.6)}
+.pop.on{transform:scale(1)}
+.up{transform:translateY(14px)}.up.on{transform:none}
+.dr{stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 1s ease}
+.dr.on{stroke-dashoffset:0}
+.ping{transform-box:fill-box;transform-origin:center;animation:ping 1.6s ease-out infinite}
+@keyframes ping{0%{transform:scale(.6);opacity:.9}100%{transform:scale(2.2);opacity:0}}
+.flash.on{animation:flash .9s ease 2}
+@keyframes flash{50%{opacity:.25}}
+.out{transition:opacity .5s ease}.out.off{opacity:.18}
+/* offer */
+.bundles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:26px 0 18px}
+.b{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 14px;display:flex;flex-direction:column;gap:6px;text-align:center;font-family:var(--sans);min-width:0}
+.b.best{border:2px solid var(--green)}
+.b .badge{font-size:12px;font-weight:600;color:var(--green);min-height:18px}
+.b h4{margin:0;font-family:var(--serif);font-size:22px;color:var(--head);font-weight:600}
+.b .day{font-size:30px;font-weight:600;color:var(--head);font-variant-numeric:tabular-nums}
+.b .day small{font-size:13px;color:var(--dim);font-weight:500}
+.b .tot{font-size:13px;color:var(--dim)}
+.b a{margin-top:8px;display:block;background:var(--green-deep);color:var(--white);text-decoration:none;font-weight:600;font-size:15px;border-radius:8px;padding:12px 8px}
+.b a:hover{background:#12935f}
+.guarantee{background:var(--card);border:1px solid var(--green-deep);border-radius:10px;padding:16px 18px;font-family:var(--sans);font-size:16px;line-height:1.5;color:var(--head);margin:0 0 26px}
+.cta{display:block;font-weight:600;font-size:21px;margin:0 0 10px;text-decoration:none}
+.cta:hover{text-decoration:underline}
+.bio{display:flex;gap:14px;align-items:flex-start;border-top:1px solid var(--line);padding-top:22px;margin-top:40px;font-family:var(--sans);font-size:14px;color:var(--dim)}
+.bio b{color:var(--head)}
+footer{max-width:680px;margin:40px auto 0;font-family:var(--sans);font-size:12px;line-height:1.6;color:var(--dim);border-top:1px solid var(--line);padding-top:20px}
+.demo{font-family:var(--sans);font-size:12px;font-weight:600;color:var(--bg);background:var(--gold-text);border-radius:999px;padding:3px 10px}
+@media(max-width:620px){
+  body{font-size:18px}
+  h2{font-size:24px}h3{font-size:20px}
+  .fig{padding:6px;border-radius:10px;margin-inline:-6px}
+  .bundles{grid-template-columns:1fr}
+  .b.best{order:-1}
+  .byline .when{display:none}
+}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .s,.dr,.out{transition:none}.ping,.flash.on{animation:none}
+}
+</style>
+</head>
+<body>
+<div class="progress" aria-hidden="true"><i id="bar"></i></div>
+<div class="col">
+  <div class="top"><b>The Everyday Wellness Desk</b><span class="demo">DEMO · Info advertorial</span></div>
+
+  <p class="tag">Health Habits After 50</p>
+  <h1>Most people fight the 3&nbsp;p.m. crash with willpower. That's the mistake.</h1>
+  <div class="sub">And the snack drawer has been winning for years…</div>
+
+  <p>Around 3 p.m., energy dips and the cravings start. It happens to almost everyone.</p>
+  <p><strong>BUT :</strong> most people answer it the same way. Grit, a "just one" snack, then guilt. Tomorrow, repeat.</p>
+  <p><mark>Willpower isn't the problem. The routine around 3 p.m. is.</mark></p>
+  <p><strong>The good news :</strong> the fix is small. No diet, no app, no 5 a.m. workouts.</p>
+  <p><strong>Below we'll break down the 3 changes. Then where a wellness patch fits, and where it doesn't.</strong></p>
+
+  <div class="byline">
+    <span class="av" aria-hidden="true">E</span>
+    <div><b>The editors</b><span>The Everyday Wellness Desk</span></div>
+    <div class="when"><b>November 22, 2026</b><span>6 min read</span></div>
+  </div>
+
+  <p><mark><strong>Most of the difference comes from 3 changes in your afternoon.</strong></mark></p>
+  <ol class="preview">
+    <li><strong>Change #1 :</strong> Stop treating the slump as a willpower test.</li>
+    <li><strong>Change #2 :</strong> Rebuild the 90 minutes after lunch. <em>The biggest one.</em></li>
+    <li><strong>Change #3 :</strong> Give 3 p.m. a fixed routine, so there's nothing to decide.</li>
+  </ol>
+
+  <h3>First: why listen to us?</h3>
+  <p>We're editors, not doctors. Our job is reading the fine print so you don't have to.</p>
+  <p>For this piece we read the product label, every checkout page and a pile of real buyer comments about the afternoon slump.</p>
+  <p>What kept coming up wasn't a lack of discipline. <strong>It was people losing the same fight at the same hour, every day.</strong></p>
+
+  <h2>Change #1: Stop fighting it with willpower</h2>
+  <h3>The problem</h3>
+  <p>The slump arrives. You resist. You snack anyway. Then you feel bad, and promise to try harder tomorrow.</p>
+  <p>That loop runs every single afternoon. <mark>After a month it's not a bad day. It's a habit, 30 times over.</mark></p>
+</div>
+
+<figure aria-labelledby="c1">
+  <div class="fig">
+    <button class="replay" type="button" data-replay>↻ Replay</button>
+    <svg viewBox="0 0 880 440" role="img" aria-label="Animated loop: slump, snack, guilt, try harder tomorrow, repeating for 30 days, then broken by a routine change.">
+      <text x="28" y="40" class="mono" font-size="15" fill="#7d8782" letter-spacing="1.5">THE 3 P.M. LOOP</text>
+      <g transform="translate(300 235)">
+        <circle r="138" fill="none" stroke="#2c322f" stroke-width="2"/>
+        <circle r="138" fill="none" stroke="#e0705a" stroke-width="4" pathLength="1" class="dr out" data-t="300" data-k="loop" transform="rotate(-90)"/>
+        <g class="s pop" data-t="200"><circle cx="0" cy="-138" r="44" fill="#232826" stroke="#e0705a" stroke-width="2"/><text y="-132" text-anchor="middle" font-size="19" font-weight="600" fill="#eceFed">Slump</text></g>
+        <g class="s pop" data-t="700"><circle cx="138" cy="0" r="44" fill="#232826" stroke="#e0705a" stroke-width="2"/><text x="138" y="6" text-anchor="middle" font-size="19" font-weight="600" fill="#eceFed">Snack</text></g>
+        <g class="s pop" data-t="1200"><circle cx="0" cy="138" r="44" fill="#232826" stroke="#e0705a" stroke-width="2"/><text y="144" text-anchor="middle" font-size="19" font-weight="600" fill="#eceFed">Guilt</text></g>
+        <g class="s pop" data-t="1700"><circle cx="-138" cy="0" r="52" fill="#232826" stroke="#e0705a" stroke-width="2"/><text x="-138" y="-4" text-anchor="middle" font-size="16" font-weight="600" fill="#eceFed">"Try harder</text><text x="-138" y="16" text-anchor="middle" font-size="16" font-weight="600" fill="#eceFed">tomorrow"</text></g>
+        <text y="-6" text-anchor="middle" class="mono" font-size="14" fill="#7d8782">DAY</text>
+        <text y="34" text-anchor="middle" class="serif" font-size="44" font-weight="600" fill="#eceFed" data-count="30" data-t="2100" data-dur="1800">1</text>
+      </g>
+      <g class="s up" data-t="4300">
+        <line x1="520" y1="235" x2="575" y2="235" stroke="#3fbf8f" stroke-width="3" stroke-dasharray="6 6"/>
+        <rect x="585" y="160" width="260" height="150" rx="12" fill="#0e7c57"/>
+        <text x="715" y="205" text-anchor="middle" font-size="16" font-weight="600" fill="#ffffff" opacity=".85">THE FIX</text>
+        <text x="715" y="240" text-anchor="middle" class="serif" font-size="25" font-weight="600" fill="#ffffff">Change the routine,</text>
+        <text x="715" y="272" text-anchor="middle" class="serif" font-size="25" font-weight="600" fill="#ffffff">not the willpower</text>
+      </g>
+      <g data-t="4300" class="s"><circle cx="545" cy="235" r="7" fill="#3fbf8f"/><circle cx="545" cy="235" r="7" fill="#3fbf8f" class="ping"/></g>
+    </svg>
+  </div>
+  <figcaption id="c1">Same 4 steps, every afternoon. After 30 days it's a habit, not a slip. You don't win it by trying harder. You win it by changing what happens around 3 p.m.</figcaption>
+</figure>
+
+<div class="col">
+  <p>So the question isn't "how do I resist better?"</p>
+  <p><strong>It's "what does my afternoon look like before the slump hits?"</strong></p>
+
+  <h2>Change #2: Rebuild the 90 minutes after lunch</h2>
+  <p>This is the big one. Most slumps are set up between 12:30 and 2:00.</p>
+  <h3>Step 1: Look at what you're doing now</h3>
+  <p>A quick desk lunch. Then sitting, straight through. By 3 p.m. you're flat, and the pantry is ten steps away.</p>
+  <h3>Step 2: Swap three things</h3>
+  <div class="quote"><p>Protein at lunch. Ten minutes of walking after it. A glass of water at 3. <mark>Small enough to do on a busy day.</mark></p></div>
+</div>
+
+<figure aria-labelledby="c2">
+  <div class="fig">
+    <button class="replay" type="button" data-replay>↻ Replay</button>
+    <svg viewBox="0 0 880 440" role="img" aria-label="Animated comparison of an old afternoon and a new afternoon, slot by slot, with the new routine's items ticking in.">
+      <text x="28" y="40" class="mono" font-size="15" fill="#7d8782" letter-spacing="1.5">YOUR AFTERNOON · BEFORE vs AFTER</text>
+      <text x="300" y="86" text-anchor="middle" font-size="17" font-weight="600" fill="#e0705a">BEFORE</text>
+      <text x="640" y="86" text-anchor="middle" font-size="17" font-weight="600" fill="#3fbf8f">AFTER</text>
+      <g class="mono" font-size="16" fill="#7d8782">
+        <text x="40" y="140">12:30</text><text x="40" y="210">1:00</text><text x="40" y="280">2:00</text><text x="40" y="350">3:00</text>
+      </g>
+      <g font-size="18" font-weight="600" fill="#b9c0bc">
+        <g class="s up" data-t="200"><rect x="150" y="112" width="300" height="44" rx="8" fill="#232826"/><text x="170" y="141">Quick desk lunch</text></g>
+        <g class="s up" data-t="400"><rect x="150" y="182" width="300" height="44" rx="8" fill="#232826"/><text x="170" y="211">Back to the chair</text></g>
+        <g class="s up" data-t="600"><rect x="150" y="252" width="300" height="44" rx="8" fill="#232826"/><text x="170" y="281">Still sitting</text></g>
+        <g class="s up flash" data-t="800"><rect x="150" y="322" width="300" height="44" rx="8" fill="#3a2420" stroke="#e0705a"/><text x="170" y="351" fill="#f2b3a6">Slump → pantry</text></g>
+      </g>
+      <g font-size="18" font-weight="600" fill="#eceFed">
+        <g class="s pop" data-t="1600"><rect x="490" y="112" width="300" height="44" rx="8" fill="#16352a" stroke="#0e7c57"/><text x="540" y="141">Lunch with protein</text><path d="M508 133l7 7 13-14" stroke="#3fbf8f" stroke-width="3" fill="none" stroke-linecap="round" pathLength="1" class="dr" data-t="1900"/></g>
+        <g class="s pop" data-t="2300"><rect x="490" y="182" width="300" height="44" rx="8" fill="#16352a" stroke="#0e7c57"/><text x="540" y="211">10-minute walk</text><path d="M508 203l7 7 13-14" stroke="#3fbf8f" stroke-width="3" fill="none" stroke-linecap="round" pathLength="1" class="dr" data-t="2600"/></g>
+        <g class="s pop" data-t="3000"><rect x="490" y="252" width="300" height="44" rx="8" fill="#16352a" stroke="#0e7c57"/><text x="540" y="281">Back to work</text><path d="M508 273l7 7 13-14" stroke="#3fbf8f" stroke-width="3" fill="none" stroke-linecap="round" pathLength="1" class="dr" data-t="3300"/></g>
+        <g class="s pop" data-t="3700"><rect x="490" y="322" width="300" height="44" rx="8" fill="#16352a" stroke="#3fbf8f" stroke-width="2"/><text x="540" y="351">Water + 3 p.m. routine</text><path d="M508 343l7 7 13-14" stroke="#3fbf8f" stroke-width="3" fill="none" stroke-linecap="round" pathLength="1" class="dr" data-t="4000"/></g>
+      </g>
+      <g class="s up" data-t="4500"><text x="640" y="412" text-anchor="middle" font-size="16" font-weight="600" fill="#3fbf8f">Same day. Three swaps. Nothing to decide at 3 p.m.</text></g>
+    </svg>
+  </div>
+  <figcaption id="c2">Four time slots, three swaps. Nothing here costs money or takes more than ten minutes. That's why it sticks when a diet doesn't.</figcaption>
+</figure>
+
+<div class="col">
+  <p>That's Change #2. Now the afternoon isn't set up to fail.</p>
+  <p>NOW Change #3 makes 3 p.m. automatic:</p>
+
+  <h2>Change #3: Give 3 p.m. a fixed routine</h2>
+  <p>Decisions are where the snack wins. A fixed routine removes the decision.</p>
+  <p>For some readers that routine is a glass of water and a short stretch. <strong>Others pair it with a once-a-day wellness patch, so the moment has a clear start.</strong></p>
+  <p>The one people keep asking us about is GLPatches. So we looked at what you actually get. <mark>Here's what's on the box, and what isn't.</mark></p>
+</div>
+
+<figure aria-labelledby="c3">
+  <div class="fig">
+    <button class="replay" type="button" data-replay>↻ Replay</button>
+    <svg viewBox="0 0 880 440" role="img" aria-label="Animated product check: the GLPatches pouch appears and labelled callouts point to verified facts.">
+      <text x="28" y="40" class="mono" font-size="15" fill="#7d8782" letter-spacing="1.5">WHAT'S ACTUALLY IN THE BOX · CHECKED BY OUR EDITORS</text>
+      <g class="s pop" data-t="200">
+        <ellipse cx="190" cy="402" rx="110" ry="12" fill="#000" opacity=".35"/>
+        <image href="/u/SeespNBT-Sz1yWMDOW3IxSEa.webp" x="80" y="66" width="220" height="352" preserveAspectRatio="xMidYMid meet"/>
+      </g>
+      <g data-t="900" class="s"><circle cx="252" cy="112" r="6" fill="#3fbf8f"/><circle cx="252" cy="112" r="6" fill="#3fbf8f" class="ping"/></g>
+      <path d="M258 112 H470" stroke="#3fbf8f" stroke-width="2" fill="none" pathLength="1" class="dr" data-t="900"/>
+      <g class="s up" data-t="1200"><text x="480" y="106" font-size="19" font-weight="600" fill="#eceFed">A wellness patch</text><text x="480" y="130" font-size="15" fill="#b9c0bc">Not a medication. Not a GLP-1 drug.</text></g>
+
+      <g data-t="1700" class="s"><circle cx="190" cy="222" r="6" fill="#3fbf8f"/></g>
+      <path d="M196 222 H470" stroke="#3fbf8f" stroke-width="2" fill="none" pathLength="1" class="dr" data-t="1700"/>
+      <g class="s up" data-t="2000"><text x="480" y="216" font-size="19" font-weight="600" fill="#eceFed">Pouch says "GLPro"</text><text x="480" y="240" font-size="15" fill="#b9c0bc">Sold as GLPatches on the checkout page.</text></g>
+
+      <g data-t="2500" class="s"><circle cx="190" cy="300" r="6" fill="#e3bd4c"/></g>
+      <path d="M196 300 H470" stroke="#e3bd4c" stroke-width="2" fill="none" pathLength="1" class="dr" data-t="2500"/>
+      <g class="s up" data-t="2800"><text x="480" y="294" font-size="19" font-weight="600" fill="#eceFed">Ingredients: read the label</text><text x="480" y="318" font-size="15" fill="#b9c0bc">The seller's page doesn't list them.</text></g>
+
+      <g class="s pop" data-t="3400"><rect x="476" y="350" width="370" height="56" rx="10" fill="#0e7c57"/><text x="661" y="384" text-anchor="middle" font-size="18" font-weight="600" fill="#ffffff">60-day return policy (by the vendor)</text></g>
+    </svg>
+  </div>
+  <figcaption id="c3">What we could confirm: it's a wellness patch, the pouch reads "GLPro", ingredients aren't published on the seller's page, and the checkout lists a 60-day return policy handled by the vendor. Read the full label before you use it.</figcaption>
+</figure>
+
+<div class="col">
+  <p>We'll be straight: <strong>no patch replaces the first two changes.</strong> It's a routine marker, not a fix on its own.</p>
+  <p>If you take medication, especially for blood sugar or weight, <mark>talk to your doctor or pharmacist before adding any supplement.</mark></p>
+
+  <h3>What it costs per day</h3>
+  <p>The bundles are one-time purchases. Here's the price per day of supply, before shipping:</p>
+</div>
+
+<figure aria-labelledby="c4">
+  <div class="fig">
+    <button class="replay" type="button" data-replay>↻ Replay</button>
+    <svg viewBox="0 0 880 440" role="img" aria-label="Animated bar chart of cost per day: 2 packs $2.63, 3 packs $2.30, 6 packs $1.63.">
+      <text x="28" y="40" class="mono" font-size="15" fill="#7d8782" letter-spacing="1.5">COST PER DAY OF SUPPLY · PRODUCT ONLY</text>
+      <line x1="120" y1="380" x2="820" y2="380" stroke="#2c322f" stroke-width="2"/>
+      <!-- scale: $3.00 = 270px tall, baseline y=380 -->
+      <g class="mono" font-size="13" fill="#7d8782"><text x="110" y="384" text-anchor="end">$0</text><text x="110" y="200" text-anchor="end">$2</text><text x="110" y="110" text-anchor="end">$3</text></g>
+      <line x1="120" y1="200" x2="820" y2="200" stroke="#2c322f" stroke-dasharray="4 6"/><line x1="120" y1="110" x2="820" y2="110" stroke="#2c322f" stroke-dasharray="4 6"/>
+      <g>
+        <rect x="190" width="140" rx="8" fill="#3a3f3c" data-bar="236.7" data-t="300" y="380" height="0"/>
+        <rect x="400" width="140" rx="8" fill="#3a3f3c" data-bar="207" data-t="700" y="380" height="0"/>
+        <rect x="610" width="140" rx="8" fill="#0e7c57" data-bar="146.7" data-t="1100" y="380" height="0"/>
+      </g>
+      <g font-size="17" font-weight="600" fill="#b9c0bc" text-anchor="middle">
+        <text x="260" y="408">2 packs</text><text x="470" y="408">3 packs</text><text x="680" y="408" fill="#3fbf8f">6 packs</text>
+      </g>
+      <g class="serif" font-size="30" font-weight="600" fill="#eceFed" text-anchor="middle">
+        <text x="260" y="128" class="s" data-t="1300" data-money="2.63">$0.00</text>
+        <text x="470" y="158" class="s" data-t="1500" data-money="2.30">$0.00</text>
+        <text x="680" y="218" class="s" data-t="1700" data-money="1.63">$0.00</text>
+      </g>
+      <g class="s pop" data-t="2900"><rect x="612" y="58" width="136" height="34" rx="17" fill="#3fbf8f"/><text x="680" y="81" text-anchor="middle" font-size="15" font-weight="600" fill="#121513">BEST VALUE</text></g>
+      <path d="M680 96 V196" stroke="#3fbf8f" stroke-width="2" stroke-dasharray="4 5" class="s" data-t="2900"/>
+    </svg>
+  </div>
+  <figcaption id="c4">2 packs: $158 for 60 days ($2.63 a day). 3 packs: $207 for 90 days ($2.30). 6 packs: $294 for 180 days ($1.63). Shipping and taxes are shown at checkout.</figcaption>
+</figure>
+
+<div class="col">
+  <h2>The easy way to do all of this</h2>
+  <p>You don't need to buy anything for Changes #1 and #2. They're free and they matter most.</p>
+  <p><mark><strong>But make no mistake. If the afternoon keeps beating you, do these 3 things:</strong></mark></p>
+  <ol class="preview">
+    <li>Stop treating 3 p.m. as a willpower test.</li>
+    <li>Protein at lunch, then a 10-minute walk.</li>
+    <li>Give 3 p.m. a fixed routine, with or without a patch.</li>
+  </ol>
+  <p>If you want to try GLPatches as part of step 3, <mark>the 6-pack is the lowest price per day.</mark></p>
+
+  <div class="bundles" id="bundles">
+    <div class="b"><span class="badge">Try it</span><h4>2 packs</h4><span class="day">$2.63<small> /day</small></span><span class="tot">$158 · 60-day supply</span><a href="https://www.jvzoo.com/b/117757/446537/99?aid=3601021" rel="sponsored nofollow" target="_blank">Choose 2 packs →</a></div>
+    <div class="b"><span class="badge">Most popular</span><h4>3 packs</h4><span class="day">$2.30<small> /day</small></span><span class="tot">$207 · 90-day supply</span><a href="https://www.jvzoo.com/b/117757/447307/99?aid=3601021" rel="sponsored nofollow" target="_blank">Choose 3 packs →</a></div>
+    <div class="b best"><span class="badge">Best value</span><h4>6 packs</h4><span class="day">$1.63<small> /day</small></span><span class="tot">$294 · 180-day supply</span><a href="https://www.jvzoo.com/b/117757/447309/99?aid=3601021" rel="sponsored nofollow" target="_blank">Choose 6 packs →</a></div>
+  </div>
+
+  <div class="guarantee"><strong>60-day return policy, handled by the product vendor.</strong> One-time purchase via JVZoo. Check the return conditions at checkout before you order.</div>
+
+  <a class="cta" href="#bundles">→ Compare the GLPatches bundles</a>
+  <p style="font-size:17px">(one-time purchase, shipping shown at checkout)</p>
+  <a class="cta" href="#top" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">→ Re-read the 3 changes first</a>
+  <p style="font-size:17px">(free, and they matter most)</p>
+
+  <p style="margin-top:34px">That's it.<br><strong>The editors</strong></p>
+
+  <div class="bio"><span class="av" aria-hidden="true">E</span><div><b>The Everyday Wellness Desk</b><br>We read labels, checkout pages and buyer comments, so you can decide faster. We're editors, not doctors.</div></div>
+</div>
+
+<footer>
+  This page is an advertisement and not a news article. We may earn a commission from purchases made through links on this page. These statements have not been evaluated by the Food and Drug Administration. This product is not intended to diagnose, treat, cure, or prevent any disease. Individual results vary. Consult your healthcare provider before starting any supplement, especially if you are pregnant, nursing, take medication or have a medical condition. Illustrations show routines, not product results.
+</footer>
+
+<script>
+(function(){
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var bar = document.getElementById('bar');
+  function prog(){ var h = document.documentElement.scrollHeight - innerHeight; bar.style.width = (h > 0 ? Math.min(100, scrollY / h * 100) : 0) + '%'; }
+  addEventListener('scroll', prog, {passive:true}); prog();
+
+  function money(n){ return '$' + n.toFixed(2); }
+  function reset(svg){
+    svg.querySelectorAll('[data-t]').forEach(function(el){ el.classList.remove('on'); });
+    svg.querySelectorAll('[data-count]').forEach(function(el){ el.textContent = '1'; });
+    svg.querySelectorAll('[data-money]').forEach(function(el){ el.textContent = '$0.00'; });
+    svg.querySelectorAll('[data-bar]').forEach(function(el){ el.setAttribute('y', 380); el.setAttribute('height', 0); });
+    svg.querySelectorAll('.out').forEach(function(el){ el.classList.remove('off'); });
+  }
+  function tween(dur, fn){ var t0 = performance.now(); (function f(t){ var k = Math.min(1, (t - t0) / dur); fn(1 - Math.pow(1 - k, 3)); if (k < 1) requestAnimationFrame(f); })(t0); }
+  function play(svg){
+    (svg._timers || []).forEach(clearTimeout); svg._timers = [];
+    reset(svg);
+    svg.querySelectorAll('[data-t]').forEach(function(el){
+      var t = reduce ? 0 : +el.getAttribute('data-t');
+      svg._timers.push(setTimeout(function(){
+        el.classList.add('on');
+        if (el.hasAttribute('data-count')){ var to = +el.getAttribute('data-count'); var d = reduce ? 1 : +(el.getAttribute('data-dur') || 1200); tween(d, function(k){ el.textContent = Math.max(1, Math.round(to * k)); }); }
+        if (el.hasAttribute('data-money')){ var m = +el.getAttribute('data-money'); tween(reduce ? 1 : 1100, function(k){ el.textContent = money(m * k); }); }
+        if (el.hasAttribute('data-bar')){ var hgt = +el.getAttribute('data-bar'); tween(reduce ? 1 : 1100, function(k){ el.setAttribute('height', hgt * k); el.setAttribute('y', 380 - hgt * k); }); }
+        if (el.getAttribute('data-k') === 'loop' && !reduce){ svg._timers.push(setTimeout(function(){ el.classList.add('off'); }, 4200)); }
+      }, t));
+    });
+  }
+  var svgs = [].slice.call(document.querySelectorAll('figure svg'));
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(es){ es.forEach(function(e){ if (e.isIntersecting && !e.target._played){ e.target._played = true; play(e.target); } }); }, {threshold: .45});
+    svgs.forEach(function(s){ io.observe(s); });
+  } else { svgs.forEach(play); }
+  document.querySelectorAll('[data-replay]').forEach(function(b){ b.addEventListener('click', function(){ play(b.parentNode.querySelector('svg')); }); });
+})();
+</script>
+</body>
+</html>
