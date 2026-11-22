@@ -556,6 +556,11 @@ body.noscroll{overflow:hidden;}
 .pg-x{border:0;background:transparent;font-size:20px;line-height:1;cursor:pointer;color:var(--fg2);padding:0 4px}
 .pg-sum summary{cursor:pointer;font-weight:600;font-size:14px}.pg-sum p{white-space:pre-wrap;font-size:13.5px;color:var(--fg2);margin:8px 0 0}
 .pg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.pg-kinds{border:0;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+.pg-kind{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--border);background:var(--surface);border-radius:12px;padding:12px 14px;cursor:pointer}
+.pg-kind:has(input:checked){border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.pg-kind input{margin-top:4px;accent-color:var(--accent)}.pg-kind span{display:flex;flex-direction:column;gap:3px;min-width:0}
+.pg-kind small{color:var(--fg2);font-size:13px;line-height:1.4}.pg-kind a{font-size:13px}
 .pg-card{padding:18px;display:flex;flex-direction:column;gap:10px;cursor:pointer;text-align:left;border:1px solid var(--border);border-radius:14px;background:var(--surface);font:inherit;color:inherit;min-width:0}
 .pg-card:hover{border-color:var(--fg2)}.pg-card h3{margin:0;font-size:16px;overflow-wrap:anywhere}.pg-card .nt-sub{margin:0;overflow-wrap:anywhere}
 .pg-empty{padding:36px 18px;text-align:center;color:var(--fg2);border:1px dashed var(--border);border-radius:14px;grid-column:1/-1}
@@ -2081,12 +2086,16 @@ function chip(p){const w=(p.notes||[]).filter(n=>n.kind==='warning').length;
 function cardsHtml(){if(!list.length)return`<div class="pg-empty">No pages yet. Press <b>Build a new page</b> and paste a product link.</div>`;
   return list.map(p=>`<button type="button" class="pg-card" data-pg="${e(p.id)}">${chip(p)}<h3>${e(p.name||p.input.name||p.input.url)}</h3>
   <p class="nt-sub">${p.status==='building'?e(((p.phases||[]).find(x=>x.id===p.phase)||{}).label||'Starting'):p.status==='failed'?e(p.error||'Stopped'):'/p/'+e(p.slug)}</p>
-  <p class="nt-sub">${e(p.created_by||'')} · ${new Date(p.created_at).toLocaleDateString([], {month:'short',day:'numeric'})}</p></button>`).join('');}
+  <p class="nt-sub">${p.kind==='info'?'Info advertorial':'Story advertorial'} · ${e(p.created_by||'')} · ${new Date(p.created_at).toLocaleDateString([], {month:'short',day:'numeric'})}</p></button>`).join('');}
 function renderList(){g('pgRows').innerHTML=cardsHtml();
   const s=g('pgSetup');const miss=[!ready.claude&&'the Anthropic API key (ANTHROPIC_API_KEY)',!ready.images&&'the OpenAI key for AI images (OPENAI_API_KEY; optional, pages then use your uploaded and vendor images)'].filter(Boolean);
   s.hidden=!miss.length;s.textContent=miss.length?'Not set up yet in Vercel: '+miss.join(' and ')+'.':'';g('pgNew').disabled=!canEdit||!ready.claude;}
 function formHtml(){return`<div class="nt-head"><button type="button" class="nt-link" data-pgback>← All pages</button><div style="flex:1 1 260px;min-width:0"><h1>Build a new page</h1><div class="nt-sub">Claude researches the product, writes the story, makes the images and builds the page. About 20 minutes; you can close this tab.</div></div></div>
   <form class="card nt-panel" id="pgForm" autocomplete="off">
+  <fieldset class="pg-kinds"><legend class="nt-f" style="padding:0">Page type</legend>
+    <label class="pg-kind"><input type="radio" name="kind" value="advertorial" checked><span><b>Story advertorial</b><small>A reader's story, magazine style, with AI photos. About 20 min.</small></span></label>
+    <label class="pg-kind"><input type="radio" name="kind" value="info"><span><b>Information advertorial</b><small>Editors' explainer with animated drawings (like v4 / Hyros). About 15 min.</small> <a href="/demo/info-advertorial-v4" target="_blank" rel="noopener">See example ↗</a></span></label>
+  </fieldset>
   <label class="nt-f">Product link * <span class="nt-hint">sales page, VSL or your affiliate checkout link</span><input type="url" name="url" required placeholder="https://…"></label>
   <div class="nt-g2"><label class="nt-f">Product name <span class="nt-hint">optional</span><input name="name" placeholder="e.g. CardioFlush LT"></label>
   <label class="nt-f">Network<select name="network"><option value="jvzoo">JVZoo</option><option value="clickbank">ClickBank</option><option value="digistore">Digistore24</option><option value="buygoods">BuyGoods</option><option value="wealthpay">WealthPay</option><option value="other">Other</option></select></label></div>
@@ -2095,7 +2104,7 @@ function formHtml(){return`<div class="nt-head"><button type="button" class="nt-
     <div class="nt-drop"><label class="nt-second nt-filebtn">Upload images<input type="file" id="pgFiles" accept="image/jpeg,image/png,image/webp" multiple hidden></label><span class="nt-hint">JPG, PNG or WebP, up to 10</span></div>
     <div class="nt-thumbs" id="pgThumbs"></div></div>
   <label class="nt-f">Notes for Claude <span class="nt-hint">optional: audience, angle, claims to avoid</span><textarea name="notes" rows="2"></textarea></label>
-  <div class="nt-row"><button type="submit" class="nt-primary">Build advertorial</button><span class="nt-hint">Ready in about 20 minutes</span></div></form>`;}
+  <div class="nt-row"><button type="submit" class="nt-primary">Build page</button><span class="nt-hint">You can close this tab while Claude works</span></div></form>`;}
 function thumbs(){const b=g('pgThumbs');if(!b)return;b.innerHTML=ups.map((u,i)=>u.url?`<span class="nt-thumb"><img src="${e(u.url)}" alt="Upload ${i+1}"><button type="button" data-unpg="${i}" aria-label="Remove image">×</button></span>`:`<span class="nt-thumb nt-busy">${u.err?e(u.err):'Uploading…'}</span>`).join('');}
 async function shrinkImg(file){if(file.size<=3500000)return file;const bmp=await createImageBitmap(file),k=Math.min(1,2000/Math.max(bmp.width,bmp.height)),c=document.createElement('canvas');
   c.width=Math.round(bmp.width*k);c.height=Math.round(bmp.height*k);c.getContext('2d').drawImage(bmp,0,0,c.width,c.height);return new Promise(r=>c.toBlob(r,'image/jpeg',.88));}
@@ -2156,9 +2165,9 @@ async function act(a){const p=list.find(x=>x.id===openId);if(!p)return;
 async function submit(ev){ev.preventDefault();const f=ev.target,v=n=>(f.elements[n].value||'').trim();
   if(ups.some(u=>!u.url&&!u.err)){toast('Wait until the images finish uploading');return;}
   const btn=f.querySelector('button[type=submit]');btn.disabled=true;btn.textContent='Starting Claude…';
-  try{const j=await api('/api/pages',{url:v('url'),name:v('name'),network:v('network'),buy_links:v('buy').split(/\s*\n\s*/).filter(Boolean),images:ups.filter(u=>u.url).map(u=>u.url),notes:v('notes')});
+  try{const kind=(f.querySelector('input[name=kind]:checked')||{}).value||'advertorial';const j=await api('/api/pages',{kind,url:v('url'),name:v('name'),network:v('network'),buy_links:v('buy').split(/\s*\n\s*/).filter(Boolean),images:ups.filter(u=>u.url).map(u=>u.url),notes:v('notes')});
     list.unshift(j.page);ups=[];openId=j.page.id;mode=j.page.status==='failed'?'detail':'detail';render();}
-  catch(err){toast(err.message);btn.disabled=false;btn.textContent='Build advertorial';}}
+  catch(err){toast(err.message);btn.disabled=false;btn.textContent='Build page';}}
 window.pgShow=async()=>{await load();render();startTimer();};
 window.pgInit=()=>{canEdit=['owner','editor'].includes(me().role)||!window.NUTRA_HOSTED;
   g('pagesView').addEventListener('click',ev=>{const c=ev.target.closest('[data-pg]'),b=ev.target.closest('[data-pgback]'),a=ev.target.closest('[data-pgact]'),vw=ev.target.closest('[data-view]'),un=ev.target.closest('[data-unpg]'),cp=ev.target.closest('[data-copy]');

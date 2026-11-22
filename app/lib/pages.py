@@ -1,7 +1,7 @@
 """Page builder jobs: the dashboard creates a page, a Claude Managed Agents session researches the product, makes
 images and posts the page content back; the server renders it with lib/advertorial.py and hosts it at /p/<slug>."""
 import os, json, re, secrets, hashlib, datetime, urllib.request, base64
-from . import db, agent, advertorial
+from . import db, agent, advertorial, infoad
 
 SCHEMA = """
 create table if not exists pages (
@@ -20,6 +20,9 @@ PHASES = [('starting', 'Starting', 1), ('research', 'Researching the product', 5
           ('images', 'Making the images', 7), ('building', 'Building the page', 1), ('checking', 'Checking everything', 1)]
 CHANGE_PHASES = [('starting', 'Starting', 1), ('writing', 'Making your changes', 3), ('images', 'Updating images', 2),
                  ('building', 'Building the page', 1), ('checking', 'Checking everything', 1)]
+INFO_PHASES = [('starting', 'Starting', 1), ('research', 'Researching the product', 5), ('writing', 'Writing the article', 5),
+               ('building', 'Drawing the animations', 2), ('checking', 'Checking everything', 1)]
+KINDS = {'advertorial': 'Story advertorial', 'info': 'Information advertorial'}
 STALE_MIN = 75  # a build with no news for this long is marked failed
 
 
@@ -42,7 +45,7 @@ def token_hash(tok):
 def public(row, full=False):
     if not row:
         return None
-    phases = CHANGE_PHASES if (row.get('revisions') or []) and row['status'] in ('queued', 'building') else PHASES
+    phases = CHANGE_PHASES if (row.get('revisions') or []) and row['status'] in ('queued', 'building') else INFO_PHASES if row.get('kind') == 'info' else PHASES
     out = {k: row.get(k) for k in ('id', 'slug', 'kind', 'name', 'status', 'phase', 'error', 'published', 'created_by')}
     out.update({'input': row.get('input') or {}, 'started_at': iso(row.get('started_at')), 'finished_at': iso(row.get('finished_at')),
                 'updated_at': iso(row.get('updated_at')), 'created_at': iso(row.get('created_at')),
@@ -221,8 +224,35 @@ was asked (keep everything else), make new images only if needed, POST the full 
 
 TEXT FIELDS are plain text; only <strong>, <em> and <br> are allowed inside them. No other HTML, no markdown.
 
-CONTENT JSON SCHEMA
-""" + advertorial.SCHEMA_DOC
+CONTENT JSON SCHEMA (story advertorial)
+""" + advertorial.SCHEMA_DOC + """
+
+
+INFO ADVERTORIAL (when the job or change request says kind=info). Everything above about the API, research, ingredients,
+bundles, billing, notes and compliance still applies. What is different:
+- Format: a short explainer in the style of a founder's blog post (think go.hyros.com/blog-3), voiced by "the editors of
+  <publication>". No character, no story, no composite person, no doctor. Confident, direct, plain words, 1-3 sentence
+  paragraphs, lots of air. Pattern for the intro: the common problem → "<strong>BUT:</strong>" what most people do wrong →
+  one <mark>highlighted</mark> line naming the real mistake → "<strong>The good news:</strong>" → "Below we'll break down the 3 changes…".
+- Angle: find the ONE mistake buyers in this product's category commonly make (from buyer reviews/forums you read), then
+  3 changes that fix it. Change #2 is "the biggest one". Change #3 is where the product fits, with FACTS ONLY (format, what the
+  label/checkout shows, return days, cost per day). Say plainly that the product doesn't replace changes #1 and #2.
+  ~900-1,300 words. Strong but never scary; no fear about health.
+- Phases: research → writing → building → checking. Do NOT make AI images. product.pack_image must be a REAL product photo:
+  the team's uploaded image (first one) or the vendor's own product image URL (https). If neither exists, POST a warning note.
+- Figures: the server draws all animations from small data objects. Use all five figure types once each:
+  loop (change #1, the cycle people are stuck in), before_after (change #2, old vs new routine), product (change #3, verified
+  facts as callouts; mark unclear facts with "warn": true), cost (right after product; drawn from the bundles: give every bundle
+  supply_days), ingredients (after cost; drawn from the "ingredients" object). Also use: steps (3 steps to fit it into the day;
+  only one step is the product; for product directions say "follow the label" unless the label states them), compare
+  (3-4 options compared on FORMAT, EFFORT and COST only, never results, never drugs by name; product first; be fair, e.g.
+  willpower costs $0), timeline (3-4 points about the ROUTINE, never weight or health results), and one cta (mid-page).
+- Text drawn inside animations has hard length limits (see the schema comments); the server rejects longer text, so keep labels short.
+- No testimonials, no sample results, no invented numbers. "reviews" only with a real public source and its URL, else null.
+- Highlights: <mark> is allowed in text fields (use ~1 per section).
+
+CONTENT JSON SCHEMA (info advertorial)
+""" + infoad.INFO_SCHEMA_DOC
 
 
 def system_prompt():
@@ -233,7 +263,10 @@ def system_prompt():
 
 def job_text(row, tok, base):
     i = row['input'] or {}
-    lines = [f"JOB: build a new {row['kind']} page.", f"PAGE={row['id']}", f"BASE={base}", f"PAGE_TOKEN={tok}",
+    kind = 'info' if row['kind'] == 'info' else 'advertorial'
+    head = ("JOB: build a new INFO page (kind=info). Follow the INFO ADVERTORIAL section and the INFO schema, not the story steps."
+            if kind == 'info' else "JOB: build a new STORY advertorial page (kind=advertorial).")
+    lines = [head, f"PAGE={row['id']}", f"BASE={base}", f"PAGE_TOKEN={tok}",
              f"Product link: {i.get('url')}"]
     if i.get('name'):
         lines.append(f"Product name (as the team calls it): {i['name']}")
@@ -284,7 +317,7 @@ def request_changes(row, text, user, base):
     revs = (row.get('revisions') or []) + [{'at': iso(now()), 'by': user['email'], 'text': text[:2000]}]
     db.q("""update pages set status = 'building', phase = 'starting', error = null, token_hash = %s, revisions = %s,
             started_at = now(), finished_at = null, updated_at = now() where id = %s""", (token_hash(tok), db.J(revs), row['id']))
-    msg = f"CHANGES: {text}\n\nPAGE={row['id']}\nBASE={base}\nPAGE_TOKEN={tok} (new token; the old one no longer works)"
+    msg = f"CHANGES: {text}\n\nPage type: {'INFO (kind=info, INFO schema)' if row.get('kind') == 'info' else 'STORY advertorial'}\nPAGE={row['id']}\nBASE={base}\nPAGE_TOKEN={tok} (new token; the old one no longer works)"
     try:
         alive = False
         if row.get('session_id'):
@@ -345,7 +378,7 @@ def agent_row(pid, auth_header):
 
 
 def set_phase(row, phase, text=''):
-    if phase not in {p for p, _, _ in PHASES}:
+    if phase not in {p for p, _, _ in PHASES + INFO_PHASES}:
         return False
     # only moves the countdown; a delivered (ready) page stays ready
     db.q("update pages set phase = %s, updated_at = now() where id = %s and status = 'building'", (phase, row['id']))
@@ -403,7 +436,7 @@ def reopen(row):
 
 
 def deliver(row, content, base):
-    probs = validate(content)
+    probs = infoad.validate(content) if row.get('kind') == 'info' else validate(content)
     if probs:
         log(row['id'], 'Claude fixing: ' + '; '.join(probs)[:200])
         return {'ok': False, 'problems': probs}

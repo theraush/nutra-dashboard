@@ -4,7 +4,7 @@ from http.cookies import SimpleCookie
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
-from lib import db, auth, postback, sync, pages, images, advertorial, agent  # noqa: E402
+from lib import db, auth, postback, sync, pages, images, advertorial, agent, infoad  # noqa: E402
 
 STATIC = os.path.join(ROOT, 'static')
 PATH_RE = re.compile(r'^[A-Za-z0-9_\-.~:@+]{1,200}/[A-Za-z0-9_\-.~:@+]{1,200}$')
@@ -124,7 +124,7 @@ def api_pages(env, path, method, p, user):
         if not re.match(r'^https?://[^\s]+$', url):
             return jresp({'ok': False, 'error': 'Paste the product link (starting with https://).'}, 400)
         lst = lambda k: [str(x).strip()[:1000] for x in (p.get(k) or []) if re.match(r'^https?://', str(x).strip())][:12]
-        inp = {'url': url[:1000], 'kind': 'advertorial', 'name': str(p.get('name') or '').strip()[:80],
+        inp = {'url': url[:1000], 'kind': 'info' if p.get('kind') == 'info' else 'advertorial', 'name': str(p.get('name') or '').strip()[:80],
                'network': str(p.get('network') or '').strip()[:30], 'buy_links': lst('buy_links'), 'images': lst('images'),
                'notes': str(p.get('notes') or '').strip()[:3000]}
         return jresp({'ok': True, 'page': pages.public(pages.create(inp, user, base_url(env)))})
@@ -225,12 +225,15 @@ def api_agent(env, path, method, body):
 
 def serve_page(slug, user):
     pages.setup()
-    row = db.q1('select id, slug, content, published from pages where slug = %s', (slug,))
+    row = db.q1('select id, slug, kind, content, published, delivered_at from pages where slug = %s', (slug,))
     if not row or not row.get('content'):
         return Resp(404, 'Not found', 'text/plain')
     if not row['published'] and not user:
         return Resp(404, 'Not found', 'text/plain')
     hdrs = [('Cache-Control', 'no-store' if not row['published'] else 'public, max-age=60')]
+    if row.get('kind') == 'info':
+        d = (row.get('delivered_at') or pages.now()).date()
+        return Resp(200, infoad.render(row['content'], row['id'], preview=not row['published'], date=d), headers=hdrs)
     return Resp(200, advertorial.render(row['content'], row['id'], preview=not row['published']), headers=hdrs)
 
 

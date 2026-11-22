@@ -17,6 +17,8 @@ https://nutra-dashboard-taupe.vercel.app). Pushing to `main` deploys automatical
     `ANTHROPIC_API_KEY`) researches a product and posts page content JSON to `/api/agent/<page>/...` (per-page token); the server
     renders it with the advertorial template and hosts it at `/p/<slug>`. Images via OpenAI (`OPENAI_API_KEY`, optional).
     Skills come from the private repo in `SKILLS_REPO` (+ `SKILLS_GITHUB_TOKEN`), else the built-in brief in `lib/pages.py`.
+  - `lib/infoad.py` (+ `lib/infoad.css`) — the **Information advertorial** page type (kind `info`, design = /demo/info-advertorial-v4):
+    Claude sends data, the server draws the animated figures (loop, before_after, product, cost, ingredients) for desktop and phone.
   - `static/dashboard.html` — the page. `static/shim.js` gives it `window.claude.use('db'|'user')` backed by `/api/db`.
   - `app/README.md` — env vars and routes.
 - `dashboard.html` (repo root) — same page, used by the old Claude artifact. **After editing the page, copy it to
