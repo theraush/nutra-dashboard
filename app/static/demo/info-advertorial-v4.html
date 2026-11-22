@@ -195,6 +195,31 @@ figcaption{background:none;color:var(--dim);border-left:3px solid var(--green);b
   .btn{width:100%;text-align:center}
 }
 @media(prefers-reduced-motion:reduce){.tl-line,.rb em{transition:none}}
+
+/* ── bigger type for 50+ readers on phones; nothing under 15px ── */
+body{font-size:22px}
+.top{font-size:15px}.byline{font-size:15px}footer{font-size:14px}
+figcaption{font-size:17px}
+.b .badge{font-size:14px}.b .tot{font-size:15px}
+.bb-k{font-size:13px}.bb-p{font-size:17px}.g-line{font-size:16px}.trust{font-size:16px}
+.step b{font-size:18px}.step p{font-size:17px}
+.cr>span:first-child{font-size:16px}.ch>span{font-size:13px}.cr .tx{font-size:15px}
+.cap{font-size:16px}.midcta b{font-size:20px}.midcta span{font-size:17px}
+.tl b{font-size:15px}.tl p{font-size:17px}
+.rb{font-size:15px;grid-template-columns:40px 1fr 44px}.rv-score small{font-size:14px}
+.faq summary{font-size:19px}.faq p{font-size:18px}
+.sample-tag{font-size:12px}.t{font-size:16px}.t p{font-size:19px}.t b{font-size:15px}.sample-note{font-size:15px}
+svg.ph{display:none}
+.demo{white-space:nowrap;color:#ffffff}
+@media(max-width:620px){
+  body{font-size:20px;line-height:1.5}
+  h1{font-size:36px}h2{font-size:28px}h3{font-size:23px}
+  .sub{font-size:19px}.tag{font-size:13px}
+  .fig svg.dk{display:none}.fig svg.ph{display:block}
+  .replay{font-size:13px;top:8px;right:8px}
+  .cr>span{font-size:18px}.cr>span:first-child{font-size:15px}.ch>span{font-size:12px}.cr .tx{font-size:14px}
+  .bb-name{font-size:20px}
+}
 </style>
 </head>
 <body>
@@ -257,7 +282,7 @@ figcaption{background:none;color:var(--dim);border-left:3px solid var(--green);b
 <figure aria-labelledby="c1">
   <div class="fig">
     <button class="replay" type="button" data-replay>↻ Replay</button>
-    <svg viewBox="0 0 880 440" role="img" aria-label="Animated loop: slump, snack, guilt, try harder tomorrow, repeating for 30 days, then broken by a routine change.">
+    <svg class="dk" viewBox="0 0 880 440" role="img" aria-label="Animated loop: slump, snack, guilt, try harder tomorrow, repeating for 30 days, then broken by a routine change.">
       <text x="28" y="40" class="mono" font-size="15" fill="#66708a" letter-spacing="1.5">THE 3 P.M. LOOP</text>
       <g transform="translate(300 235)">
         <circle r="138" fill="none" stroke="#dfe4ef" stroke-width="2"/>
@@ -278,6 +303,26 @@ figcaption{background:none;color:var(--dim);border-left:3px solid var(--green);b
       </g>
       <g data-t="4300" class="s"><circle cx="545" cy="235" r="7" fill="#2445d6"/><circle cx="545" cy="235" r="7" fill="#2445d6" class="ping"/></g>
     </svg>
+    <svg class="ph" viewBox="0 0 360 530" role="img" aria-label="Animated loop: slump, snack, guilt, try harder tomorrow, for 30 days. The fix: change the routine, not the willpower.">
+      <text x="16" y="30" class="mono" font-size="15" fill="#66708a" letter-spacing="1">THE 3 P.M. LOOP</text>
+      <g transform="translate(180 214)">
+        <circle r="112" fill="none" stroke="#dfe4ef" stroke-width="2"/>
+        <circle r="112" fill="none" stroke="#e5484d" stroke-width="4" pathLength="1" class="dr out" data-t="300" data-k="loop" transform="rotate(-90)"/>
+        <g class="s pop" data-t="200"><circle cy="-112" r="42" fill="#e9edf7" stroke="#e5484d" stroke-width="2"/><text y="-106" text-anchor="middle" font-size="19" font-weight="600" fill="#0f1630">Slump</text></g>
+        <g class="s pop" data-t="700"><circle cx="112" r="42" fill="#e9edf7" stroke="#e5484d" stroke-width="2"/><text x="112" y="6" text-anchor="middle" font-size="19" font-weight="600" fill="#0f1630">Snack</text></g>
+        <g class="s pop" data-t="1200"><circle cy="112" r="42" fill="#e9edf7" stroke="#e5484d" stroke-width="2"/><text y="118" text-anchor="middle" font-size="19" font-weight="600" fill="#0f1630">Guilt</text></g>
+        <g class="s pop" data-t="1700"><circle cx="-112" r="50" fill="#e9edf7" stroke="#e5484d" stroke-width="2"/><text x="-112" y="-4" text-anchor="middle" font-size="16" font-weight="600" fill="#0f1630">"Try harder</text><text x="-112" y="16" text-anchor="middle" font-size="16" font-weight="600" fill="#0f1630">tomorrow"</text></g>
+        <text y="-8" text-anchor="middle" class="mono" font-size="15" fill="#66708a">DAY</text>
+        <text y="32" text-anchor="middle" class="serif" font-size="44" font-weight="600" fill="#0f1630" data-count="30" data-t="2100" data-dur="1800">1</text>
+      </g>
+      <g class="s up" data-t="4300">
+        <line x1="180" y1="370" x2="180" y2="394" stroke="#2445d6" stroke-width="3" stroke-dasharray="5 5"/>
+        <rect x="16" y="396" width="328" height="120" rx="12" fill="#2445d6"/>
+        <text x="180" y="430" text-anchor="middle" font-size="16" font-weight="600" fill="#ffffff" opacity=".85">THE FIX</text>
+        <text x="180" y="464" text-anchor="middle" class="serif" font-size="25" font-weight="600" fill="#ffffff">Change the routine,</text>
+        <text x="180" y="496" text-anchor="middle" class="serif" font-size="25" font-weight="600" fill="#ffffff">not the willpower</text>
+      </g>
+    </svg>
   </div>
   <figcaption id="c1">Same 4 steps, every afternoon. After 30 days it's a habit, not a slip. You don't win it by trying harder. You win it by changing what happens around 3 p.m.</figcaption>
 </figure>
@@ -297,7 +342,7 @@ figcaption{background:none;color:var(--dim);border-left:3px solid var(--green);b
 <figure aria-labelledby="c2">
   <div class="fig">
     <button class="replay" type="button" data-replay>↻ Replay</button>
-    <svg viewBox="0 0 880 440" role="img" aria-label="Animated comparison of an old afternoon and a new afternoon, slot by slot, with the new routine's items ticking in.">
+    <svg class="dk" viewBox="0 0 880 440" role="img" aria-label="Animated comparison of an old afternoon and a new afternoon, slot by slot, with the new routine's items ticking in.">
       <text x="28" y="40" class="mono" font-size="15" fill="#66708a" letter-spacing="1.5">YOUR AFTERNOON · BEFORE vs AFTER</text>
       <text x="300" y="86" text-anchor="middle" font-size="17" font-weight="600" fill="#e5484d">BEFORE</text>
       <text x="640" y="86" text-anchor="middle" font-size="17" font-weight="600" fill="#2445d6">AFTER</text>
@@ -318,6 +363,26 @@ figcaption{background:none;color:var(--dim);border-left:3px solid var(--green);b
       </g>
       <g class="s up" data-t="4500"><text x="640" y="412" text-anchor="middle" font-size="16" font-weight="600" fill="#2445d6">Same day. Three swaps. Nothing to decide at 3 p.m.</text></g>
     </svg>
+    <svg class="ph" viewBox="0 0 360 556" role="img" aria-label="Animated: each old afternoon slot is crossed out and replaced: lunch with protein, a 10-minute walk, back to work, water and a 3 p.m. routine.">
+      <text x="16" y="30" class="mono" font-size="15" fill="#66708a" letter-spacing="1">YOUR AFTERNOON · BEFORE → AFTER</text>
+      <g class="s up" data-t="200"><text x="16" y="82" class="mono" font-size="16" fill="#66708a">12:30</text><text x="74" y="82" font-size="17" font-weight="600" fill="#66708a">Quick desk lunch</text></g>
+      <line x1="72" y1="76" x2="204" y2="76" stroke="#e5484d" stroke-width="2.5" pathLength="1" class="dr" data-t="1400"/>
+      <g class="s pop" data-t="1600"><rect x="16" y="96" width="328" height="54" rx="10" fill="#e8edff" stroke="#2445d6" stroke-width="1"/><text x="60" y="130" font-size="19" font-weight="600" fill="#0f1630">Lunch with protein</text></g>
+      <path d="M30 123l7 7 13-14" stroke="#2445d6" stroke-width="3" fill="none" stroke-linecap="round" pathLength="1" class="dr" data-t="1900"/>
+      <g class="s up" data-t="400"><text x="16" y="198" class="mono" font-size="16" fill="#66708a">1:00</text><text x="74" y="198" font-size="17" font-weight="600" fill="#66708a">Back to the chair</text></g>
+      <line x1="72" y1="192" x2="206" y2="192" stroke="#e5484d" stroke-width="2.5" pathLength="1" class="dr" data-t="2100"/>
+      <g class="s pop" data-t="2300"><rect x="16" y="212" width="328" height="54" rx="10" fill="#e8edff" stroke="#2445d6" stroke-width="1"/><text x="60" y="246" font-size="19" font-weight="600" fill="#0f1630">10-minute walk</text></g>
+      <path d="M30 239l7 7 13-14" stroke="#2445d6" stroke-width="3" fill="none" stroke-linecap="round" pathLength="1" class="dr" data-t="2600"/>
+      <g class="s up" data-t="600"><text x="16" y="314" class="mono" font-size="16" fill="#66708a">2:00</text><text x="74" y="314" font-size="17" font-weight="600" fill="#66708a">Still sitting</text></g>
+      <line x1="72" y1="308" x2="166" y2="308" stroke="#e5484d" stroke-width="2.5" pathLength="1" class="dr" data-t="2800"/>
+      <g class="s pop" data-t="3000"><rect x="16" y="328" width="328" height="54" rx="10" fill="#e8edff" stroke="#2445d6" stroke-width="1"/><text x="60" y="362" font-size="19" font-weight="600" fill="#0f1630">Back to work</text></g>
+      <path d="M30 355l7 7 13-14" stroke="#2445d6" stroke-width="3" fill="none" stroke-linecap="round" pathLength="1" class="dr" data-t="3300"/>
+      <g class="s up" data-t="800"><text x="16" y="430" class="mono" font-size="16" fill="#66708a">3:00</text><text x="74" y="430" font-size="17" font-weight="600" fill="#c42b31">Slump → pantry</text></g>
+      <line x1="72" y1="424" x2="190" y2="424" stroke="#e5484d" stroke-width="2.5" pathLength="1" class="dr" data-t="3500"/>
+      <g class="s pop" data-t="3700"><rect x="16" y="444" width="328" height="54" rx="10" fill="#e8edff" stroke="#2445d6" stroke-width="2"/><text x="60" y="478" font-size="19" font-weight="600" fill="#0f1630">Water + 3 p.m. routine</text></g>
+      <path d="M30 471l7 7 13-14" stroke="#2445d6" stroke-width="3" fill="none" stroke-linecap="round" pathLength="1" class="dr" data-t="4000"/>
+      <g class="s up" data-t="4500"><text x="180" y="540" text-anchor="middle" font-size="17" font-weight="600" fill="#2445d6">Three swaps. Nothing to decide at 3 p.m.</text></g>
+    </svg>
   </div>
   <figcaption id="c2">Four time slots, three swaps. Nothing here costs money or takes more than ten minutes. That's why it sticks when a diet doesn't.</figcaption>
 </figure>
@@ -335,7 +400,7 @@ figcaption{background:none;color:var(--dim);border-left:3px solid var(--green);b
 <figure aria-labelledby="c3">
   <div class="fig">
     <button class="replay" type="button" data-replay>↻ Replay</button>
-    <svg viewBox="0 0 880 440" role="img" aria-label="Animated product check: the GLPatches pouch appears and labelled callouts point to verified facts.">
+    <svg class="dk" viewBox="0 0 880 440" role="img" aria-label="Animated product check: the GLPatches pouch appears and labelled callouts point to verified facts.">
       <text x="28" y="40" class="mono" font-size="15" fill="#66708a" letter-spacing="1.5">WHAT'S ACTUALLY IN THE BOX · CHECKED BY OUR EDITORS</text>
       <g class="s pop" data-t="200">
         <ellipse cx="190" cy="402" rx="110" ry="12" fill="#000" opacity=".10"/>
@@ -355,6 +420,17 @@ figcaption{background:none;color:var(--dim);border-left:3px solid var(--green);b
 
       <g class="s pop" data-t="3400"><rect x="476" y="350" width="370" height="56" rx="10" fill="#2445d6"/><text x="661" y="384" text-anchor="middle" font-size="18" font-weight="600" fill="#ffffff">60-day return policy (by the vendor)</text></g>
     </svg>
+    <svg class="ph" viewBox="0 0 360 596" role="img" aria-label="Animated product check: the GLPatches pouch appears, then three checked facts and the 60-day return policy.">
+      <text x="16" y="30" class="mono" font-size="15" fill="#66708a" letter-spacing="1">WHAT'S IN THE BOX · CHECKED</text>
+      <g class="s pop" data-t="200"><ellipse cx="180" cy="270" rx="70" ry="8" fill="#000" opacity=".10"/><image href="/u/SeespNBT-Sz1yWMDOW3IxSEa.webp" x="110" y="46" width="140" height="224" preserveAspectRatio="xMidYMid meet"/></g>
+      <g class="s" data-t="900"><circle cx="24" cy="312" r="6" fill="#2445d6"/><circle cx="24" cy="312" r="6" fill="#2445d6" class="ping"/></g>
+      <g class="s up" data-t="1100"><text x="40" y="318" font-size="19" font-weight="600" fill="#0f1630">A wellness patch</text><text x="40" y="344" font-size="16" fill="#2f3650">Not a medication. Not a GLP-1 drug.</text></g>
+      <g class="s" data-t="1700"><circle cx="24" cy="382" r="6" fill="#2445d6"/><circle cx="24" cy="382" r="6" fill="#2445d6" class="ping"/></g>
+      <g class="s up" data-t="1900"><text x="40" y="388" font-size="19" font-weight="600" fill="#0f1630">Pouch says "GLPro"</text><text x="40" y="414" font-size="16" fill="#2f3650">Sold as GLPatches at checkout.</text></g>
+      <g class="s" data-t="2500"><circle cx="24" cy="452" r="6" fill="#c98a00"/><circle cx="24" cy="452" r="6" fill="#c98a00" class="ping"/></g>
+      <g class="s up" data-t="2700"><text x="40" y="458" font-size="19" font-weight="600" fill="#0f1630">Ingredients: read the label</text><text x="40" y="484" font-size="16" fill="#2f3650">The seller's page doesn't list them.</text></g>
+      <g class="s pop" data-t="3400"><rect x="16" y="516" width="328" height="66" rx="10" fill="#2445d6"/><text x="180" y="544" text-anchor="middle" font-size="20" font-weight="600" fill="#ffffff">60-day return policy</text><text x="180" y="568" text-anchor="middle" font-size="16" fill="#ffffff" opacity=".9">handled by the vendor</text></g>
+    </svg>
   </div>
   <figcaption id="c3">What we could confirm: it's a wellness patch, the pouch reads "GLPro", ingredients aren't published on the seller's page, and the checkout lists a 60-day return policy handled by the vendor. Read the full label before you use it.</figcaption>
 </figure>
@@ -368,7 +444,7 @@ figcaption{background:none;color:var(--dim);border-left:3px solid var(--green);b
 <figure aria-labelledby="c6">
   <div class="fig">
     <button class="replay" type="button" data-replay>↻ Replay</button>
-    <svg viewBox="0 0 880 440" role="img" aria-label="Placeholder: four ingredient cards appear one by one, with the source of the list shown below.">
+    <svg class="dk" viewBox="0 0 880 440" role="img" aria-label="Placeholder: four ingredient cards appear one by one, with the source of the list shown below.">
       <text x="28" y="40" class="mono" font-size="15" fill="#66708a" letter-spacing="1.5">WHAT'S INSIDE · FROM THE LABEL</text>
       <g class="s pop" data-t="100"><rect x="610" y="20" width="242" height="30" rx="15" fill="#e5484d"/><text x="731" y="41" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">PLACEHOLDER · AUTO-FILLED</text></g>
       <g class="s pop" data-t="300"><image href="/u/SeespNBT-Sz1yWMDOW3IxSEa.webp" x="40" y="80" width="170" height="272" preserveAspectRatio="xMidYMid meet"/></g>
@@ -379,6 +455,15 @@ figcaption{background:none;color:var(--dim);border-left:3px solid var(--green);b
         <g class="s up" data-t="2100"><rect x="560" y="216" width="290" height="120" rx="12" fill="#e9edf7" stroke="#dfe4ef"/><circle cx="596" cy="254" r="16" fill="#2445d6"/><text x="596" y="260" text-anchor="middle" font-size="15" fill="#ffffff">4</text><text x="624" y="260">Ingredient name</text><text x="580" y="296" font-size="15" font-weight="500" fill="#2f3650">Amount per patch</text><text x="580" y="319" font-size="14" font-weight="500" fill="#66708a">What the seller says it's for</text></g>
       </g>
       <g class="s up" data-t="2700"><rect x="250" y="356" width="600" height="46" rx="10" fill="#e8edff" stroke="#2445d6"/><text x="272" y="385" font-size="16" font-weight="600" fill="#0f1630">Source: <tspan fill="#2445d6">seller's label</tspan> · checked on the order date</text></g>
+    </svg>
+    <svg class="ph" viewBox="0 0 360 566" role="img" aria-label="Placeholder: four ingredient cards appear one by one, with the source of the list below.">
+      <text x="16" y="30" class="mono" font-size="15" fill="#66708a" letter-spacing="1">WHAT'S INSIDE · FROM THE LABEL</text>
+      <g class="s pop" data-t="100"><rect x="16" y="44" width="240" height="28" rx="14" fill="#e5484d"/><text x="136" y="63" text-anchor="middle" font-size="15" font-weight="700" fill="#ffffff">PLACEHOLDER · AUTO-FILLED</text></g>
+      <g class="s up" data-t="500"><rect x="16" y="88" width="328" height="88" rx="12" fill="#e9edf7" stroke="#dfe4ef"/><circle cx="44" cy="116" r="14" fill="#2445d6"/><text x="44" y="121" text-anchor="middle" font-size="15" font-weight="700" fill="#ffffff">1</text><text x="68" y="122" font-size="19" font-weight="600" fill="#0f1630">Ingredient name</text><text x="32" y="148" font-size="16" fill="#2f3650">Amount per patch · e.g. 100 mg</text><text x="32" y="168" font-size="15" fill="#66708a">What the seller says it's for</text></g>
+      <g class="s up" data-t="900"><rect x="16" y="186" width="328" height="88" rx="12" fill="#e9edf7" stroke="#dfe4ef"/><circle cx="44" cy="214" r="14" fill="#2445d6"/><text x="44" y="219" text-anchor="middle" font-size="15" font-weight="700" fill="#ffffff">2</text><text x="68" y="220" font-size="19" font-weight="600" fill="#0f1630">Ingredient name</text><text x="32" y="246" font-size="16" fill="#2f3650">Amount per patch</text><text x="32" y="266" font-size="15" fill="#66708a">What the seller says it's for</text></g>
+      <g class="s up" data-t="1300"><rect x="16" y="284" width="328" height="88" rx="12" fill="#e9edf7" stroke="#dfe4ef"/><circle cx="44" cy="312" r="14" fill="#2445d6"/><text x="44" y="317" text-anchor="middle" font-size="15" font-weight="700" fill="#ffffff">3</text><text x="68" y="318" font-size="19" font-weight="600" fill="#0f1630">Ingredient name</text><text x="32" y="344" font-size="16" fill="#2f3650">Amount per patch</text><text x="32" y="364" font-size="15" fill="#66708a">What the seller says it's for</text></g>
+      <g class="s up" data-t="1700"><rect x="16" y="382" width="328" height="88" rx="12" fill="#e9edf7" stroke="#dfe4ef"/><circle cx="44" cy="410" r="14" fill="#2445d6"/><text x="44" y="415" text-anchor="middle" font-size="15" font-weight="700" fill="#ffffff">4</text><text x="68" y="416" font-size="19" font-weight="600" fill="#0f1630">Ingredient name</text><text x="32" y="442" font-size="16" fill="#2f3650">Amount per patch</text><text x="32" y="462" font-size="15" fill="#66708a">What the seller says it's for</text></g>
+      <g class="s up" data-t="2300"><rect x="16" y="482" width="328" height="70" rx="10" fill="#e8edff" stroke="#2445d6"/><text x="32" y="510" font-size="18" font-weight="600" fill="#0f1630">Source: <tspan fill="#2445d6">seller's label</tspan></text><text x="32" y="536" font-size="16" fill="#2f3650">checked on the order date</text></g>
     </svg>
   </div>
   <figcaption id="c6">Placeholder. The builder fills in the real ingredient names and amounts, plus where the list came from: the seller's page, the label, or another store selling the same product.</figcaption>
@@ -456,7 +541,7 @@ figcaption{background:none;color:var(--dim);border-left:3px solid var(--green);b
 <figure aria-labelledby="c5">
   <div class="fig">
     <button class="replay" type="button" data-replay>↻ Replay</button>
-    <svg viewBox="0 0 880 440" role="img" aria-label="Sample chart: afternoon snack trips per week dropping from 9 to 3 over four weeks. Placeholder data.">
+    <svg class="dk" viewBox="0 0 880 440" role="img" aria-label="Sample chart: afternoon snack trips per week dropping from 9 to 3 over four weeks. Placeholder data.">
       <text x="28" y="40" class="mono" font-size="15" fill="#66708a" letter-spacing="1.5">3 P.M. SNACK TRIPS PER WEEK · 4-WEEK LOG</text>
       <g class="s pop" data-t="100"><rect x="640" y="20" width="212" height="30" rx="15" fill="#e5484d"/><text x="746" y="41" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">SAMPLE DATA · NOT REAL</text></g>
       <!-- scale: 10 trips = 250px, baseline y=360, x from 140 to 780 (week 0..4) -->
@@ -469,6 +554,18 @@ figcaption{background:none;color:var(--dim);border-left:3px solid var(--green);b
       <g class="s up" data-t="300"><text x="160" y="125" class="serif" font-size="26" font-weight="600" fill="#0f1630">9</text></g>
       <g class="s up" data-t="1800"><text x="760" y="262" class="serif" font-size="26" font-weight="600" fill="#0f1630" text-anchor="end">3</text></g>
       <g class="s pop" data-t="2300"><rect x="560" y="80" width="230" height="76" rx="12" fill="#2445d6"/><text x="675" y="116" text-anchor="middle" class="serif" font-size="30" font-weight="600" fill="#ffffff" data-pct="67" data-t="2300">−0%</text><text x="675" y="143" text-anchor="middle" font-size="14" font-weight="600" fill="#ffffff" opacity=".85">fewer snack trips (sample)</text></g>
+    </svg>
+    <svg class="ph" viewBox="0 0 360 430" role="img" aria-label="Sample chart: afternoon snack trips per week dropping from 9 to 3 over four weeks. Placeholder data.">
+      <text x="16" y="30" class="mono" font-size="15" fill="#66708a" letter-spacing="1">SNACK TRIPS PER WEEK · 4 WEEKS</text>
+      <g class="s pop" data-t="100"><rect x="16" y="44" width="214" height="28" rx="14" fill="#e5484d"/><text x="123" y="63" text-anchor="middle" font-size="15" font-weight="700" fill="#ffffff">SAMPLE DATA · NOT REAL</text></g>
+      <line x1="24" y1="380" x2="352" y2="380" stroke="#dfe4ef" stroke-width="2"/>
+      <line x1="24" y1="235" x2="352" y2="235" stroke="#dfe4ef" stroke-dasharray="4 6"/><line x1="24" y1="110" x2="352" y2="110" stroke="#dfe4ef" stroke-dasharray="4 6"/>
+      <g font-size="16" font-weight="600" fill="#66708a" text-anchor="middle"><text x="40" y="408">Start</text><text x="115" y="408">Wk 1</text><text x="190" y="408">Wk 2</text><text x="265" y="408">Wk 3</text><text x="340" y="408">Wk 4</text></g>
+      <path d="M40 135 L115 185 L190 235 L265 260 L340 285" fill="none" stroke="#2445d6" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" pathLength="1" class="dr" data-t="600"/>
+      <g fill="#2445d6"><circle cx="40" cy="135" r="7" class="s" data-t="600"/><circle cx="115" cy="185" r="7" class="s" data-t="900"/><circle cx="190" cy="235" r="7" class="s" data-t="1200"/><circle cx="265" cy="260" r="7" class="s" data-t="1450"/><circle cx="340" cy="285" r="7" class="s" data-t="1650"/><circle cx="340" cy="285" r="9" class="s ping" data-t="1650"/></g>
+      <g class="s up" data-t="300"><text x="52" y="124" class="serif" font-size="26" font-weight="600" fill="#0f1630">9</text></g>
+      <g class="s up" data-t="1800"><text x="340" y="322" class="serif" font-size="26" font-weight="600" fill="#0f1630" text-anchor="middle">3</text></g>
+      <g class="s pop" data-t="2300"><rect x="168" y="92" width="178" height="74" rx="12" fill="#2445d6"/><text x="257" y="128" text-anchor="middle" class="serif" font-size="30" font-weight="600" fill="#ffffff" data-pct="67" data-t="2300">−0%</text><text x="257" y="154" text-anchor="middle" font-size="15" font-weight="600" fill="#ffffff" opacity=".9">fewer trips (sample)</text></g>
     </svg>
   </div>
   <figcaption id="c5">Placeholder chart to show the layout. On a live page this slot only shows real, verified numbers, or it's removed.</figcaption>
@@ -489,7 +586,7 @@ figcaption{background:none;color:var(--dim);border-left:3px solid var(--green);b
 <figure aria-labelledby="c4">
   <div class="fig">
     <button class="replay" type="button" data-replay>↻ Replay</button>
-    <svg viewBox="0 0 880 440" role="img" aria-label="Animated bar chart of cost per day: 2 packs $2.63, 3 packs $2.30, 6 packs $1.63.">
+    <svg class="dk" viewBox="0 0 880 440" role="img" aria-label="Animated bar chart of cost per day: 2 packs $2.63, 3 packs $2.30, 6 packs $1.63.">
       <text x="28" y="40" class="mono" font-size="15" fill="#66708a" letter-spacing="1.5">COST PER DAY OF SUPPLY · PRODUCT ONLY</text>
       <line x1="120" y1="380" x2="820" y2="380" stroke="#dfe4ef" stroke-width="2"/>
       <!-- scale: $3.00 = 270px tall, baseline y=380 -->
@@ -510,6 +607,22 @@ figcaption{background:none;color:var(--dim);border-left:3px solid var(--green);b
       </g>
       <g class="s pop" data-t="2900"><rect x="612" y="58" width="136" height="34" rx="17" fill="#2445d6"/><text x="680" y="81" text-anchor="middle" font-size="15" font-weight="600" fill="#ffffff">BEST VALUE</text></g>
       <path d="M680 96 V196" stroke="#2445d6" stroke-width="2" stroke-dasharray="4 5" class="s" data-t="2900"/>
+    </svg>
+    <svg class="ph" viewBox="0 0 360 424" role="img" aria-label="Animated bar chart of cost per day: 2 packs $2.63, 3 packs $2.30, 6 packs $1.63.">
+      <text x="16" y="30" class="mono" font-size="15" fill="#66708a" letter-spacing="1">COST PER DAY · PRODUCT ONLY</text>
+      <line x1="16" y1="380" x2="344" y2="380" stroke="#dfe4ef" stroke-width="2"/>
+      <line x1="16" y1="200" x2="344" y2="200" stroke="#dfe4ef" stroke-dasharray="4 6"/><line x1="16" y1="110" x2="344" y2="110" stroke="#dfe4ef" stroke-dasharray="4 6"/>
+      <rect x="30" width="80" rx="8" fill="#cdd5ea" data-bar="236.7" data-t="300" y="380" height="0"/>
+      <rect x="140" width="80" rx="8" fill="#cdd5ea" data-bar="207" data-t="700" y="380" height="0"/>
+      <rect x="250" width="80" rx="8" fill="#2445d6" data-bar="146.7" data-t="1100" y="380" height="0"/>
+      <g font-size="17" font-weight="600" fill="#2f3650" text-anchor="middle"><text x="70" y="406">2 packs</text><text x="180" y="406">3 packs</text><text x="290" y="406" fill="#2445d6">6 packs</text></g>
+      <g class="serif" font-size="27" font-weight="600" fill="#0f1630" text-anchor="middle">
+        <text x="70" y="131" class="s" data-t="1300" data-money="2.63">$0.00</text>
+        <text x="180" y="161" class="s" data-t="1500" data-money="2.30">$0.00</text>
+        <text x="290" y="221" class="s" data-t="1700" data-money="1.63">$0.00</text>
+      </g>
+      <g class="s pop" data-t="2900"><rect x="228" y="56" width="124" height="32" rx="16" fill="#2445d6"/><text x="290" y="78" text-anchor="middle" font-size="15" font-weight="700" fill="#ffffff">BEST VALUE</text></g>
+      <path d="M290 92 V192" stroke="#2445d6" stroke-width="2" stroke-dasharray="4 5" class="s" data-t="2900"/>
     </svg>
   </div>
   <figcaption id="c4">2 packs: $158 for 60 days ($2.63 a day). 3 packs: $207 for 90 days ($2.30). 6 packs: $294 for 180 days ($1.63). Shipping and taxes are shown at checkout.</figcaption>
@@ -616,7 +729,7 @@ figcaption{background:none;color:var(--dim);border-left:3px solid var(--green);b
     var io = new IntersectionObserver(function(es){ es.forEach(function(e){ if (e.isIntersecting && !e.target._played){ e.target._played = true; play(e.target); } }); }, {threshold: .45});
     svgs.forEach(function(s){ io.observe(s); });
   } else { svgs.forEach(play); }
-  document.querySelectorAll('[data-replay]').forEach(function(b){ b.addEventListener('click', function(){ play(b.parentNode.querySelector('svg')); }); });
+  document.querySelectorAll('[data-replay]').forEach(function(b){ b.addEventListener('click', function(){ b.parentNode.querySelectorAll('svg').forEach(play); }); });
 })();
 </script>
 
