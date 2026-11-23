@@ -64,7 +64,9 @@ def get(pid):
 
 def list_pages():
     setup()
-    return db.q('select * from pages order by created_at desc limit 200')
+    rows = db.q('select * from pages order by created_at desc limit 200')
+    # pages still building get looked at here too, so a finished build never sits on "Final check" until someone opens it
+    return [check(r) if r['status'] == 'building' else r for r in rows]
 
 
 def plain(s):
@@ -298,8 +300,14 @@ def new_id():
     return 'pg_' + secrets.token_urlsafe(8).replace('-', 'x').replace('_', 'y')
 
 
+GENERIC = {'jvzoo', 'clickbank', 'hop', 'digistore24', 'digistore', 'buygoods', 'warriorplus', 'wealthpay', 'checkout', 'pay',
+           'secure', 'order', 'shop', 'go', 'www', 'bit', 'linktr'}
+
+
 def unique_slug(name):
     base = advertorial.slugify(name or 'story')
+    if base in GENERIC:
+        base = 'page-' + secrets.token_hex(2)
     slug, n = base, 2
     while db.q1('select 1 from pages where slug = %s', (slug,)):
         slug, n = f'{base}-{n}', n + 1
@@ -357,13 +365,17 @@ def check(row):
     if last and (now() - last).total_seconds() < 45:
         return row
     db.q('update pages set checked_at = now() where id = %s', (row['id'],))
+    started = row.get('started_at') or now()
+    delivered = row.get('delivered_at') and row['delivered_at'] >= started
     try:
         s = agent.session(row['session_id'])
     except Exception:
+        s = None
+    if s is None or (delivered and (now() - row['delivered_at']).total_seconds() > 15 * 60):
+        if delivered:  # the page is in; Claude's session is gone or its last check is taking too long
+            finish(row)
         return get(row['id'])
     status = s.get('status') or ''
-    started = row.get('started_at') or now()
-    delivered = row.get('delivered_at') and row['delivered_at'] >= started
     if status in ('idle', 'terminated') and delivered:
         finish(row)  # delivered this round, then finished talking: that's success
     elif status == 'terminated':
@@ -453,6 +465,12 @@ def deliver(row, content, base):
         log(row['id'], 'Claude fixing: ' + '; '.join(probs)[:200])
         return {'ok': False, 'problems': probs}
     name = row.get('name') or (content.get('publication') or {}).get('name')
+    if re.fullmatch(r'page-[0-9a-f]{4}', row.get('slug') or '') and not row.get('published'):
+        better = (content.get('product') or {}).get('name') or row.get('name') or (content.get('publication') or {}).get('name')
+        if better and advertorial.slugify(better) not in GENERIC:
+            new = unique_slug(better)
+            db.q('update pages set slug = %s where id = %s', (new, row['id']))
+            row = {**row, 'slug': new}
     # stays 'building' (phase checking) until Claude finishes its last check; the dashboard already shows the page
     db.q("""update pages set content = %s, phase = 'checking', error = null, name = coalesce(name, %s), delivered_at = now(),
             updated_at = now() where id = %s""", (db.J(content), name, row['id']))
