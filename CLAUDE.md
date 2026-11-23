@@ -22,6 +22,8 @@ https://nutra-dashboard-taupe.vercel.app). Pushing to `main` deploys automatical
     **Design is LOCKED (Vlad approved v4, Nov 2026): AI photo of someone using the product above the fold (clock drawing
     moves into Change #1; clock is the fallback when there's no photo), product photos in bundle cards.** It's the default page type. Don't change the look,
     colours, fonts or section order without asking him; content/bug fixes are fine.
+  - `lib/history.py` — **History** tab: archiving a product pauses its active campaigns, sets `offers.status='archived'`
+    (hidden everywhere) and freezes a summary in kv `history/<key>`. Restore sets it active again (ads stay paused).
   - `static/dashboard.html` — the page. `static/shim.js` gives it `window.claude.use('db'|'user')` backed by `/api/db`.
   - `app/README.md` — env vars and routes.
 - `dashboard.html` (repo root) — same page, used by the old Claude artifact. **After editing the page, copy it to

@@ -61,7 +61,7 @@ input,select{font-family:inherit;}
 .brand-logo{display:flex;align-items:center;height:44px;padding:0 4px;background:#fff;border-radius:8px;}
 .brand-logo img{height:44px;width:auto;display:block;}
 @media(max-width:480px){.brand-logo,.brand-logo img{height:38px;}}
-.nav-pills{display:flex;align-items:center;gap:2px;padding:0 12px;height:100%;}
+.nav-pills{display:flex;align-items:center;gap:2px;padding:0 12px;height:100%;min-width:0;flex:0 1 auto;overflow-x:auto;scrollbar-width:none;}.nav-pills::-webkit-scrollbar{display:none}.nav-pill{flex:none}
 .nav-pill{display:flex;align-items:center;gap:5px;padding:5px 12px;border-radius:7px;font-size:12px;font-weight:500;color:var(--fg2);background:transparent;border:none;height:32px;transition:all .15s;}
 .nav-pill:hover{background:var(--surface2);color:var(--fg);}
 .nav-pill.active{background:var(--fg);color:var(--surface);}
@@ -145,7 +145,7 @@ input,select{font-family:inherit;}
 .data-badge b{font-weight:700;color:var(--fg);}
 .spark-days{font-size:10px;color:var(--fg3);margin-top:6px;}
 @media(max-width:640px){.data-badge{display:none;}}
-@media(max-width:480px){.brand{padding:0 12px;}.brand-name{display:none;}.nav-pills{padding:0 6px;}.nav-pill{padding:5px 10px;}.nav-pill svg{display:none;}.topbar-right{padding:0 10px;gap:6px;}}
+@media(max-width:480px){.brand{padding:0 12px;}.brand-name{display:none;}.nav-pills{padding:0 6px;}.nav-pill{padding:5px 8px;}.nav-pill svg{display:none;}.topbar-right{padding:0 10px;gap:6px;}}
 
 /* ── Rev panel ── */
 .rev-panel{padding:18px;}
@@ -556,6 +556,32 @@ body.noscroll{overflow:hidden;}
 .pg-x{border:0;background:transparent;font-size:20px;line-height:1;cursor:pointer;color:var(--fg2);padding:0 4px}
 .pg-sum summary{cursor:pointer;font-weight:600;font-size:14px}.pg-sum p{white-space:pre-wrap;font-size:13.5px;color:var(--fg2);margin:8px 0 0}
 .pg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.hi-totals{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 14px}
+.hi-totals div{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:10px 14px;min-width:120px}
+.hi-totals small{display:block;color:var(--fg2);font-size:12px}.hi-totals b{font-size:20px}
+.hi-table{width:100%;border-collapse:collapse;font-size:14px}
+.hi-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:14px;background:var(--surface)}
+.hi-table th{text-align:left;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--fg2);padding:12px 14px;border-bottom:1px solid var(--border);white-space:nowrap}
+.hi-table td{padding:12px 14px;border-bottom:1px solid var(--border);vertical-align:top;white-space:nowrap}
+.hi-table tr.hi-row{cursor:pointer}.hi-table tr.hi-row:hover td{background:var(--surface2)}
+.hi-table td.num{text-align:right;font-variant-numeric:tabular-nums}.hi-table th.num{text-align:right}
+.hi-name b{display:block}.hi-name small{color:var(--fg2)}
+.hi-neg{color:var(--red)}.hi-pos{color:var(--green)}
+.hi-end{font-size:12px;font-weight:600;padding:3px 8px;border-radius:999px;background:var(--surface2);color:var(--fg2)}
+.hi-detail td{white-space:normal;background:var(--surface2)}
+.hi-dgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.hi-dgrid h4{margin:0 0 6px;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--fg2)}
+.hi-bars{display:flex;align-items:flex-end;gap:2px;height:70px}.hi-bars i{flex:1;background:var(--accent);border-radius:2px 2px 0 0;min-height:2px}
+.hi-empty{padding:30px;text-align:center;color:var(--fg2);border:1px dashed var(--border);border-radius:14px}
+.hi-why{white-space:normal!important;min-width:180px}
+@media(max-width:700px){.hi-wrap{overflow:visible}.hi-table thead{display:none}.hi-table,.hi-table tbody,.hi-table tr,.hi-table td{display:block;width:100%}
+.hi-table tr.hi-row{padding:6px 0;border-bottom:1px solid var(--border)}.hi-table tr.hi-row td{border:0;padding:4px 14px;display:flex;justify-content:space-between;gap:12px;white-space:normal;text-align:right}
+.hi-table tr.hi-row td::before{content:attr(data-l);color:var(--fg2);font-size:12px;text-align:left;flex:none}.hi-table tr.hi-row td.hi-name{display:block;text-align:left;padding-top:10px}
+.hi-why{min-width:0}.hi-detail td{padding:14px}}
+.hi-modal{position:fixed;inset:0;z-index:200;background:rgba(10,14,25,.45);display:grid;place-items:center;padding:16px}
+.hi-modal[hidden]{display:none}
+.hi-box{max-width:440px;width:100%;padding:20px;display:flex;flex-direction:column;gap:12px}
+.hi-box h2{margin:0;font-size:19px}.hi-what{margin:0;padding-left:18px;color:var(--fg2);font-size:14px;line-height:1.6}
 .pg-kinds{border:0;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
 .pg-kind{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--border);background:var(--surface);border-radius:12px;padding:12px 14px;cursor:pointer}
 .pg-kind:has(input:checked){border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
@@ -711,6 +737,10 @@ body.noscroll{overflow:hidden;}
     <button class="nav-pill" id="tab-pages" onclick="switchTab('pages')">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2.5" y="1.5" width="11" height="13" rx="1.5"/><path d="M5 5h6M5 8h6M5 11h3.5"/></svg>
       Pages
+    </button>
+    <button class="nav-pill" id="tab-history" onclick="switchTab('history')">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 8a6 6 0 1 0 1.8-4.3"/><path d="M2 2.5v3h3"/><path d="M8 5v3.2l2.2 1.4"/></svg>
+      History
     </button>
     <button class="nav-pill" id="tab-settings" onclick="switchTab('settings')">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="2.2"/><path d="M8 1.5v1.8M8 12.7v1.8M14.5 8h-1.8M3.3 8H1.5M12.6 3.4l-1.3 1.3M4.7 11.3l-1.3 1.3M12.6 12.6l-1.3-1.3M4.7 4.7L3.4 3.4"/></svg>
@@ -878,6 +908,24 @@ body.noscroll{overflow:hidden;}
 
 <!-- ══ SETTINGS ══ -->
 <!-- ══ NEW TESTS ══ -->
+<!-- ══ HISTORY (archived product tests) ══ -->
+<div id="historyView" hidden>
+<div class="page nt-wrap">
+  <div class="ph">
+    <div><div class="ph-title">History</div><div class="nt-sub">Products you've finished testing: when, how much you spent and how it ended. Archive a product from its ··· menu on Overview.</div></div>
+  </div>
+  <div class="hi-totals" id="hiTotals"></div>
+  <div id="hiRows"></div>
+</div>
+</div>
+<div class="hi-modal" id="hiModal" hidden role="dialog" aria-modal="true" aria-labelledby="hiModalTitle">
+  <div class="hi-box card">
+    <h2 id="hiModalTitle">Archive</h2>
+    <ul class="hi-what"><li><b>Pauses</b> its active campaigns in Meta</li><li><b>Hides</b> it from Overview</li><li>Keeps all numbers in <b>History</b> (you can restore it)</li></ul>
+    <label class="nt-f">Why did we stop? <span class="nt-hint">optional, one line</span><input id="hiReason" maxlength="300" placeholder="e.g. No sales after $600, CPC too high"></label>
+    <div class="nt-row" style="justify-content:flex-end"><button type="button" class="nt-second" data-hi="cancel">Cancel</button><button type="button" class="nt-primary" data-hi="go">Archive & pause ads</button></div>
+  </div>
+</div>
 <!-- ══ PAGES (Claude page builder) ══ -->
 <div id="pagesView" hidden>
 <div class="page nt-wrap">
@@ -1356,6 +1404,7 @@ function menuSpec(kind,btn){
     {type:'radio',label:'Daily chart',items:[['spend','Spend'],['impr','Impressions'],['clicks','Link clicks'],['lpv','Landing page views']].map(([id,l])=>({id,label:l,on:view.spark[k]===id})),pick:id=>{view.spark[k]=id;}},
     {type:'action',label:'Dashboard',items:[{id:'focus',label:view.focus===k?'Show all products again':`Focus dashboard on ${P.name}`,run:()=>{view.focus=view.focus===k?null:k;fProd=view.focus||'all';}}]},
     {type:'action',label:'Links',items:[{id:'ads',label:'Show ads for this offer',run:()=>openAds(k),keepToast:true},...(P.lander?[{id:'lander',label:`Open landing page ↗`,href:P.lander,sub:P.lander.replace(/^https?:\/\//,'')}]:[]),{id:'edit',label:'Edit offer & budget',run:()=>{switchTab('settings');window.stShow('offers');}},
+      ...(window.hiCanEdit&&window.hiCanEdit()?[{id:'archive',label:'Archive product (done testing)…',sub:'Pauses its ads and moves it to History',run:()=>window.hiArchive(k),keepToast:true}]:[]),
       ...P.buy.map(([l,u])=>({id:'buy',label:`Copy ${l} buy link`,copy:u,sub:'Copy only: opening it counts as a checkout visit'})),
       {id:'ads',label:'Copy Ads Manager link',copy:`https://adsmanager.facebook.com/adsmanager/manage/campaigns?act=${P.acct}`,sub:`Account ${P.acct}`}]}]};}
   if(kind==='table')return{title:'Ad accounts table',groups:[
@@ -1724,9 +1773,10 @@ function switchTab(tab){
   $('overviewView').hidden=tab!=='overview';
   $('budgetView').hidden=tab!=='budgets';
   $('settingsView').hidden=tab!=='settings';
-  $('testsView').hidden=true;$('pagesView').hidden=tab!=='pages';
-  ['overview','budgets','pages','settings'].forEach(t=>$('tab-'+t).classList.toggle('active',t===tab));
-  if(tab==='pages'&&window.pgShow)window.pgShow();
+  $('testsView').hidden=true;$('pagesView').hidden=tab!=='pages';$('historyView').hidden=tab!=='history';
+  ['overview','budgets','pages','history','settings'].forEach(t=>$('tab-'+t).classList.toggle('active',t===tab));
+  try{$('tab-'+tab).scrollIntoView({block:'nearest',inline:'nearest'});}catch(e){}
+  if(tab==='pages'&&window.pgShow)window.pgShow();if(tab==='history'&&window.hiShow)window.hiShow();
   document.querySelector('.settings-btn').classList.toggle('on',tab==='settings');
   if(tab==='overview')renderOverview();else if(tab==='budgets')renderBudgets();
 }
@@ -2068,6 +2118,54 @@ function init(){
   boot();   // start listening right away so the sync status and rules are live
 }
 window.stInit=init;
+// ── History: archived product tests (server: /api/history) ──
+(function(){
+const g=id=>document.getElementById(id),e=s=>esc(s==null?'':s);
+let items=[],open=null,arch=null;
+const usd=v=>(v<0?'−':'')+'$'+Math.abs(Number(v||0)).toLocaleString('en-US',{minimumFractionDigits:Math.abs(v)%1?2:0,maximumFractionDigits:2});
+const day=d=>d?new Date(d+'T12:00:00Z').toLocaleDateString([], {month:'short',day:'numeric',year:'numeric'}):'—';
+const me=()=>window.NUTRA_ME||{};
+window.hiCanEdit=()=>!!window.NUTRA_HOSTED&&['owner','editor'].includes(me().role);
+async function api(body){const r=await fetch('/api/history',body?{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify(body)}:{credentials:'same-origin'});
+  const j=await r.json().catch(()=>({ok:false,error:'Server error'}));if(!r.ok||j.ok===false)throw new Error(j.error||('Error '+r.status));return j;}
+function ended(x){return x.autopaused_at?'Auto-paused, then archived':'Archived';}
+function bars(daily){const v=Object.entries(daily||{});if(!v.length)return'<span class="nt-hint">No spend recorded</span>';const mx=Math.max(...v.map(x=>x[1]))||1;
+  return`<div class="hi-bars" role="img" aria-label="Daily spend">${v.map(([d,n])=>`<i style="height:${Math.max(3,n/mx*100)}%" title="${e(d)}: ${usd(n)}"></i>`).join('')}</div><div class="nt-hint">${day(v[0][0])} → ${day(v[v.length-1][0])}</div>`;}
+function detail(x){const ads=(x.top_ads||[]).map(a=>`<li>${e(a.name)} <span class="nt-hint">· ${e(a.campaign)} · ${usd(a.spend)} · ${a.clicks} clicks</span></li>`).join('');
+  return`<tr class="hi-detail"><td colspan="9"><div class="hi-dgrid">
+  <div><h4>Daily spend</h4>${bars(x.daily)}</div>
+  <div><h4>Details</h4><div>Offer: ${e(x.offer)} · ${e(x.network)}</div>${x.lander?`<div>Lander: <a href="${e(x.lander)}" target="_blank" rel="noopener">${e(x.lander.replace(/^https?:\/\//,''))}</a></div>`:''}
+    <div>Ad account: ${e(x.acct||'—')}</div><div>Impressions ${Number(x.impressions||0).toLocaleString()} · landing views ${x.lpv||0} · refunds ${x.refunds||0}</div>
+    <div>Budget: ${x.budget?usd(x.budget):'—'}</div><div>Archived ${day((x.archived_at||'').slice(0,10))} by ${e(x.archived_by)}</div>
+    ${(x.paused_campaigns||[]).length?`<div>Paused: ${e(x.paused_campaigns.join(', '))}</div>`:'<div>No campaigns were running</div>'}${x.pause_error?`<div class="hi-neg">${e(x.pause_error)}</div>`:''}</div>
+  <div><h4>Top ads by spend</h4>${ads?`<ul style="margin:0;padding-left:18px">${ads}</ul>`:'<span class="nt-hint">No ad data</span>'}
+    ${window.hiCanEdit()?`<div class="nt-row" style="margin-top:12px"><button type="button" class="nt-second" data-hirestore="${e(x.key)}">Restore to Overview</button><span class="nt-hint">Ads stay paused</span></div>`:''}</div>
+  </div></td></tr>`;}
+function render(){const t=items.reduce((a,x)=>({spend:a.spend+(x.spend||0),rev:a.rev+(x.revenue||0),sales:a.sales+(x.sales||0)}),{spend:0,rev:0,sales:0});
+  g('hiTotals').innerHTML=items.length?`<div><small>Products tested</small><b>${items.length}</b></div><div><small>Total spend</small><b>${usd(t.spend)}</b></div><div><small>Sales</small><b>${t.sales}</b></div><div><small>Revenue</small><b>${usd(t.rev)}</b></div><div><small>Profit</small><b class="${t.rev-t.spend<0?'hi-neg':'hi-pos'}">${usd(t.rev-t.spend)}</b></div>`:'';
+  if(!items.length){g('hiRows').innerHTML='<div class="hi-empty">Nothing archived yet. On Overview, open a product\'s <b>···</b> menu and choose <b>Archive product</b>.</div>';return;}
+  g('hiRows').innerHTML=`<div class="hi-wrap"><table class="hi-table"><thead><tr><th>Product</th><th>Tested</th><th class="num">Spend</th><th class="num">Clicks</th><th class="num">Checkouts</th><th class="num">Sales</th><th class="num">Profit</th><th>How it ended</th><th>Why we stopped</th></tr></thead><tbody>
+  ${items.map(x=>`<tr class="hi-row" data-hikey="${e(x.key)}" aria-expanded="${open===x.key}"><td class="hi-name"><b>${e(x.name)}</b><small>${e(x.offer)}</small></td>
+    <td data-l="Tested">${day(x.first_day)} → ${day(x.last_day)}<br><small class="nt-hint">${x.days||0} days with spend</small></td>
+    <td class="num" data-l="Spend">${usd(x.spend)}</td><td class="num" data-l="Clicks">${Number(x.clicks||0).toLocaleString()}</td><td class="num" data-l="Checkouts">${x.checkouts||0}</td><td class="num" data-l="Sales">${x.sales||0}</td>
+    <td class="num ${x.profit<0?'hi-neg':'hi-pos'}" data-l="Profit">${usd(x.profit)}</td><td data-l="How it ended"><span class="hi-end">${ended(x)}</span></td><td class="hi-why" data-l="Why we stopped">${e(x.reason||'—')}</td></tr>${open===x.key?detail(x):''}`).join('')}
+  </tbody></table></div>`;}
+async function load(){try{items=(await api()).items||[];}catch(err){g('hiRows').innerHTML=`<div class="hi-empty">${e(err.message)}</div>`;return;}render();}
+window.hiShow=load;
+window.hiArchive=k=>{const P=(typeof PROD!=='undefined'&&PROD[k])||{name:k};arch=k;g('hiModalTitle').textContent='Archive '+P.name+'?';g('hiReason').value='';g('hiModal').hidden=false;setTimeout(()=>g('hiReason').focus(),30);};
+function close(){g('hiModal').hidden=true;arch=null;}
+document.addEventListener('click',async ev=>{
+  const b=ev.target.closest('[data-hi]');if(b){if(b.dataset.hi==='cancel')return close();if(!arch)return;b.disabled=true;b.textContent='Pausing ads…';
+    try{const j=await api({op:'archive',key:arch,reason:g('hiReason').value});const it=j.item||{};
+      toast(it.pause_error?'Archived. '+it.pause_error:`Archived. Paused ${(it.paused_campaigns||[]).length} campaign(s).`);close();setTimeout(()=>{location.hash='history';location.reload();},1400);}
+    catch(err){toast(err.message);b.disabled=false;b.textContent='Archive & pause ads';}return;}
+  if(ev.target===g('hiModal'))return close();
+  const rs=ev.target.closest('[data-hirestore]');if(rs){if(rs.dataset.sure!=='1'){rs.dataset.sure='1';rs.textContent='Click again to restore';return;}
+    try{await api({op:'restore',key:rs.dataset.hirestore});toast('Restored. It shows on Overview again; ads stay paused.');setTimeout(()=>location.reload(),1200);}catch(err){toast(err.message);}return;}
+  const row=ev.target.closest('[data-hikey]');if(row&&!ev.target.closest('a')){open=open===row.dataset.hikey?null:row.dataset.hikey;render();}});
+document.addEventListener('keydown',ev=>{if(ev.key==='Escape'&&!g('hiModal').hidden)close();});
+if(location.hash==='#history')setTimeout(()=>{if(typeof switchTab==='function')switchTab('history');},0);
+})();
 // ── Pages: Claude builds advertorials through the API; this tab starts builds, shows the countdown and the result ──
 (function(){
 const g=id=>document.getElementById(id),e=s=>esc(s==null?'':s);

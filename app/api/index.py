@@ -4,7 +4,7 @@ from http.cookies import SimpleCookie
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
-from lib import db, auth, postback, sync, pages, images, advertorial, agent, infoad  # noqa: E402
+from lib import db, auth, postback, sync, pages, images, advertorial, agent, infoad, history  # noqa: E402
 
 STATIC = os.path.join(ROOT, 'static')
 PATH_RE = re.compile(r'^[A-Za-z0-9_\-.~:@+]{1,200}/[A-Za-z0-9_\-.~:@+]{1,200}$')
@@ -579,6 +579,27 @@ def route(env):
         if not r:
             return Resp(404, 'Not found', 'text/plain')
         return Resp(200, bytes(r['data']), r['mime'], [('Cache-Control', 'public, max-age=31536000, immutable')])
+
+    # History: archive a tested product (pauses its live campaigns, hides it) / restore it / list
+    if path == '/api/history':
+        if not user or user['role'] == 'agent':
+            return jresp({'ok': False, 'error': 'signed out'}, 401)
+        if method == 'GET':
+            return jresp({'ok': True, 'items': history.items()})
+        if method != 'POST' or not same_origin(env):
+            return jresp({'ok': False}, 405)
+        if user['role'] not in ('owner', 'editor'):
+            return jresp({'ok': False, 'error': 'View only: ask the owner for Editor access'}, 403)
+        key = str(p.get('key') or '')
+        if not re.fullmatch(r'[a-z0-9_-]{1,40}', key):
+            return jresp({'ok': False, 'error': 'Unknown product'}, 400)
+        if p.get('op') == 'archive':
+            r = history.archive(key, p.get('reason'), user)
+        elif p.get('op') == 'restore':
+            r = history.restore(key, user)
+        else:
+            return jresp({'ok': False, 'error': 'Unknown action'}, 400)
+        return jresp(r, 200 if r.get('ok') else 400)
 
     # owner: create / replace / remove the access key the Claude scheduled task uses
     if path == '/api/agent-key':
