@@ -1,4 +1,4 @@
-"""LOCKED DESIGN (v4 + animated hero, approved by Vlad Nov 2026): ask before changing the look.
+"""LOCKED DESIGN (v4: hero photo + clock drawing, bundle pack photos; approved by Vlad Nov 2026): ask before changing the look.
 
 Renders an "Information advertorial" (Hyros-style explainer, design v4) from Claude's content JSON.
 
@@ -15,7 +15,8 @@ INFO_SCHEMA_DOC = r"""{
              "h1": "Most people fight the 3 p.m. crash with willpower. That's the mistake.",   // <= 75 chars (3-4 lines on a phone)
              "sub": "And the snack drawer has been winning for years…",                        // <= 70 chars, the twist
              "minutes": 6},
-  "hero": {"time": "3:00 PM", "when": "Every afternoon", "meter": "Cravings", "level": "High", "line": "Same time. Same fight."},
+  "hero": {"image": "https://… the hero PHOTO from the image endpoint (see prompt rules)", "alt": "…", "caption": "<= 90 chars, describes the moment",
+           "time": "3:00 PM", "when": "Every afternoon", "meter": "Cravings", "level": "High", "line": "Same time. Same fight."},
            // above-the-fold drawing: a clock runs to the moment the problem shows up, a meter fills.
            // time <= 8 (a clock time), when <= 22, meter <= 16 (what rises), level <= 8, line <= 34
   "intro": ["Around 3 p.m., energy dips…", "<strong>BUT:</strong> most people…", "<mark>Willpower isn't the problem…</mark>",
@@ -74,7 +75,7 @@ HEAD, TEXT, DIM, LINE, CARD2, BLUE, CORAL, CORAL_DK, BLUE_BG, GOLD, BAR = ('#0f1
                                                                         '#2445d6', '#e5484d', '#c42b31', '#e8edff', '#c98a00', '#cdd5ea')
 _ALLOWED = re.compile(r'&lt;(/?)(strong|em|b|i|br|mark)\s*/?&gt;', re.I)
 LIMITS = {'loop_step': 20, 'fix': 40, 'time': 6, 'ba': 24, 'ba_footer': 52, 'callout_h': 28, 'callout_p': 38, 'pill': 24, 'pill_sub': 26,
-          'label': 44, 'h1': 80, 'hero_time': 8, 'hero_when': 22, 'hero_meter': 16, 'hero_level': 8, 'hero_line': 34, 'col': 14, 'cell': 8, 'badge': 10, 'trust': 22, 'format': 32}
+          'label': 44, 'h1': 80, 'hero_time': 8, 'hero_when': 22, 'hero_meter': 16, 'hero_level': 8, 'hero_line': 34, 'hero_caption': 90, 'col': 14, 'cell': 8, 'badge': 10, 'trust': 22, 'format': 32}
 CSS = open(os.path.join(os.path.dirname(__file__), 'infoad.css'), encoding='utf-8').read()
 
 
@@ -178,6 +179,15 @@ def fig_hero(h):
     ph = title_txt(label, 16, 30, maxw=230) + clock(84, 132, 66) + timetxt(170, 120, 44, 17, 180) + (meterbar(16, 344, 266, 17) if meter else '')
     return wrap_fig(dk, (ph, 292), '', f'{when} {tm}: {meter} {level}'.strip(), dk_h=300, cls='hero')
 
+
+
+def photo_hero(h):
+    img = safe_url(h.get('image'))
+    if not img:
+        return ''
+    cap = plain(h.get('caption'))
+    return (f'<figure class="hero-photo"><img src="{a(img)}" alt="{a(plain(h.get("alt")) or cap or "Illustration")}" width="1536" height="1024" '
+            f'fetchpriority="high"><figcaption>{t(cap) + " " if cap else ""}<span>Illustration</span></figcaption></figure>')
 
 # ── figure library ──
 def fig_loop(f):
@@ -560,7 +570,15 @@ def render(c, page_id='', preview=False, date=None):
               + (f'<ul class="trust">{trust}</ul>' if trust else ''))
     why = c.get('why') or {}
     why_html = (f'<h3>{t(why.get("h3") or "First: why listen to us?")}</h3>' + ''.join(f'<p>{t(p)}</p>' for p in why.get('paras') or [])) if why else ''
-    changes = ''.join(f'<h2>{t(ch.get("h2"))}</h2>' + ''.join(block(b, c, days) for b in ch.get('blocks') or []) for ch in (c.get('changes') or [])[:4])
+    he0 = c.get('hero') or {}
+    moved = ('</div>' + fig_hero(he0) + '<div class="col">') if photo_hero(he0) and (he0.get('time') or he0.get('meter')) else ''
+
+    def change_html(i, ch):
+        bl = [block(b, c, days) for b in ch.get('blocks') or []]
+        if i == 0 and moved:
+            bl.insert(min(1, len(bl)), moved)
+        return f'<h2>{t(ch.get("h2"))}</h2>' + ''.join(bl)
+    changes = ''.join(change_html(i, ch) for i, ch in enumerate((c.get('changes') or [])[:4]))
     ew = c.get('easy_way') or {}
     easy = (f'<h2>{t(ew.get("h2") or "The easy way to do all of this")}</h2>' + ''.join(f'<p>{t(p)}</p>' for p in ew.get('paras') or [])
             + (f'<p><mark>{t(ew.get("lead"))}</mark></p>' if ew.get('lead') else '')
@@ -587,7 +605,9 @@ def render(c, page_id='', preview=False, date=None):
             f'<details{" open" if i == 0 else ""}><summary>{t(f.get("q"))}</summary><p>{t(f.get("a"))}</p></details>' for i, f in enumerate(c['faq'][:8])) + '</div>'
     title = plain(meta.get('title')) or plain(hd.get('h1')) or pname
     he = c.get('hero') or {}
-    hero_html = ('</div>' + fig_hero(he) + '<div class="col">') if (he.get('time') or he.get('meter')) else ''
+    clock = ('</div>' + fig_hero(he) + '<div class="col">') if (he.get('time') or he.get('meter')) else ''
+    photo = photo_hero(he)
+    hero_html = ('</div>' + photo + '<div class="col">') if photo else clock
     banner = '<div class="preview-banner">Preview · not published yet</div>' if preview else ''
     return f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>{a(title)}</title><meta name="description" content="{a(plain(meta.get("description")))}"><meta property="og:title" content="{a(title)}"><meta property="og:type" content="article">
@@ -613,6 +633,11 @@ def render(c, page_id='', preview=False, date=None):
 
 
 EXTRA_CSS = r"""
+figure.hero-photo{max-width:880px;margin:22px auto 30px}
+figure.hero-photo img{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover;border-radius:14px;background:var(--card)}
+figure.hero-photo figcaption{background:none;color:var(--dim);border:0;padding:8px 2px 0;font-weight:500;font-size:14px}
+figure.hero-photo figcaption span{color:var(--dim);opacity:.8;font-size:12px;text-transform:uppercase;letter-spacing:.08em}
+@media(max-width:620px){figure.hero-photo{margin:14px -16px 22px}figure.hero-photo img{border-radius:0}figure.hero-photo figcaption{padding-inline:16px}}
 .dr.meter{transition-duration:2s}
 .b .packs{position:relative;height:150px;margin:8px 0 6px}
 .b .packs::after{content:"";position:absolute;left:18%;right:18%;bottom:0;height:10px;border-radius:50%;background:radial-gradient(closest-side,rgba(15,22,48,.16),transparent)}
@@ -689,6 +714,9 @@ def validate(c):
         probs.append('hero needs time and meter (the above-the-fold drawing: when the problem shows up, and what rises)')
     for k in ('time', 'when', 'meter', 'level', 'line'):
         lim(f'hero.{k}', he.get(k), L['hero_' + k])
+    lim('hero.caption', he.get('caption'), L['hero_caption'])
+    if he.get('image') and not safe_url(he.get('image')):
+        probs.append('hero.image must be an https URL from the image endpoint (or leave it out to use the clock drawing)')
     if len(c.get('intro') or []) < 3:
         probs.append('intro needs 4-6 short paragraphs')
     if len((c.get('preview') or {}).get('items') or []) != 3:

@@ -21,7 +21,7 @@ PHASES = [('starting', 'Starting', 1), ('research', 'Researching the product', 5
 CHANGE_PHASES = [('starting', 'Starting', 1), ('writing', 'Making your changes', 3), ('images', 'Updating images', 2),
                  ('building', 'Building the page', 1), ('checking', 'Checking everything', 1)]
 INFO_PHASES = [('starting', 'Starting', 1), ('research', 'Researching the product', 5), ('writing', 'Writing the article', 5),
-               ('building', 'Drawing the animations', 2), ('checking', 'Checking everything', 1)]
+               ('images', 'Making the hero photo', 3), ('building', 'Drawing the animations', 2), ('checking', 'Checking everything', 1)]
 KINDS = {'advertorial': 'Story advertorial', 'info': 'Information advertorial'}
 STALE_MIN = 75  # a build with no news for this long is marked failed
 
@@ -238,10 +238,20 @@ bundles, billing, notes and compliance still applies. What is different:
   3 changes that fix it. Change #2 is "the biggest one". Change #3 is where the product fits, with FACTS ONLY (format, what the
   label/checkout shows, return days, cost per day). Say plainly that the product doesn't replace changes #1 and #2.
   ~900-1,300 words. Strong but never scary; no fear about health.
-- Phases: research → writing → building → checking. Do NOT make AI images. product.pack_image must be a REAL product photo:
+- Phases: research → writing → images → building → checking. product.pack_image must be a REAL product photo:
   the team's uploaded image (first one) or the vendor's own product image URL (https). If neither exists, POST a warning note.
-- hero (above the fold, under the headline): the moment the problem shows up for this audience, as a clock time, and what
-  rises then (e.g. 3:00 PM / Cravings, 9:30 AM / Brain fog, 2:00 AM / Wide awake). It must match the article's angle.
+- hero.image (above the fold, under the headline): exactly ONE AI photo, made with the image endpoint, shape "landscape",
+  refs = [pack_image]. It shows a person of the audience's age and gender USING the product at the moment the article is
+  about (e.g. a woman in her late 50s at her kitchen table at 3 p.m., pressing the patch onto her upper arm, a glass of water
+  beside her). Candid editorial photo, natural window light, realistic skin, everyday clothes, not glossy, not posed to camera.
+  Prompt must say: "keep the product and its label exactly as in the reference image; no added text, captions or logos".
+  NEVER show bodies for weight (no scales, tape measures, bellies, before/after), no medical settings, no doctors, no
+  pained faces. hero.caption describes the moment in plain words (it is shown with "Illustration"); never call the person a
+  customer, user or reader, never give them a name or a quote. If you can view the image, check the product looks right;
+  if it is clearly wrong, make it once more. If the image endpoint fails (e.g. no credits), leave hero.image out: the page
+  then shows the clock drawing on top instead. Make no other AI images.
+- hero time/meter (always fill them): the moment the problem shows up as a clock time, and what rises then (e.g. 3:00 PM /
+  Cravings, 9:30 AM / Brain fog, 2:00 AM / Wide awake). With a photo, this clock drawing appears inside Change #1.
 - Figures: the server draws all animations from small data objects. Use all five figure types once each:
   loop (change #1, the cycle people are stuck in), before_after (change #2, old vs new routine), product (change #3, verified
   facts as callouts; mark unclear facts with "warn": true), cost (right after product; drawn from the bundles: give every bundle
