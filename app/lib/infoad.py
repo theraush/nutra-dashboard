@@ -614,7 +614,7 @@ def render(c, page_id='', preview=False, date=None):
 
 EXTRA_CSS = r"""
 .dr.meter{transition-duration:2s}
-.b .packs{position:relative;height:130px;margin:8px 0 6px}.b .packs.two{height:150px}
+.b .packs{position:relative;height:150px;margin:8px 0 6px}
 .b .packs::after{content:"";position:absolute;left:18%;right:18%;bottom:0;height:10px;border-radius:50%;background:radial-gradient(closest-side,rgba(15,22,48,.16),transparent)}
 .b .packs img{position:absolute;height:auto;max-height:118px;object-fit:contain;object-position:bottom;filter:drop-shadow(0 4px 6px rgba(15,22,48,.15))}
 .hand{transform:rotate(var(--from));transition:transform 2.6s cubic-bezier(.35,.05,.25,1)}.hand.on{transform:rotate(var(--to))}
