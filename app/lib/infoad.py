@@ -488,20 +488,23 @@ def block(b, c, days):
 
 
 def packs_html(pack, q, name=''):
-    """A small stack of product photos for a bundle card: 1-3 in a row, 4-6 in two staggered rows."""
+    """A small stack of product photos for a bundle card: 1-3 in a row, 4-6 in two staggered rows. Sizes are % of the card."""
     if not pack:
         return ''
     n = max(1, min(int(q or 1), 6))
     front = n if n <= 3 else 3
     back = n - front
+    W, S = {1: (56, 0), 2: (48, 30), 3: (42, 27)}[front]
     imgs = []
-    for i in range(back):  # back row: smaller, higher
-        dx = (i - (back - 1) / 2) * 48 + (24 if back < 3 else 0)
-        imgs.append(f'<img src="{a(pack)}" alt="" loading="lazy" style="left:calc(50% + {dx:.0f}px - 30px);bottom:40px;width:60px;z-index:1;opacity:.92">')
-    for i in range(front):
-        dx = (i - (front - 1) / 2) * 50
-        imgs.append(f'<img src="{a(pack)}" alt="" loading="lazy" style="left:calc(50% + {dx:.0f}px - 36px);bottom:4px;width:72px;z-index:{2 + i}">')
-    return f'<div class="packs" role="img" aria-label="{n} x {a(plain(name) or "product")}">{"".join(imgs)}</div>'
+    for k in range(back):  # back row: a bit smaller and higher, peeking over the front row
+        bw = W * .86
+        left = 50 + (k - (back - 1) / 2) * S - bw / 2
+        imgs.append(f'<img src="{a(pack)}" alt="" loading="lazy" style="left:{left:.1f}%;width:{bw:.1f}%;bottom:30%;z-index:1">')
+    for k in range(front):
+        left = 50 + (k - (front - 1) / 2) * S - W / 2
+        imgs.append(f'<img src="{a(pack)}" alt="" loading="lazy" style="left:{left:.1f}%;width:{W}%;bottom:4px;z-index:{2 + k}">')
+    return f'<div class="packs{" two" if back else ""}" role="img" aria-label="{n} x {a(plain(name) or "product")}">{"".join(imgs)}</div>'
+
 
 
 def bundles(o, pack='', name=''):
@@ -611,9 +614,9 @@ def render(c, page_id='', preview=False, date=None):
 
 EXTRA_CSS = r"""
 .dr.meter{transition-duration:2s}
-.b .packs{position:relative;height:150px;margin:8px 0 6px}
+.b .packs{position:relative;height:130px;margin:8px 0 6px}.b .packs.two{height:150px}
 .b .packs::after{content:"";position:absolute;left:18%;right:18%;bottom:0;height:10px;border-radius:50%;background:radial-gradient(closest-side,rgba(15,22,48,.16),transparent)}
-.b .packs img{position:absolute;height:auto;max-height:120px;object-fit:contain;filter:drop-shadow(0 4px 6px rgba(15,22,48,.15))}
+.b .packs img{position:absolute;height:auto;max-height:118px;object-fit:contain;object-position:bottom;filter:drop-shadow(0 4px 6px rgba(15,22,48,.15))}
 .hand{transform:rotate(var(--from));transition:transform 2.6s cubic-bezier(.35,.05,.25,1)}.hand.on{transform:rotate(var(--to))}
 figure.hero{margin:22px auto 30px}figure.hero .fig{padding:8px 12px}
 @media(max-width:620px){h1{font-size:33px}figure.hero{margin:16px auto 22px}}
