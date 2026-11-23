@@ -2157,7 +2157,7 @@ function close(){g('hiModal').hidden=true;arch=null;}
 document.addEventListener('click',async ev=>{
   const b=ev.target.closest('[data-hi]');if(b){if(b.dataset.hi==='cancel')return close();if(!arch)return;b.disabled=true;b.textContent='Pausing ads…';
     try{const j=await api({op:'archive',key:arch,reason:g('hiReason').value});const it=j.item||{};
-      toast(it.pause_error?'Archived. '+it.pause_error:`Archived. Paused ${(it.paused_campaigns||[]).length} campaign(s).`);close();setTimeout(()=>{location.hash='history';location.reload();},1400);}
+      toast(it.pause_error?'Archived. '+it.pause_error:`Archived. Paused ${(it.paused_campaigns||[]).length} campaign(s).`);close();setTimeout(()=>location.reload(),1400);}
     catch(err){toast(err.message);b.disabled=false;b.textContent='Archive & pause ads';}return;}
   if(ev.target===g('hiModal'))return close();
   const rs=ev.target.closest('[data-hirestore]');if(rs){if(rs.dataset.sure!=='1'){rs.dataset.sure='1';rs.textContent='Click again to restore';return;}
