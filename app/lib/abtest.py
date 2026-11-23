@@ -15,8 +15,16 @@ alter table pages add column if not exists tests_done jsonb not null default '[]
 FOCUS = {'angle': 'the angle and headline: a different main mistake/hook, a new h1 and sub (and the intro lines that set it up)',
          'intro': 'the opening only: the paragraphs right under the headline/photo (problem-first, a "BUT:" twist, or a short checklist), keep the headline',
          'offer': 'how the offer is framed: the buy-box line, the cta block, the "easy way" shortcut line and button wording (e.g. lead with days of supply or the guarantee instead of cost per day)',
+         'hormozi': ('the OFFER part only, in Alex Hormozi style (the article sections stay exactly as they are): the buy-box line, the '
+                     'cta block, the "easy way" section and its shortcut line, and button wording. Use: (1) plain value math with the REAL '
+                     'cost per day vs. an everyday thing the reader already pays for (e.g. "less than the afternoon snack it replaces"); '
+                     '(2) the whole package spelled out (packs, days of supply, one order, no subscription if the checkout is one-time); '
+                     '(3) risk reversal using ONLY the real return policy and days, credited to the vendor; (4) make the choice easy: '
+                     'say which bundle is the obvious pick and show the math. One line of light edge is fine ("the 6-pack math is almost '
+                     'unfair"). Never: "should be illegal", "insane", hype, fake scarcity or deadlines, invented bonuses or discounts, '
+                     'guarantees the vendor does not give, or any health/weight promise. Short, punchy, plain words.'),
          'length': 'a shorter page: tighten every section, drop the weakest block, keep all figures, facts, offer and FAQ essentials'}
-FOCUS_LABEL = {'angle': 'Angle & headline', 'intro': 'Opening', 'offer': 'Offer framing', 'length': 'Shorter page'}
+FOCUS_LABEL = {'angle': 'Angle & headline', 'intro': 'Opening', 'offer': 'Offer framing', 'hormozi': 'Hormozi-style offer', 'length': 'Shorter page'}
 MIN_DAYS, MIN_VIEWS, SURE = 7, 500, 0.95
 CODE_RE = re.compile(r'^[0-9a-f]{4}[AB]$')
 TID_RE = re.compile(r'^(.*)~([0-9a-f]{4}[AB])$')
@@ -90,6 +98,10 @@ def deliver_variant(row, content, validate):
     b_urls = sorted(str(b.get('url')) for b in (content.get('offer') or {}).get('bundles') or [])
     if a_urls != b_urls:
         probs.append('keep offer.bundles and their URLs exactly as in version A')
+    low = json.dumps(content).lower()
+    for bad in ('illegal', 'insane', 'only today', 'limited time', 'selling out', 'free bonus'):
+        if bad in low:
+            probs.append(f'remove "{bad}": hype or scarcity the checkout does not show gets ad accounts flagged')
     if probs:
         return {'ok': False, 'problems': probs}
     t.update({'state': 'ready', 'b': content, 'ready_at': iso()})
