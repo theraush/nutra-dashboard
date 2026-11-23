@@ -240,6 +240,8 @@ bundles, billing, notes and compliance still applies. What is different:
   ~900-1,300 words. Strong but never scary; no fear about health.
 - Phases: research → writing → building → checking. Do NOT make AI images. product.pack_image must be a REAL product photo:
   the team's uploaded image (first one) or the vendor's own product image URL (https). If neither exists, POST a warning note.
+- hero (above the fold, under the headline): the moment the problem shows up for this audience, as a clock time, and what
+  rises then (e.g. 3:00 PM / Cravings, 9:30 AM / Brain fog, 2:00 AM / Wide awake). It must match the article's angle.
 - Figures: the server draws all animations from small data objects. Use all five figure types once each:
   loop (change #1, the cycle people are stuck in), before_after (change #2, old vs new routine), product (change #3, verified
   facts as callouts; mark unclear facts with "warn": true), cost (right after product; drawn from the bundles: give every bundle

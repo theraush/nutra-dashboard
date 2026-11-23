@@ -10,9 +10,12 @@ INFO_SCHEMA_DOC = r"""{
   "meta": {"title": "...", "description": "..."},
   "publication": {"name": "The Everyday Wellness Desk"},          // neutral editorial name, never a real outlet
   "header": {"tag": "Health Habits After 50",                       // 2-4 words
-             "h1": "Most people fight the 3 p.m. crash with willpower. That's the mistake.",   // <= 90 chars
+             "h1": "Most people fight the 3 p.m. crash with willpower. That's the mistake.",   // <= 75 chars (3-4 lines on a phone)
              "sub": "And the snack drawer has been winning for years…",                        // <= 70 chars, the twist
              "minutes": 6},
+  "hero": {"time": "3:00 PM", "when": "Every afternoon", "meter": "Cravings", "level": "High", "line": "Same time. Same fight."},
+           // above-the-fold drawing: a clock runs to the moment the problem shows up, a meter fills.
+           // time <= 8 (a clock time), when <= 22, meter <= 16 (what rises), level <= 8, line <= 34
   "intro": ["Around 3 p.m., energy dips…", "<strong>BUT:</strong> most people…", "<mark>Willpower isn't the problem…</mark>",
             "<strong>The good news:</strong> …", "<strong>Below we'll break down the 3 changes…</strong>"],     // 4-6 tiny paragraphs
   "preview": {"lead": "Most of the difference comes from 3 changes in your afternoon.",
@@ -69,7 +72,7 @@ HEAD, TEXT, DIM, LINE, CARD2, BLUE, CORAL, CORAL_DK, BLUE_BG, GOLD, BAR = ('#0f1
                                                                         '#2445d6', '#e5484d', '#c42b31', '#e8edff', '#c98a00', '#cdd5ea')
 _ALLOWED = re.compile(r'&lt;(/?)(strong|em|b|i|br|mark)\s*/?&gt;', re.I)
 LIMITS = {'loop_step': 20, 'fix': 40, 'time': 6, 'ba': 24, 'ba_footer': 52, 'callout_h': 28, 'callout_p': 38, 'pill': 24, 'pill_sub': 26,
-          'label': 44, 'col': 14, 'cell': 8, 'badge': 10, 'trust': 22, 'format': 32}
+          'label': 44, 'h1': 80, 'hero_time': 8, 'hero_when': 22, 'hero_meter': 16, 'hero_level': 8, 'hero_line': 34, 'col': 14, 'cell': 8, 'badge': 10, 'trust': 22, 'format': 32}
 CSS = open(os.path.join(os.path.dirname(__file__), 'infoad.css'), encoding='utf-8').read()
 
 
@@ -117,11 +120,61 @@ def title_txt(label, x0, y, size=15, maxw=None):
     return f'<text x="{x0}" y="{y}" class="mono" font-size="{size}" fill="{DIM}" letter-spacing="1">{x(s)}</text>'
 
 
-def wrap_fig(dk, ph, caption, label):
+def wrap_fig(dk, ph, caption, label, dk_h=440, cls=''):
     cap = f'<figcaption>{t(caption)}</figcaption>' if caption else ''
-    return (f'<figure><div class="fig"><button class="replay" type="button" data-replay>↻ Replay</button>'
-            f'<svg class="dk" viewBox="0 0 880 440" role="img" aria-label="{a(plain(caption) or label)}">{dk}</svg>'
+    return (f'<figure{" class=" + chr(34) + cls + chr(34) if cls else ""}><div class="fig"><button class="replay" type="button" data-replay>↻ Replay</button>'
+            f'<svg class="dk" viewBox="0 0 880 {dk_h}" role="img" aria-label="{a(plain(caption) or label)}">{dk}</svg>'
             f'<svg class="ph" viewBox="0 0 360 {ph[1]}" role="img" aria-label="{a(plain(caption) or label)}">{ph[0]}</svg></div>{cap}</figure>')
+
+
+def _hm(s):
+    m = re.match(r'\s*(\d{1,2})(?::(\d{2}))?', str(s or ''))
+    return (int(m.group(1)) % 12, int(m.group(2) or 0)) if m else None
+
+
+def fig_hero(h):
+    """Above-the-fold drawing: a clock runs to the moment the problem shows up, the time pops in, a meter fills up."""
+    tm = plain(h.get('time'))[:10]
+    hm = _hm(tm)
+    meter, level = plain(h.get('meter'))[:18], plain(h.get('level') or 'High')[:10]
+    when, line = plain(h.get('when'))[:26], plain(h.get('line'))[:40]
+    label = ' · '.join(v for v in (when.upper(), tm.upper()) if v) or 'THE MOMENT IT STARTS'
+
+    def clock(cx, cy, r):
+        ticks = ''.join(f'<line x1="{cx}" y1="{cy - r + 8}" x2="{cx}" y2="{cy - r + (18 if k % 3 == 0 else 13)}" stroke="{HEAD if k % 3 == 0 else DIM}" '
+                        f'stroke-width="{3 if k % 3 == 0 else 2}" transform="rotate({k * 30} {cx} {cy})"/>' for k in range(12))
+        if hm:
+            hh, mm = hm
+            to_m, to_h = mm * 6, hh * 30 + mm * 0.5
+        else:
+            to_m, to_h = 0, 90
+        fr_m, fr_h = to_m - 1080, to_h - 90
+
+        def hand(ln, w, col, fr, to):
+            return (f'<line x1="{cx}" y1="{cy}" x2="{cx}" y2="{cy - ln:.0f}" stroke="{col}" stroke-width="{w}" stroke-linecap="round" class="hand" data-t="200" '
+                    f'style="transform-origin:{cx}px {cy}px;--from:{fr:g}deg;--to:{to:g}deg"/>')
+        return (f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="#ffffff" stroke="{LINE}" stroke-width="3"/>'
+                f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="{CORAL}" stroke-width="5" pathLength="1" class="dr" data-t="2900" transform="rotate(-90 {cx} {cy})"/>'
+                + ticks + hand(r * .48, 6, HEAD, fr_h, to_h) + hand(r * .72, 4, BLUE, fr_m, to_m) + f'<circle cx="{cx}" cy="{cy}" r="6" fill="{HEAD}"/>')
+
+    def meterbar(x1, x2, y, size):
+        w = x2 - x1
+        return (f'<text x="{x1}" y="{y - 22}" font-size="{size}" font-weight="600" fill="{TEXT}">{x(meter)}</text>'
+                f'<line x1="{x1 + 10}" y1="{y}" x2="{x2 - 10}" y2="{y}" stroke="{CARD2}" stroke-width="20" stroke-linecap="round"/>'
+                f'<line x1="{x1 + 10}" y1="{y}" x2="{x1 + 10 + (w - 20) * .86:.0f}" y2="{y}" stroke="{CORAL}" stroke-width="20" stroke-linecap="round" pathLength="1" class="dr meter" data-t="1200"/>'
+                f'<g class="s pop flash" data-t="3000"><rect x="{x2 - 92}" y="{y - 52}" width="92" height="30" rx="15" fill="{CORAL}"/>'
+                f'<text x="{x2 - 46}" y="{y - 31}" text-anchor="middle" font-size="15" font-weight="700" fill="#ffffff">{x(level.upper())}</text></g>')
+
+    def timetxt(x0, y, size, subsize, maxw):
+        sz = fs(tm, size, maxw, 28)
+        out = f'<g class="s pop" data-t="2700"><text x="{x0}" y="{y}" class="serif" font-size="{sz}" font-weight="700" fill="{HEAD}">{x(tm)}</text></g>'
+        if line:
+            out += f'<g class="s up" data-t="3200"><text x="{x0}" y="{y + subsize + 14}" font-size="{fs(line, subsize, maxw)}" font-weight="600" fill="{CORAL_DK}">{x(line)}</text></g>'
+        return out
+
+    dk = title_txt(label, 28, 40) + clock(150, 168, 108) + timetxt(310, 140, 64, 22, 540) + (meterbar(310, 850, 262, 18) if meter else '')
+    ph = title_txt(label, 16, 30, maxw=230) + clock(84, 132, 66) + timetxt(170, 120, 44, 17, 180) + (meterbar(16, 344, 266, 17) if meter else '')
+    return wrap_fig(dk, (ph, 292), '', f'{when} {tm}: {meter} {level}'.strip(), dk_h=300, cls='hero')
 
 
 # ── figure library ──
@@ -511,6 +564,8 @@ def render(c, page_id='', preview=False, date=None):
         faq = '<h3>Questions readers ask</h3><div class="faq">' + ''.join(
             f'<details{" open" if i == 0 else ""}><summary>{t(f.get("q"))}</summary><p>{t(f.get("a"))}</p></details>' for i, f in enumerate(c['faq'][:8])) + '</div>'
     title = plain(meta.get('title')) or plain(hd.get('h1')) or pname
+    he = c.get('hero') or {}
+    hero_html = ('</div>' + fig_hero(he) + '<div class="col">') if (he.get('time') or he.get('meter')) else ''
     banner = '<div class="preview-banner">Preview · not published yet</div>' if preview else ''
     return f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>{a(title)}</title><meta name="description" content="{a(plain(meta.get("description")))}"><meta property="og:title" content="{a(title)}"><meta property="og:type" content="article">
@@ -522,6 +577,7 @@ def render(c, page_id='', preview=False, date=None):
 <div class="col">
 <div class="top" id="top"><b>{t(pname)}</b><span class="demo">Advertisement</span></div>
 <p class="tag">{t(hd.get("tag"))}</p><h1>{t(hd.get("h1"))}</h1>{f'<div class="sub">{t(hd.get("sub"))}</div>' if hd.get("sub") else ""}
+{hero_html}
 {intro}
 <div class="byline"><span class="av" aria-hidden="true">{a(pname[:1].upper())}</span><div><b>The editors</b><span>{t(pname)}</span></div>
 <div class="when"><b>{d.strftime("%B")} {d.day}, {d.year}</b><span>{t(hd.get("minutes") or 6)} min read</span></div></div>
@@ -535,6 +591,11 @@ def render(c, page_id='', preview=False, date=None):
 
 
 EXTRA_CSS = r"""
+.dr.meter{transition-duration:2s}
+.hand{transform:rotate(var(--from));transition:transform 2.6s cubic-bezier(.35,.05,.25,1)}.hand.on{transform:rotate(var(--to))}
+figure.hero{margin:22px auto 30px}figure.hero .fig{padding:8px 12px}
+@media(max-width:620px){h1{font-size:33px}figure.hero{margin:16px auto 22px}}
+@media(prefers-reduced-motion:reduce){.hand{transition:none}}
 .preview-banner{position:sticky;top:0;z-index:30;margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));background:#0f1630;color:#fff;text-align:center;font-family:var(--sans);font-size:14px;font-weight:600;padding:8px}
 .demo{background:var(--card2);color:var(--dim)}
 .cr.ch,.cr{grid-template-columns:minmax(0,1.6fr) repeat(var(--cols,4),minmax(0,1fr))}
@@ -597,6 +658,12 @@ def validate(c):
     need('publication.name', (c.get('publication') or {}).get('name'))
     need('header.h1', hd.get('h1'))
     need('header.sub', hd.get('sub'))
+    lim('header.h1', hd.get('h1'), L['h1'])
+    he = c.get('hero') or {}
+    if not (he.get('time') and he.get('meter')):
+        probs.append('hero needs time and meter (the above-the-fold drawing: when the problem shows up, and what rises)')
+    for k in ('time', 'when', 'meter', 'level', 'line'):
+        lim(f'hero.{k}', he.get(k), L['hero_' + k])
     if len(c.get('intro') or []) < 3:
         probs.append('intro needs 4-6 short paragraphs')
     if len((c.get('preview') or {}).get('items') or []) != 3:
