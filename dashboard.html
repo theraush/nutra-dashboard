@@ -560,7 +560,7 @@ body.noscroll{overflow:hidden;}
 .pg-kind{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--border);background:var(--surface);border-radius:12px;padding:12px 14px;cursor:pointer}
 .pg-kind:has(input:checked){border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
 .pg-kind input{margin-top:4px;accent-color:var(--accent)}.pg-kind span{display:flex;flex-direction:column;gap:3px;min-width:0}
-.pg-kind small{color:var(--fg2);font-size:13px;line-height:1.4}.pg-kind a{font-size:13px}
+.pg-kind small{color:var(--fg2);font-size:13px;line-height:1.4}.pg-kind a{font-size:13px}.pg-default{font-style:normal;font-size:11px;font-weight:600;color:var(--accent);margin-left:4px}
 .pg-card{padding:18px;display:flex;flex-direction:column;gap:10px;cursor:pointer;text-align:left;border:1px solid var(--border);border-radius:14px;background:var(--surface);font:inherit;color:inherit;min-width:0}
 .pg-card:hover{border-color:var(--fg2)}.pg-card h3{margin:0;font-size:16px;overflow-wrap:anywhere}.pg-card .nt-sub{margin:0;overflow-wrap:anywhere}
 .pg-empty{padding:36px 18px;text-align:center;color:var(--fg2);border:1px dashed var(--border);border-radius:14px;grid-column:1/-1}
@@ -2093,8 +2093,8 @@ function renderList(){g('pgRows').innerHTML=cardsHtml();
 function formHtml(){return`<div class="nt-head"><button type="button" class="nt-link" data-pgback>← All pages</button><div style="flex:1 1 260px;min-width:0"><h1>Build a new page</h1><div class="nt-sub">Claude researches the product, writes the story, makes the images and builds the page. About 20 minutes; you can close this tab.</div></div></div>
   <form class="card nt-panel" id="pgForm" autocomplete="off">
   <fieldset class="pg-kinds"><legend class="nt-f" style="padding:0">Page type</legend>
-    <label class="pg-kind"><input type="radio" name="kind" value="advertorial" checked><span><b>Story advertorial</b><small>A reader's story, magazine style, with AI photos. About 20 min.</small></span></label>
-    <label class="pg-kind"><input type="radio" name="kind" value="info"><span><b>Information advertorial</b><small>Editors' explainer with animated drawings (like v4 / Hyros). About 15 min.</small> <a href="/demo/info-advertorial-v4" target="_blank" rel="noopener">See example ↗</a></span></label>
+    <label class="pg-kind"><input type="radio" name="kind" value="info" checked><span><b>Information advertorial</b> <em class="pg-default">default</em><small>Editors' explainer with animated drawings (like v4 / Hyros). About 15 min.</small> <a href="/demo/info-advertorial-v4" target="_blank" rel="noopener">See example ↗</a></span></label>
+    <label class="pg-kind"><input type="radio" name="kind" value="advertorial"><span><b>Story advertorial</b><small>A reader's story, magazine style, with AI photos. About 20 min.</small></span></label>
   </fieldset>
   <label class="nt-f">Product link * <span class="nt-hint">sales page, VSL or your affiliate checkout link</span><input type="url" name="url" required placeholder="https://…"></label>
   <div class="nt-g2"><label class="nt-f">Product name <span class="nt-hint">optional</span><input name="name" placeholder="e.g. CardioFlush LT"></label>

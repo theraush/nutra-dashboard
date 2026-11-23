@@ -1,4 +1,6 @@
-"""Renders an "Information advertorial" (Hyros-style explainer, design v4) from Claude's content JSON.
+"""LOCKED DESIGN (v4 + animated hero, approved by Vlad Nov 2026): ask before changing the look.
+
+Renders an "Information advertorial" (Hyros-style explainer, design v4) from Claude's content JSON.
 
 Claude never writes HTML or SVG here. It fills INFO_SCHEMA_DOC; the animated figures are drawn by this file from small
 data objects (a loop, a before/after, product callouts, cost per day, ingredients), each with a wide desktop drawing and

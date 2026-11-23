@@ -19,6 +19,8 @@ https://nutra-dashboard-taupe.vercel.app). Pushing to `main` deploys automatical
     Skills come from the private repo in `SKILLS_REPO` (+ `SKILLS_GITHUB_TOKEN`), else the built-in brief in `lib/pages.py`.
   - `lib/infoad.py` (+ `lib/infoad.css`) — the **Information advertorial** page type (kind `info`, design = /demo/info-advertorial-v4):
     Claude sends data, the server draws the animated figures (loop, before_after, product, cost, ingredients) for desktop and phone.
+    **Design is LOCKED (Vlad approved v4 + animated hero, Nov 2026).** It's the default page type. Don't change the look,
+    colours, fonts or section order without asking him; content/bug fixes are fine.
   - `static/dashboard.html` — the page. `static/shim.js` gives it `window.claude.use('db'|'user')` backed by `/api/db`.
   - `app/README.md` — env vars and routes.
 - `dashboard.html` (repo root) — same page, used by the old Claude artifact. **After editing the page, copy it to
