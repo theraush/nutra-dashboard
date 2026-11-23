@@ -4,7 +4,7 @@ from http.cookies import SimpleCookie
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
-from lib import db, auth, postback, sync, pages, images, advertorial, agent, infoad, history  # noqa: E402
+from lib import db, auth, postback, sync, pages, images, advertorial, agent, infoad, history, abtest  # noqa: E402
 
 STATIC = os.path.join(ROOT, 'static')
 PATH_RE = re.compile(r'^[A-Za-z0-9_\-.~:@+]{1,200}/[A-Za-z0-9_\-.~:@+]{1,200}$')
@@ -128,7 +128,7 @@ def api_pages(env, path, method, p, user):
                'network': str(p.get('network') or '').strip()[:30], 'buy_links': lst('buy_links'), 'images': lst('images'),
                'notes': str(p.get('notes') or '').strip()[:3000]}
         return jresp({'ok': True, 'page': pages.public(pages.create(inp, user, base_url(env)))})
-    m = re.fullmatch(r'/api/pages/(pg_[A-Za-z0-9]{8,20})(?:/(status|changes|publish|delete|retry|stop|reopen|redo_images|dismiss))?', path)
+    m = re.fullmatch(r'/api/pages/(pg_[A-Za-z0-9]{8,20})(?:/(status|changes|publish|delete|retry|stop|reopen|redo_images|dismiss|abtest))?', path)
     if not m:
         return jresp({'ok': False}, 404)
     row = pages.get(m.group(1))
@@ -136,7 +136,7 @@ def api_pages(env, path, method, p, user):
         return jresp({'ok': False, 'error': 'Page not found'}, 404)
     act = m.group(2) or 'status'
     if act == 'status':
-        return jresp({'ok': True, 'page': pages.public(pages.check(row))})
+        return jresp({'ok': True, 'page': pages.public(abtest.check_building(pages.check(row)))})
     if not editor:
         return jresp({'ok': False, 'error': 'View only'}, 403)
     if act == 'reopen':
@@ -164,6 +164,30 @@ def api_pages(env, path, method, p, user):
         if not row.get('content'):
             return jresp({'ok': False, 'error': 'This page has no content yet. Use Try again instead.'}, 409)
         return jresp({'ok': True, 'page': pages.public(pages.request_changes(row, text, user, base_url(env)))})
+    if act == 'abtest':
+        op = str(p.get('op') or '')
+        if op == 'make':
+            if row['status'] != 'ready' or not row.get('content'):
+                return jresp({'ok': False, 'error': 'The page must be ready before you can test a version B.'}, 409)
+            if (row.get('test') or {}).get('state') in ('building', 'running'):
+                return jresp({'ok': False, 'error': 'A test is already in progress on this page.'}, 409)
+            if not agent.configured():
+                return jresp({'ok': False, 'error': 'ANTHROPIC_API_KEY is not set in Vercel yet.'}, 400)
+            tok = secrets.token_urlsafe(24)
+            r = abtest.request_variant(row, str(p.get('focus') or ''), p.get('note'), user, base_url(env), tok, pages.token_hash(tok))
+        elif op == 'start':
+            r = abtest.start(row, p.get('auto', True))
+        elif op == 'auto':
+            r = abtest.set_auto(row, p.get('auto'))
+        elif op == 'pick':
+            r = abtest.pick(row, str(p.get('winner') or ''))
+        elif op == 'discard':
+            r = abtest.discard(row)
+        else:
+            return jresp({'ok': False, 'error': 'Unknown action'}, 400)
+        if not r.get('ok'):
+            return jresp(r, 400)
+        return jresp({'ok': True, 'page': pages.public(pages.get(row['id']))})
     if act == 'retry':
         if row['status'] == 'building':
             return jresp({'ok': False, 'error': 'Already building.'}, 409)
@@ -186,7 +210,7 @@ def api_pages(env, path, method, p, user):
 
 
 def api_agent(env, path, method, body):
-    m = re.fullmatch(r'/api/agent/(pg_[A-Za-z0-9]{8,20})/(progress|image|content|fail|note)', path)
+    m = re.fullmatch(r'/api/agent/(pg_[A-Za-z0-9]{8,20})/(progress|image|content|fail|note|variant)', path)
     if not m:
         return jresp({'ok': False}, 404)
     row = pages.agent_row(m.group(1), env.get('HTTP_AUTHORIZATION'))
@@ -214,7 +238,11 @@ def api_agent(env, path, method, body):
             return jresp({'ok': False, 'error': str(e)[:300] + ' (the team has been told; use uploaded or vendor photos and carry on)'}, 200)
         return jresp({'ok': True, 'url': f"{base_url(env)}/u/{uid}.png"})
     if act == 'content':
+        if (row.get('test') or {}).get('state') == 'building' and row['status'] != 'building':
+            return jresp({'ok': False, 'problems': ['this is a VARIANT request: POST version B to /api/agent/<page>/variant, not /content']})
         return jresp(pages.deliver(row, data, base_url(env)))
+    if act == 'variant':
+        return jresp(abtest.deliver_variant(row, data, infoad.validate if row.get('kind') == 'info' else pages.validate))
     if act == 'note':
         pages.note(row['id'], str(data.get('text') or ''), str(data.get('kind') or 'warning'), str(data.get('fix') or ''))
         return jresp({'ok': True})
@@ -223,18 +251,46 @@ def api_agent(env, path, method, body):
         return jresp({'ok': True})
 
 
-def serve_page(slug, user):
+def serve_page(slug, user, env=None, p=None):
     pages.setup()
-    row = db.q1('select id, slug, kind, content, published, delivered_at from pages where slug = %s', (slug,))
+    row = db.q1('select id, slug, kind, content, published, delivered_at, test from pages where slug = %s', (slug,))
     if not row or not row.get('content'):
         return Resp(404, 'Not found', 'text/plain')
     if not row['published'] and not user:
         return Resp(404, 'Not found', 'text/plain')
-    hdrs = [('Cache-Control', 'no-store' if not row['published'] else 'public, max-age=60')]
+    t = row.get('test') or {}
+    cname = f"ab_{t.get('id')}" if t.get('id') else ''
+    cookie = SimpleCookie((env or {}).get('HTTP_COOKIE', '')).get(cname) if cname else None
+    forced = str((p or {}).get('v') or '') if user else ''
+    content, code, set_v = abtest.choose(row, cookie.value if cookie else None, forced)
+    testing = t.get('state') == 'running'
+    hdrs = [('Cache-Control', 'no-store' if (not row['published'] or testing or forced) else 'public, max-age=60')]
+    if set_v:
+        hdrs.append(('Set-Cookie', f'{cname}={set_v}; Path=/p/{row["slug"]}; Max-Age=7776000; SameSite=Lax' + ('; Secure' if SECURE else '')))
     if row.get('kind') == 'info':
         d = (row.get('delivered_at') or pages.now()).date()
-        return Resp(200, infoad.render(row['content'], row['id'], preview=not row['published'], date=d), headers=hdrs)
-    return Resp(200, advertorial.render(row['content'], row['id'], preview=not row['published']), headers=hdrs)
+        html_ = infoad.render(content, row['id'], preview=not row['published'], date=d)
+    else:
+        html_ = advertorial.render(content, row['id'], preview=not row['published'])
+    if code and not user:
+        html_ = html_.replace('</body>', abtest.AB_JS.replace('__CODE__', json.dumps(code)).replace('__PAGE__', json.dumps(row['id'])) + '</body>', 1)
+    return Resp(200, html_, headers=hdrs)
+
+
+def page_view(env, body):
+    src = env.get('HTTP_ORIGIN') or env.get('HTTP_REFERER') or ''
+    if urllib.parse.urlparse(src).netloc != env.get('HTTP_HOST'):
+        return Resp(204, b'', 'text/plain')
+    try:
+        d = json.loads(body[:2000] or b'{}')
+        row = pages.get(str(d.get('page') or ''))
+        t = (row or {}).get('test') or {}
+        code = str(d.get('v') or '')
+        if row and row['published'] and t.get('state') == 'running' and code[:4] == t.get('id'):
+            abtest.count_view(row['id'], code)
+    except Exception:
+        pass
+    return Resp(204, b'', 'text/plain')
 
 
 def page_click(env, body):
@@ -248,11 +304,12 @@ def page_click(env, body):
             i = row['input'] or {}
             prod = re.search(r'/b/\d+/(\d{1,12})/', str(d.get('href') or ''))
             c = lambda k: (str(d.get(k) or '').strip()[:200] or None)
-            db.q("""insert into events (network, event, product_id, product_key, offer, pack, utm_source, utm_campaign, utm_content, fbclid, raw)
-                    values (%s,'click',%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
+            var = c('variant') if abtest.CODE_RE.match(c('variant') or '') else None
+            db.q("""insert into events (network, event, product_id, product_key, offer, pack, utm_source, utm_campaign, utm_content, fbclid, raw, variant)
+                    values (%s,'click',%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
                  (i.get('network') or 'jvzoo', prod.group(1) if prod else None, i.get('offer_key') or None, row.get('name') or row['slug'],
                   f"Bundle {c('bundle')}" if c('bundle') else None, c('utm_source'), c('utm_campaign'), c('utm_content'), c('fbclid'),
-                  db.J({'page': row['slug']})))
+                  db.J({'page': row['slug']}), var))
     except Exception:
         pass
     return Resp(204, b'', 'text/plain')
@@ -617,12 +674,14 @@ def route(env):
         return api_agent(env, path, method, body)
     if path == '/api/public/page-click':
         return page_click(env, body)
+    if path == '/api/public/page-view':
+        return page_view(env, body)
     m_demo = re.fullmatch(r'/demo/([a-z0-9-]{1,60})', path)
     if m_demo and method in ('GET', 'HEAD') and os.path.isfile(os.path.join(STATIC, 'demo', m_demo.group(1) + '.html')):
         return Resp(200, read_static('demo/' + m_demo.group(1) + '.html'), headers=[('X-Robots-Tag', 'noindex'), ('Cache-Control', 'public, max-age=60')])
     m_p = re.fullmatch(r'/p/([a-z0-9-]{1,60})', path)
     if m_p and method in ('GET', 'HEAD'):
-        return serve_page(m_p.group(1), user)
+        return serve_page(m_p.group(1), user, env, p)
     if path == '/api/pages-selftest':
         if not user or user['role'] != 'owner' or method != 'POST' or not same_origin(env):
             return jresp({'ok': False}, 403)

@@ -1,6 +1,6 @@
 """Network postbacks (JVZoo sales, checkout starts) and lander buy-button clicks -> events table."""
 import os, re, hmac
-from . import db
+from . import db, abtest
 
 PACKS = {'446243': '2 Bottles', '446537': '2 Pack', '447307': '3 Pack', '447309': '6 Pack', '451967': '2 Bottles',
          '451969': '3 Bottles', '451971': '6 Bottles', '457697': '3 Bottles Upsell', '457713': '6 Bottles Upsell',
@@ -55,14 +55,18 @@ def handle(params, forced_network=None):
         hit = next((o for o in offers if o['key'] == p('offer')), None)
     typ = p('type')
     raw = {k: str(v)[:500] for k, v in params.items() if k != 'key'}
+    abtest.setup()
+    tid, variant = abtest.parse_tid(p('tid'))
+    utm_content, v2 = abtest.parse_tid(p('utm_content'))
+    variant = variant or v2
     try:
         db.q("""insert into events (network, event, transaction_type, transaction_id, product_id, product_name, product_key, offer, pack,
-                                    amount, commission, currency, tid, fbclid, utm_source, utm_campaign, utm_content, country, is_test, raw)
-                values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
+                                    amount, commission, currency, tid, fbclid, utm_source, utm_campaign, utm_content, country, is_test, raw, variant)
+                values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
              (network, (p('event') or 'purchase').lower()[:30], typ.upper() if typ else None, p('txn'), product_id, p('product_name'),
               hit['key'] if hit else None, (hit['offer'] if hit else None) or 'Unknown', PACKS.get(product_id or ''),
-              money(params.get('amount')), money(params.get('commission')), p('currency'), p('tid'), p('fbclid'),
-              p('utm_source'), p('utm_campaign'), p('utm_content'), p('country'), p('test') == '1', db.J(raw)))
+              money(params.get('amount')), money(params.get('commission')), p('currency'), tid, p('fbclid'),
+              p('utm_source'), p('utm_campaign'), utm_content, p('country'), p('test') == '1', db.J(raw), variant))
     except Exception as e:
         if 'events_txn_uq' in str(e) or 'duplicate key' in str(e):
             return 200, {'ok': True, 'duplicate': True}

@@ -1,7 +1,7 @@
 """The hourly job: Meta numbers + postbacks -> dashboard data, then budget pauses, pause rules and alerts.
 Meta is only ever asked to PAUSE things."""
 import datetime, re, traceback
-from . import db, engine, meta, notify
+from . import db, engine, meta, notify, abtest
 
 KEY_RE = re.compile(r'^[a-z0-9_-]{1,40}$')
 
@@ -196,6 +196,11 @@ def _run(now, errors, done):
     data['warn'] = (data.get('warn') or []) + [e for e in errors][:5]
     db.q("""insert into snapshot (id, data, at) values (1, %s, now())
             on conflict (id) do update set data = excluded.data, at = now()""", (db.J(data),))
+
+    try:
+        done += abtest.auto_check_all()
+    except Exception as ex:
+        errors.append(f'A/B auto-winner: {ex}')
 
     summary = ' · '.join(
         f"{o['name']} ${sum(v[0] for d, v in data['meta'].get(o['key'], {}).items() if d >= data['settings'][o['key']]['start']):,.2f}/${data['settings'][o['key']]['budget']:,.0f}"

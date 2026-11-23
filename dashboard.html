@@ -582,6 +582,13 @@ body.noscroll{overflow:hidden;}
 .hi-modal[hidden]{display:none}
 .hi-box{max-width:440px;width:100%;padding:20px;display:flex;flex-direction:column;gap:12px}
 .hi-box h2{margin:0;font-size:19px}.hi-what{margin:0;padding-left:18px;color:var(--fg2);font-size:14px;line-height:1.6}
+.ab-focus{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}
+#abNote{width:100%;font:inherit;font-size:14px;padding:9px 12px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--fg)}
+.ab-auto{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--fg2)}
+.ab-a{display:inline-flex;align-items:center;text-decoration:none}
+.ab-t td,.ab-t th{padding:8px 12px}.hi-wrap.ab-wrap{overflow-x:auto}.ab-t td.num{font-weight:600}
+.ab-verdict{margin:0;font-weight:600}.ab-verdict.win{color:var(--green)}
+@media(max-width:700px){.ab-t thead{display:table-header-group}.hi-table.ab-t,.ab-t tbody{display:table;width:100%}.ab-t tbody{display:table-row-group}.ab-t tr{display:table-row}.ab-t td,.ab-t th{display:table-cell;padding:8px 8px;white-space:normal}.ab-t td .nt-hint{display:block}}
 .pg-kinds{border:0;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
 .pg-kind{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--border);background:var(--surface);border-radius:12px;padding:12px 14px;cursor:pointer}
 .pg-kind:has(input:checked){border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
@@ -2180,7 +2187,7 @@ function chip(p){const w=(p.notes||[]).filter(n=>n.kind==='warning').length;
   if(p.status!=='building'&&p.status!=='failed'&&w)return`<span class="nt-tag nt-you">READY · ${w} TO CHECK</span>`;
   if(p.status==='building'&&p.has_content&&p.phase==='checking')return'<span class="nt-tag nt-claude">FINAL CHECK</span>';
   if(p.status==='building'){const m=left(p);return`<span class="nt-tag nt-claude">BUILDING · ~${m} MIN LEFT</span>`;}
-  if(p.status==='failed')return'<span class="nt-tag nt-you">NEEDS ATTENTION</span>';if(p.published)return'<span class="nt-tag nt-done">LIVE</span>';return'<span class="nt-tag nt-next">READY · NOT PUBLISHED</span>';}
+  if(p.status==='failed')return'<span class="nt-tag nt-you">NEEDS ATTENTION</span>';if(p.published&&p.test&&p.test.state==='running')return'<span class="nt-tag nt-done">LIVE · A/B TEST</span>';if(p.published)return'<span class="nt-tag nt-done">LIVE</span>';return'<span class="nt-tag nt-next">READY · NOT PUBLISHED</span>';}
 function cardsHtml(){if(!list.length)return`<div class="pg-empty">No pages yet. Press <b>Build a new page</b> and paste a product link.</div>`;
   return list.map(p=>`<button type="button" class="pg-card" data-pg="${e(p.id)}">${chip(p)}<h3>${e(p.name||p.input.name||p.input.url)}</h3>
   <p class="nt-sub">${p.status==='building'?e(((p.phases||[]).find(x=>x.id===p.phase)||{}).label||'Starting'):p.status==='failed'?e(p.error||'Stopped'):'/p/'+e(p.slug)}</p>
@@ -2217,6 +2224,31 @@ function notesHtml(p){const ns=p.notes||[];if(!ns.length&&!p.summary)return'';
   return`<section class="card nt-panel">${warn.length?`<b>⚠️ Check before running ads (${warn.length})</b><ul class="pg-notes">${warn.map(item).join('')}</ul>`:''}
     ${info.length?`<b>Good to know</b><ul class="pg-notes">${info.map(item).join('')}</ul>`:''}
     ${p.summary?`<details class="pg-sum"><summary>Claude's summary</summary><p>${e(p.summary)}</p></details>`:''}</section>`;}
+const AB_FOCUS=[['angle','Angle & headline','A different main hook and headline. Biggest lever.'],['intro','Opening','The first paragraphs under the photo.'],['offer','Offer framing','How the price, guarantee and buttons are pitched.'],['length','Shorter page','Same story, tighter. Tests if less is more.']];
+const pct=v=>v==null?'—':(v*100).toFixed(1)+'%';
+function abHtml(p){if(!canEdit&&!p.test&&!(p.tests_done||[]).length)return'';const t=p.test,done=(p.tests_done||[]).slice().reverse();
+  const past=done.length?`<details class="pg-sum"><summary>Past tests (${done.length})</summary>${done.map(d=>`<p><b>${e(d.focus_label||d.focus)}</b>: version <b>${e(d.winner)}</b> won${d.how==='auto'?' (picked automatically)':''} · ${new Date(d.ended_at).toLocaleDateString([], {month:'short',day:'numeric'})}${d.results&&d.results.verdict?`<br><span class="nt-hint">${e(d.results.verdict)}</span>`:''}</p>`).join('')}</details>`:'';
+  let body='';
+  if(!t){body=canEdit?`<p class="nt-hint" style="margin:0">Claude writes version B with one part of the copy changed. Same link, same design: half your visitors see A, half see B.</p>
+    <div class="ab-focus">${AB_FOCUS.map(([id,l,d],i)=>`<label class="pg-kind"><input type="radio" name="abFocus" value="${id}"${i===0?' checked':''}><span><b>${l}</b><small>${d}</small></span></label>`).join('')}</div>
+    <input id="abNote" placeholder="Optional idea for B, e.g. lead with the 60-day guarantee" maxlength="500">
+    <div class="nt-row"><button type="button" class="nt-primary" data-ab="make">Make version B</button><span class="nt-hint">About 5–8 minutes</span></div>`:'<p class="nt-hint" style="margin:0">No test running.</p>';}
+  else if(t.state==='building')body=`<p style="margin:0"><b>Claude is writing version B</b> (${e(t.focus_label)}). About 5–8 minutes; this updates by itself.</p>${canEdit?'<div class="nt-row"><button type="button" class="nt-link nt-del" data-ab="discard">Cancel</button></div>':''}`;
+  else if(t.state==='failed')body=`<p style="margin:0" class="hi-neg">Version B wasn't made: ${e(t.error||'Claude stopped.')}</p>${canEdit?'<div class="nt-row"><button type="button" class="nt-second" data-ab="discard">Clear and try again</button></div>':''}`;
+  else if(t.state==='ready')body=`<p style="margin:0"><b>Version B is ready</b> (${e(t.focus_label)}). Check both, then start.</p>
+    <div class="nt-row"><a class="nt-second ab-a" href="/p/${e(p.slug)}?v=A" target="_blank" rel="noopener">Preview A ↗</a><a class="nt-second ab-a" href="/p/${e(p.slug)}?v=B" target="_blank" rel="noopener">Preview B ↗</a></div>
+    ${canEdit?`<label class="ab-auto"><input type="checkbox" id="abAuto" checked> Pick the winner automatically (after 7+ days, 500+ visitors each, 95% sure)</label>
+    <div class="nt-row"><button type="button" class="nt-primary" data-ab="start"${p.published?'':' disabled title="Publish the page first"'}>Start 50/50 test</button>${p.published?'':'<span class="nt-hint">Publish the page first</span>'}<span style="flex:1"></span><button type="button" class="nt-link nt-del" data-ab="discard">Throw away B</button></div>`:''}`;
+  else if(t.state==='running'){const r=t.results||{},A=r.A||{},B=r.B||{};
+    const row=(l,f)=>`<tr><td>${l}</td><td class="num">${f(A)}</td><td class="num">${f(B)}</td></tr>`;
+    body=`<p style="margin:0"><b>Testing ${e(t.focus_label)}</b> · running ${r.days!=null?r.days+' days':'since '+new Date(t.started_at).toLocaleDateString()} · ${t.auto?'auto-pick <b>on</b>':'auto-pick off'}</p>
+    <div class="hi-wrap ab-wrap"><table class="hi-table ab-t"><thead><tr><th></th><th class="num">A (original)</th><th class="num">B (new)</th></tr></thead><tbody>
+    ${row('Visitors',x=>Number(x.views||0).toLocaleString())}${row('Bundle clicks',x=>`${x.clicks||0} <span class="nt-hint">(${pct(x.click_rate)})</span>`)}${row('Checkouts',x=>x.checkouts||0)}${row('Sales',x=>x.sales||0)}${row('Revenue per visitor',x=>'$'+(x.rpv||0).toFixed(2))}</tbody></table></div>
+    <p class="ab-verdict ${r.decided?'win':''}">${e(r.verdict||'Collecting data…')}</p>
+    <div class="nt-row"><a class="nt-second ab-a" href="/p/${e(p.slug)}?v=A" target="_blank" rel="noopener">See A ↗</a><a class="nt-second ab-a" href="/p/${e(p.slug)}?v=B" target="_blank" rel="noopener">See B ↗</a></div>
+    ${canEdit?`<div class="nt-row"><button type="button" class="nt-second" data-ab="pick" data-w="A">Keep A</button><button type="button" class="nt-second" data-ab="pick" data-w="B">Pick B</button>
+      <label class="ab-auto" style="margin:0"><input type="checkbox" id="abAutoRun"${t.auto?' checked':''}> Auto-pick winner</label></div>`:''}`;}
+  return`<section class="card nt-panel"><b>A/B test the copy</b>${body}${past}</section>`;}
 function detailHtml(p){const head=`<div class="nt-head"><button type="button" class="nt-link" data-pgback>← All pages</button><div style="flex:1 1 260px;min-width:0"><h1>${e(p.name||p.input.name||'New page')}</h1>
   <div class="nt-sub"><a href="${e(p.input.url)}" target="_blank" rel="noopener">${e(p.input.url)}</a></div></div>${chip(p)}</div>`;
   const url=location.origin+'/p/'+p.slug;
@@ -2239,18 +2271,27 @@ function detailHtml(p){const head=`<div class="nt-head"><button type="button" cl
     ${notesHtml(p)}<iframe class="pg-frame ${view==='phone'?'phone':''}" src="/p/${e(p.slug)}?v=${encodeURIComponent(p.updated_at||'')}" title="Page preview"></iframe>
     <section class="card nt-panel"><b>${p.published?'Live link':'Link (works once published)'}</b><div class="pg-link"><code>${e(url)}</code><button type="button" class="nt-second" data-copy="${e(url)}">Copy link</button></div>
     <p class="nt-hint" style="margin:0">Use it as the ad's website URL. Add <b>?utm_content={{ad.id}}</b> so sales show per ad. Clicks on the buy buttons are tracked once the page is published.</p></section>
+    ${abHtml(p)}
     ${canEdit?`<section class="card nt-panel"><b>Request changes</b><textarea id="pgChanges" rows="3" placeholder="e.g. Make the headline about memory, shorter opening, use the second uploaded photo as hero"></textarea>
     <div class="nt-row"><button type="button" class="nt-primary" data-pgact="changes">Send changes</button><span class="nt-hint">Claude updates the page in about 7 minutes.</span><span style="flex:1"></span><button type="button" class="nt-link nt-del" data-pgact="delete">Delete page</button></div></section>`:''}`;}
 function render(){if(mode==='list'){g('pgList').hidden=false;g('pgDetail').hidden=true;renderList();return;}
   g('pgList').hidden=true;g('pgDetail').hidden=false;
   if(mode==='new'){g('pgDetail').innerHTML=formHtml();thumbs();return;}
   const p=list.find(x=>x.id===openId);if(!p){mode='list';render();return;}
-  const keep=g('pgChanges')&&g('pgChanges').value;const hadFrame=document.querySelector('#pgDetail iframe');const sig=p.status+p.updated_at+view+p.published;
+  const keep=g('pgChanges')&&g('pgChanges').value;const hadFrame=document.querySelector('#pgDetail iframe');const sig=p.status+p.updated_at+view+p.published+JSON.stringify(p.test||'')+((p.tests_done||[]).length);
   if(hadFrame&&g('pgDetail').dataset.sig===sig)return;g('pgDetail').dataset.sig=sig;g('pgDetail').innerHTML=detailHtml(p);if(keep&&g('pgChanges'))g('pgChanges').value=keep;}
 async function load(){try{const j=await api('/api/pages');list=j.pages||[];ready=j.ready||ready;}catch(err){g('pgSetup').hidden=false;g('pgSetup').textContent='Pages could not load: '+err.message;}}
 async function refreshOpen(){if(mode!=='detail'||!openId)return;try{const j=await api('/api/pages/'+openId+'/status',{});const i=list.findIndex(x=>x.id===openId);if(i>=0)list[i]=j.page;else list.unshift(j.page);}catch(err){}}
 async function tick(){if(typeof activeTab==='undefined'||activeTab!=='pages')return;if(mode==='detail')await refreshOpen();else if(mode==='list')await load();if(mode!=='new')render();}
 function startTimer(){clearInterval(timer);timer=setInterval(()=>{if(!document.hidden)tick();},10000);}
+async function ab(btn){const p=list.find(x=>x.id===openId);if(!p)return;const op=btn.dataset.ab;const body={op};
+  if(op==='make'){body.focus=(document.querySelector('input[name=abFocus]:checked')||{}).value;body.note=(g('abNote')||{}).value||'';}
+  if(op==='start')body.auto=!!(g('abAuto')||{}).checked;
+  if(op==='pick'){const w=btn.dataset.w;if(btn.dataset.sure!=='1'){btn.dataset.sure='1';btn.textContent=w==='B'?'Click again: B becomes the page':'Click again: keep A, end test';return;}body.winner=w;}
+  if(op==='discard'&&btn.dataset.sure!=='1'){btn.dataset.sure='1';btn.textContent='Click again to confirm';return;}
+  btn.disabled=true;try{const j=await api('/api/pages/'+p.id+'/abtest',body);Object.assign(p,j.page);
+    toast(op==='make'?'Claude is writing version B':op==='start'?'Test started: 50/50 on the same link':op==='pick'?'Done: version '+body.winner+' now gets everyone':'Updated');}
+  catch(err){toast(err.message);btn.disabled=false;}g('pgDetail').dataset.sig='';render();}
 async function act(a){const p=list.find(x=>x.id===openId);if(!p)return;
   try{if(a==='changes'){const t=(g('pgChanges').value||'').trim();if(t.length<3){toast('Write what should change');return;}const j=await api('/api/pages/'+p.id+'/changes',{text:t});Object.assign(p,j.page);toast('Sent. Claude is on it.');}
   else if(a==='publish'||a==='unpublish'){const j=await api('/api/pages/'+p.id+'/publish',{published:a==='publish'});Object.assign(p,j.page);toast(a==='publish'?'Published':'Unpublished');}
@@ -2268,13 +2309,15 @@ async function submit(ev){ev.preventDefault();const f=ev.target,v=n=>(f.elements
   catch(err){toast(err.message);btn.disabled=false;btn.textContent='Build page';}}
 window.pgShow=async()=>{await load();render();startTimer();};
 window.pgInit=()=>{canEdit=['owner','editor'].includes(me().role)||!window.NUTRA_HOSTED;
-  g('pagesView').addEventListener('click',ev=>{const c=ev.target.closest('[data-pg]'),b=ev.target.closest('[data-pgback]'),a=ev.target.closest('[data-pgact]'),vw=ev.target.closest('[data-view]'),un=ev.target.closest('[data-unpg]'),cp=ev.target.closest('[data-copy]');
+  g('pagesView').addEventListener('click',ev=>{const abb=ev.target.closest('[data-ab]');if(abb){ab(abb);return;}
+    const c=ev.target.closest('[data-pg]'),b=ev.target.closest('[data-pgback]'),a=ev.target.closest('[data-pgact]'),vw=ev.target.closest('[data-view]'),un=ev.target.closest('[data-unpg]'),cp=ev.target.closest('[data-copy]');
     if(c){openId=c.dataset.pg;mode='detail';g('pgDetail').dataset.sig='';render();refreshOpen().then(render);window.scrollTo(0,0);}
     else if(b){mode='list';load().then(render);}else if(a)act(a.dataset.pgact);else if(vw){view=vw.dataset.view;g('pgDetail').dataset.sig='';render();}
     else if(un){ups.splice(+un.dataset.unpg,1);thumbs();}
     else if(cp){try{navigator.clipboard.writeText(cp.dataset.copy).then(()=>toast('Copied'),()=>{});}catch(err){}}
     const dm=ev.target.closest('[data-dismiss]');if(dm){const p=list.find(x=>x.id===openId);api('/api/pages/'+openId+'/dismiss',{index:+dm.dataset.dismiss}).then(j=>{Object.assign(p,j.page);g('pgDetail').dataset.sig='';render();}).catch(err=>toast(err.message));}});
-  g('pagesView').addEventListener('change',ev=>{if(ev.target.id==='pgFiles'){upload(ev.target.files);ev.target.value='';}});
+  g('pagesView').addEventListener('change',ev=>{if(ev.target.id==='pgFiles'){upload(ev.target.files);ev.target.value='';}
+    if(ev.target.id==='abAutoRun'){const p=list.find(x=>x.id===openId);api('/api/pages/'+openId+'/abtest',{op:'auto',auto:ev.target.checked}).then(j=>{Object.assign(p,j.page);toast(ev.target.checked?'Auto-pick on':'Auto-pick off');}).catch(err=>toast(err.message));}});
   g('pagesView').addEventListener('submit',ev=>{if(ev.target.id==='pgForm')submit(ev);});
   g('pgNew').addEventListener('click',()=>{mode='new';ups=[];render();window.scrollTo(0,0);});};
 })();

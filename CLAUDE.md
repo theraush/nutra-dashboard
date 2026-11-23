@@ -24,6 +24,9 @@ https://nutra-dashboard-taupe.vercel.app). Pushing to `main` deploys automatical
     colours, fonts or section order without asking him; content/bug fixes are fine.
   - `lib/history.py` — **History** tab: archiving a product pauses its active campaigns, sets `offers.status='archived'`
     (hidden everywhere) and freezes a summary in kv `history/<key>`. Restore sets it active again (ads stay paused).
+  - `lib/abtest.py` — **copy A/B tests** on built pages: Claude writes version B (`/api/agent/<page>/variant`), `/p/<slug>`
+    splits 50/50 with a sticky cookie, tid gets `~<test><A|B>` (postback strips it into `events.variant`), views in `ab_stats`.
+    Hourly sync auto-picks a winner (7+ days, 500+ views each, 95%) when the page has auto on.
   - `static/dashboard.html` — the page. `static/shim.js` gives it `window.claude.use('db'|'user')` backed by `/api/db`.
   - `app/README.md` — env vars and routes.
 - `dashboard.html` (repo root) — same page, used by the old Claude artifact. **After editing the page, copy it to
