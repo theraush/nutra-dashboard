@@ -487,7 +487,24 @@ def block(b, c, days):
     return ''
 
 
-def bundles(o):
+def packs_html(pack, q, name=''):
+    """A small stack of product photos for a bundle card: 1-3 in a row, 4-6 in two staggered rows."""
+    if not pack:
+        return ''
+    n = max(1, min(int(q or 1), 6))
+    front = n if n <= 3 else 3
+    back = n - front
+    imgs = []
+    for i in range(back):  # back row: smaller, higher
+        dx = (i - (back - 1) / 2) * 48 + (24 if back < 3 else 0)
+        imgs.append(f'<img src="{a(pack)}" alt="" loading="lazy" style="left:calc(50% + {dx:.0f}px - 30px);bottom:40px;width:60px;z-index:1;opacity:.92">')
+    for i in range(front):
+        dx = (i - (front - 1) / 2) * 50
+        imgs.append(f'<img src="{a(pack)}" alt="" loading="lazy" style="left:calc(50% + {dx:.0f}px - 36px);bottom:4px;width:72px;z-index:{2 + i}">')
+    return f'<div class="packs" role="img" aria-label="{n} x {a(plain(name) or "product")}">{"".join(imgs)}</div>'
+
+
+def bundles(o, pack='', name=''):
     bs = sorted([b for b in o.get('bundles') or [] if safe_url(b.get('url'))], key=lambda b: float(b.get('quantity') or 0))
     if not bs:
         return ''
@@ -504,7 +521,7 @@ def bundles(o):
         if sub:
             tot += f'<br>{t(b.get("billing_note") or o.get("billing_note") or "Subscription")}'
         cards.append(f'<div class="b{" best" if d and d == best and len(bs) > 1 else ""}"><span class="badge">{t(badge)}</span><h4>{t(b.get("label") or f"{q} {unit}s")}</h4>'
-                     f'<span class="day">{price}</span><span class="tot">{tot}</span>'
+                     f'{packs_html(pack, q, name)}<span class="day">{price}</span><span class="tot">{tot}</span>'
                      f'<a href="{a(safe_url(b["url"]))}" rel="sponsored nofollow" data-bundle="{q}">Choose {t(plain(b.get("label")) or q)} →</a></div>')
     return '<div class="bundles" id="bundles">' + ''.join(cards) + '</div>'
 
@@ -551,7 +568,7 @@ def render(c, page_id='', preview=False, date=None):
         terms.append(f'<strong>{days}-day return policy, handled by the product vendor.</strong>')
     terms.append(t(o.get('disclosure') or ('Subscription: ' + plain(o.get('billing_note')) if sub else 'One-time purchase.')))
     terms.append('Shipping and taxes are shown at checkout.')
-    offer = (bundles(o) + g_line(days) + f'<div class="guarantee">{" ".join(terms)}</div>')
+    offer = (bundles(o, pack, pr.get('name')) + g_line(days) + f'<div class="guarantee">{" ".join(terms)}</div>')
     rv = c.get('reviews') or {}
     reviews = ''
     if rv and safe_url(rv.get('source_url')) and rv.get('rating'):
@@ -594,6 +611,9 @@ def render(c, page_id='', preview=False, date=None):
 
 EXTRA_CSS = r"""
 .dr.meter{transition-duration:2s}
+.b .packs{position:relative;height:150px;margin:8px 0 6px}
+.b .packs::after{content:"";position:absolute;left:18%;right:18%;bottom:0;height:10px;border-radius:50%;background:radial-gradient(closest-side,rgba(15,22,48,.16),transparent)}
+.b .packs img{position:absolute;height:auto;max-height:120px;object-fit:contain;filter:drop-shadow(0 4px 6px rgba(15,22,48,.15))}
 .hand{transform:rotate(var(--from));transition:transform 2.6s cubic-bezier(.35,.05,.25,1)}.hand.on{transform:rotate(var(--to))}
 figure.hero{margin:22px auto 30px}figure.hero .fig{padding:8px 12px}
 @media(max-width:620px){h1{font-size:33px}figure.hero{margin:16px auto 22px}}
