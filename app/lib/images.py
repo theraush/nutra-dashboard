@@ -169,8 +169,18 @@ def hf_configured():
     return bool(os.environ.get('HF_API_KEY_ID') and os.environ.get('HF_API_KEY_SECRET'))
 
 
-def _hf_auth(style):
+def _hf_creds():
+    """(id, secret). Higgsfield shows one combined key 'ID:SECRET'; if that was pasted into either box, split it."""
     kid, sec = os.environ.get('HF_API_KEY_ID', '').strip(), os.environ.get('HF_API_KEY_SECRET', '').strip()
+    for v in (kid, sec):
+        if ':' in v:
+            a, b = v.split(':', 1)
+            return a.strip(), b.strip()
+    return kid, sec
+
+
+def _hf_auth(style):
+    kid, sec = _hf_creds()
     return {'key': {'Authorization': f'Key {kid}:{sec}'},
             'key_swapped': {'Authorization': f'Key {sec}:{kid}'},
             'headers': {'hf-api-key': kid, 'hf-secret': sec},
