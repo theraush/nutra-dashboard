@@ -209,7 +209,13 @@ def hf_check():
         if code and code not in (401, 403):
             db.kv_set('_system/hf_auth', {'style': style})
             return {'ok': True, 'style': style, 'code': code, 'tried': tried, 'body': getattr(_hf_try, 'last', '')}
-    return {'ok': False, 'tried': tried, 'why': 'Higgsfield rejected the key in every login format'}
+    import re as _re
+    kid_raw, sec_raw = os.environ.get('HF_API_KEY_ID', ''), os.environ.get('HF_API_KEY_SECRET', '')
+    kid, sec = kid_raw.strip(), sec_raw.strip()
+    shape = {'id_length': len(kid), 'id_starts': kid[:4], 'id_looks_like_uuid': bool(_re.fullmatch(r'[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', kid, _re.I)),
+             'id_has_dots': kid.endswith('...') or '…' in kid, 'secret_length': len(sec), 'colon_in_id': ':' in kid, 'colon_in_secret': ':' in sec,
+             'spaces_or_newlines_trimmed': kid != kid_raw or sec != sec_raw, 'id_equals_secret': kid == sec}
+    return {'ok': False, 'tried': tried, 'why': 'Higgsfield rejected the key in every login format', 'shape': shape}
 
 
 def _hf_soul(prompt, shape, deadline):
