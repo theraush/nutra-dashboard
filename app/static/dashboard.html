@@ -609,6 +609,15 @@ body.noscroll{overflow:hidden;}
 .hero-like{display:flex;align-items:center;gap:10px;font-size:13px;border:1px solid var(--accent);border-radius:10px;padding:6px 8px;background:var(--accent-lt)}.hero-like img{width:54px;height:36px;object-fit:cover;border-radius:6px}.hero-like span{flex:1;min-width:0}
 .hero-act .nt-link{font-size:12px;padding:0;white-space:nowrap}
 .hero-on{font-size:12px;font-weight:700;color:var(--green)}
+.di-head{display:flex;flex-direction:column;gap:2px;border-top:1px solid var(--border);padding-top:12px}
+.di-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
+.di-list li{border:1px solid var(--border);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;min-width:0;background:var(--surface)}
+.di-list li.best{border:2px solid var(--accent)}
+.di-name{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.di-name b{font-size:16px;word-break:break-all}
+.di-pick{font-style:normal;font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;background:var(--accent);color:#fff;border-radius:999px;padding:2px 7px}
+.di-free{font-size:12px;font-weight:700;color:var(--green);margin-left:auto}.di-unk{font-size:12px;color:var(--fg2);margin-left:auto}
+.di-list .nt-row{gap:6px}.di-list .nt-row>*{font-size:13px;padding:7px 11px}.di-buy{text-decoration:none;display:inline-flex;align-items:center}
+.di-wait{display:flex;align-items:center;gap:4px;font-size:14px;color:var(--accent);background:var(--accent-lt);border-radius:10px;padding:10px 12px}
 .hero-maker{display:flex;flex-direction:column;gap:10px;border:1px solid var(--border);border-radius:12px;padding:12px 14px;background:var(--surface2)}
 .hj{border:1px solid var(--accent);background:var(--accent-lt);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
 .hj-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.hj-top b{font-size:15px}
@@ -2372,7 +2381,23 @@ function domainHtml(p){if(!canEdit&&!p.domain)return'';const d=p.domain,st=domSt
   return`<section class="card nt-panel"><b>Your own domain</b><p class="nt-hint" style="margin:0">Show this page on your own Namecheap domain instead of nutra.palmtreemedia.co. Tip: use one neutral domain and give each page its own subdomain, e.g. <code>brain.yourdomain.com</code>.</p>
     ${canEdit?`<div class="nt-row"><input id="domInput" class="dom-in" placeholder="brain.yourdomain.com" value="${e(d||'')}"><button type="button" class="nt-primary" data-dom="save">${d?'Change':'Save'}</button>${d?'<button type="button" class="nt-second" data-dom="check">Check connection</button><button type="button" class="nt-link nt-del" data-dom="clear">Remove</button>':''}</div>`:''}
     ${d?`<div>${status}${st.connected?` · <a href="https://${e(d)}" target="_blank" rel="noopener">https://${e(d)} ↗</a>`:''}</div>`:''}${steps}
-    ${d&&!p.published?'<p class="nt-hint" style="margin:0">The domain shows the page only after you press <b>Publish</b>.</p>':''}</section>`;}
+    ${d&&!p.published?'<p class="nt-hint" style="margin:0">The domain shows the page only after you press <b>Publish</b>.</p>':''}${canEdit&&!d?domIdeasHtml(p):''}</section>`;}
+const domIdeas={};
+function domIdeasHtml(p){const s=domIdeas[p.id];if(!s){domIdeas[p.id]={loading:true};api('/api/pages/'+p.id+'/domain_ideas',{op:'get'}).then(j=>{domIdeas[p.id]={ideas:j.ideas||null,taken:j.taken,checked:j.checked};domIdeasPaint(p);}).catch(()=>{domIdeas[p.id]={};domIdeasPaint(p);});}
+  return`<div id="domIdeas">${domIdeasInner(p)}</div>`;}
+function domIdeasPaint(p){const b=g('domIdeas');if(b)b.innerHTML=domIdeasInner(p);}
+function domIdeasInner(p){const s=domIdeas[p.id]||{},list_=s.ideas;
+  const head=`<div class="di-head"><b>💡 Domains Claude suggests for this product</b><span class="nt-hint">Neutral "wellness magazine" names you can reuse for future products. Only names that are still free show up.</span></div>`;
+  if(s.loading&&!list_)return head+'<p class="nt-hint" style="margin:0">Loading…</p>';
+  if(s.making)return head+`<div class="di-wait"><span class="nt-spin"></span>Claude is thinking up names and checking which ones are still free… (about 20 seconds)</div>`;
+  if(!list_||!list_.length)return head+`${s.error?`<p class="hi-neg" style="margin:0">${e(s.error)}</p>`:''}<div class="nt-row"><button type="button" class="nt-primary" data-domidea="make">Suggest domains</button><span class="nt-hint">Free · about 20 seconds</span></div>`;
+  return head+`<ul class="di-list">${list_.map((x,i)=>{const full=x.sub+'.'+x.domain;return`<li${i===0?' class="best"':''}><div class="di-name"><b>${e(x.domain)}</b>${i===0?'<em class="di-pick">Top pick</em>':''}<span class="${x.free===true?'di-free':'di-unk'}">${x.free===true?'● Available':'● Check at Namecheap'}</span></div>
+    <span class="nt-hint">${e(x.why)} · this page: <code>${e(full)}</code></span>
+    <div class="nt-row"><a class="nt-primary di-buy" href="https://www.namecheap.com/domains/registration/results/?domain=${encodeURIComponent(x.domain)}" target="_blank" rel="noopener">Buy on Namecheap ↗</a><button type="button" class="nt-second" data-domuse="${e(full)}">I bought it: use ${e(full)}</button></div></li>`;}).join('')}</ul>
+    <div class="nt-row"><button type="button" class="nt-second" data-domidea="make">Suggest other names</button><span class="nt-hint">Checked ${+s.checked||0} names, ${+s.taken||0} were already taken. Prices show on Namecheap (usually about $10 a year; skip any marked "Premium").</span></div>`;}
+async function domIdea(){const p=list.find(x=>x.id===openId);if(!p)return;const keep=(domIdeas[p.id]||{}).ideas;domIdeas[p.id]={making:true,ideas:keep};domIdeasPaint(p);
+  try{const j=await api('/api/pages/'+p.id+'/domain_ideas',{op:'make'});domIdeas[p.id]={ideas:j.ideas,taken:j.taken,checked:j.checked};}
+  catch(err){domIdeas[p.id]={ideas:keep,error:err.message};toast(err.message);}domIdeasPaint(p);}
 const AB_FOCUS=[['angle','Angle & headline','A different main hook and headline. Biggest lever.'],['intro','Opening','The first paragraphs under the photo.'],['offer','Offer framing','How the price, guarantee and buttons are pitched.'],['hormozi','Hormozi-style offer','Value math, full package, risk reversal, "obvious pick". Offer part only.'],['photo','Hero photo only','Same words, a new top photo. Tests the picture alone.'],['length','Shorter page','Same story, tighter. Tests if less is more.']];
 const pct=v=>v==null?'—':(v*100).toFixed(1)+'%';
 function diffHtml(t,closed){const d=t.diff||[];if(!d.length)return t.state==='ready'?'<p class="hi-neg" style="margin:0">Claude made no visible change in B. Throw it away and try again.</p>':'';
@@ -2480,7 +2505,7 @@ async function submit(ev){ev.preventDefault();const f=ev.target,v=n=>(f.elements
   catch(err){toast(err.message);btn.disabled=false;btn.textContent='Build page';}}
 window.pgShow=async()=>{await load();render();startTimer();};
 window.pgInit=()=>{canEdit=['owner','editor'].includes(me().role)||!window.NUTRA_HOSTED;
-  g('pagesView').addEventListener('click',ev=>{const db_=ev.target.closest('[data-dom]');if(db_){dom(db_);return;}const hl=ev.target.closest('[data-herolike]');if(hl){heroBriefDraft=(g('heroBrief')||{}).value??null;heroLike=hl.dataset.herolike;g('pgDetail').dataset.sig='';render();if(heroLike){const b=g('heroBrief');b&&b.scrollIntoView({block:'center'});toast('Style picked: add your idea (optional), then Make 5 or 10');}return;}const hb=ev.target.closest('[data-hero]');if(hb){hero(hb);return;}const abb=ev.target.closest('[data-ab]');if(abb){ab(abb);return;}const au=ev.target.closest('[data-aud]');if(au){setAud(+au.dataset.aud);return;}
+  g('pagesView').addEventListener('click',ev=>{const db_=ev.target.closest('[data-dom]');if(db_){dom(db_);return;}const di=ev.target.closest('[data-domidea]');if(di){domIdea();return;}const du=ev.target.closest('[data-domuse]');if(du){const i=g('domInput');if(i){i.value=du.dataset.domuse;i.focus();i.scrollIntoView({block:'center'});}toast('Press Save after you have bought the domain');return;}const hl=ev.target.closest('[data-herolike]');if(hl){heroBriefDraft=(g('heroBrief')||{}).value??null;heroLike=hl.dataset.herolike;g('pgDetail').dataset.sig='';render();if(heroLike){const b=g('heroBrief');b&&b.scrollIntoView({block:'center'});toast('Style picked: add your idea (optional), then Make 5 or 10');}return;}const hb=ev.target.closest('[data-hero]');if(hb){hero(hb);return;}const abb=ev.target.closest('[data-ab]');if(abb){ab(abb);return;}const au=ev.target.closest('[data-aud]');if(au){setAud(+au.dataset.aud);return;}
     const c=ev.target.closest('[data-pg]'),b=ev.target.closest('[data-pgback]'),a=ev.target.closest('[data-pgact]'),vw=ev.target.closest('[data-view]'),un=ev.target.closest('[data-unpg]'),cp=ev.target.closest('[data-copy]');
     if(c){openId=c.dataset.pg;mode='detail';g('pgDetail').dataset.sig='';render();refreshOpen().then(render);window.scrollTo(0,0);}
     else if(b){mode='list';load().then(render);}else if(a)act(a.dataset.pgact);else if(vw){view=vw.dataset.view;g('pgDetail').dataset.sig='';render();}

@@ -4,7 +4,7 @@ from http.cookies import SimpleCookie
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
-from lib import db, auth, postback, sync, pages, images, advertorial, agent, infoad, history, abtest, heroes, notify  # noqa: E402
+from lib import db, auth, postback, sync, pages, images, advertorial, agent, infoad, history, abtest, heroes, notify, domainideas  # noqa: E402
 
 STATIC = os.path.join(ROOT, 'static')
 PATH_RE = re.compile(r'^[A-Za-z0-9_\-.~:@+]{1,200}/[A-Za-z0-9_\-.~:@+]{1,200}$')
@@ -129,7 +129,7 @@ def api_pages(env, path, method, p, user):
                'network': str(p.get('network') or '').strip()[:30], 'buy_links': lst('buy_links'), 'images': lst('images'),
                'notes': str(p.get('notes') or '').strip()[:3000], 'audience': pages.clean_audience(p.get('audience'))}
         return jresp({'ok': True, 'page': pages.public(pages.create(inp, user, base_url(env)))})
-    m = re.fullmatch(r'/api/pages/(pg_[A-Za-z0-9]{8,20})(?:/(status|changes|publish|delete|retry|stop|reopen|redo_images|dismiss|abtest|heroes|domain|domain_check))?', path)
+    m = re.fullmatch(r'/api/pages/(pg_[A-Za-z0-9]{8,20})(?:/(status|changes|publish|delete|retry|stop|reopen|redo_images|dismiss|abtest|heroes|domain|domain_check|domain_ideas))?', path)
     if not m:
         return jresp({'ok': False}, 404)
     row = pages.get(m.group(1))
@@ -181,6 +181,13 @@ def api_pages(env, path, method, p, user):
         return jresp({'ok': True, 'page': pages.public(pages.get(row['id']))})
     if act == 'domain_check':
         return jresp(pages.check_domain(row))
+    if act == 'domain_ideas':
+        if str(p.get('op') or '') != 'make':
+            return jresp({'ok': True, **(domainideas.cached(row) or {'ideas': None})})
+        try:
+            return jresp(domainideas.make(row, user['email']))
+        except Exception as e:
+            return jresp({'ok': False, 'error': 'Could not get ideas: ' + str(e)[:200]}, 502)
     if act == 'heroes':
         op = str(p.get('op') or '')
         if op == 'make':
