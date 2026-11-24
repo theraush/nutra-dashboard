@@ -603,6 +603,9 @@ body.noscroll{overflow:hidden;}
 .hero-act{display:flex;align-items:center;gap:8px;padding:8px 10px 10px;margin-top:auto}
 .hero-act .nt-second{padding:6px 12px;font-size:13px}.hero-tick{display:flex;align-items:center;gap:5px;font-size:13px;color:var(--fg2);margin-left:auto}
 .hero-on{font-size:12px;font-weight:700;color:var(--green)}
+.ab-diff summary{cursor:pointer;font-weight:600;font-size:14px}.ab-diff ul{list-style:none;padding:0;margin:8px 0 0;display:flex;flex-direction:column;gap:8px}
+.ab-diff li{font-size:13px;border:1px solid var(--border);border-radius:10px;padding:8px 10px;background:var(--surface)}
+.ab-dl{display:flex;flex-direction:column;gap:3px;margin-top:4px}.ab-old{color:var(--fg2);text-decoration:line-through;text-decoration-color:rgba(0,0,0,.25)}.ab-new{color:var(--fg)}
 .pg-kinds{border:0;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
 .pg-kind{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--border);background:var(--surface);border-radius:12px;padding:12px 14px;cursor:pointer}
 .pg-kind:has(input:checked){border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
@@ -2280,6 +2283,8 @@ function heroHtml(p){const o=(p.hero_options||[]).slice().reverse(),j=p.hero_job
   return`<section class="card nt-panel"><b>Hero photo options</b>${head}${grid}${btns}</section>`;}
 const AB_FOCUS=[['angle','Angle & headline','A different main hook and headline. Biggest lever.'],['intro','Opening','The first paragraphs under the photo.'],['offer','Offer framing','How the price, guarantee and buttons are pitched.'],['hormozi','Hormozi-style offer','Value math, full package, risk reversal, "obvious pick". Offer part only.'],['photo','Hero photo only','Same words, a new top photo. Tests the picture alone.'],['length','Shorter page','Same story, tighter. Tests if less is more.']];
 const pct=v=>v==null?'—':(v*100).toFixed(1)+'%';
+function diffHtml(t,closed){const d=t.diff||[];if(!d.length)return t.state==='ready'?'<p class="hi-neg" style="margin:0">Claude made no visible change in B. Throw it away and try again.</p>':'';
+  return`<details class="ab-diff"${closed?'':' open'}><summary>What's different in B (${d.length}${d.length>=8?'+':''})</summary><ul>${d.map(x=>`<li><b>${e(x.where)}</b><div class="ab-dl"><span class="ab-old">A: ${e(x.a||'(none)')}</span><span class="ab-new">B: ${e(x.b||'(removed)')}</span></div></li>`).join('')}</ul></details>`;}
 function abHtml(p){if(!canEdit&&!p.test&&!(p.tests_done||[]).length)return'';const t=p.test,done=(p.tests_done||[]).slice().reverse();
   const past=done.length?`<details class="pg-sum"><summary>Past tests (${done.length})</summary>${done.map(d=>`<p><b>${e(d.focus_label||d.focus)}</b>: version <b>${e(d.winner)}</b> won${d.how==='auto'?' (picked automatically)':''} · ${new Date(d.ended_at).toLocaleDateString([], {month:'short',day:'numeric'})}${d.results&&d.results.verdict?`<br><span class="nt-hint">${e(d.results.verdict)}</span>`:''}</p>`).join('')}</details>`:'';
   let body='';
@@ -2292,6 +2297,7 @@ function abHtml(p){if(!canEdit&&!p.test&&!(p.tests_done||[]).length)return'';con
   else if(t.state==='building')body=`<p style="margin:0"><b>Claude is writing version B</b> (${e(t.focus_label)}). About 5–8 minutes; this updates by itself.</p>${canEdit?'<div class="nt-row"><button type="button" class="nt-link nt-del" data-ab="discard">Cancel</button></div>':''}`;
   else if(t.state==='failed')body=`<p style="margin:0" class="hi-neg">Version B wasn't made: ${e(t.error||'Claude stopped.')}</p>${canEdit?'<div class="nt-row"><button type="button" class="nt-second" data-ab="discard">Clear and try again</button></div>':''}`;
   else if(t.state==='ready')body=`<p style="margin:0"><b>Version B is ready</b> (${e(t.focus_label)}${t.photo?' + new hero photo':''}). Check both, then start.</p>
+    ${diffHtml(t)}
     <div class="nt-row"><a class="nt-second ab-a" href="/p/${e(p.slug)}?v=A" target="_blank" rel="noopener">Preview A ↗</a><a class="nt-second ab-a" href="/p/${e(p.slug)}?v=B" target="_blank" rel="noopener">Preview B ↗</a></div>
     ${canEdit?`<label class="ab-auto"><input type="checkbox" id="abAuto" checked> Pick the winner automatically (after 7+ days, 500+ visitors each, 95% sure)</label>
     <div class="nt-row"><button type="button" class="nt-primary" data-ab="start"${p.published?'':' disabled title="Publish the page first"'}>Start 50/50 test</button>${p.published?'':'<span class="nt-hint">Publish the page first</span>'}<span style="flex:1"></span><button type="button" class="nt-link nt-del" data-ab="discard">Throw away B</button></div>`:''}`;
@@ -2300,6 +2306,7 @@ function abHtml(p){if(!canEdit&&!p.test&&!(p.tests_done||[]).length)return'';con
     body=`<p style="margin:0"><b>Testing ${e(t.focus_label)}</b> · running ${r.days!=null?r.days+' days':'since '+new Date(t.started_at).toLocaleDateString()} · ${t.auto?'auto-pick <b>on</b>':'auto-pick off'}</p>
     <div class="hi-wrap ab-wrap"><table class="hi-table ab-t"><thead><tr><th></th><th class="num">A (original)</th><th class="num">B (new)</th></tr></thead><tbody>
     ${row('Visitors',x=>Number(x.views||0).toLocaleString())}${row('Bundle clicks',x=>`${x.clicks||0} <span class="nt-hint">(${pct(x.click_rate)})</span>`)}${row('Checkouts',x=>x.checkouts||0)}${row('Sales',x=>x.sales||0)}${row('Revenue per visitor',x=>'$'+(x.rpv||0).toFixed(2))}</tbody></table></div>
+    ${diffHtml(t,true)}
     <p class="ab-verdict ${r.decided?'win':''}">${e(r.verdict||'Collecting data…')}</p>
     <div class="nt-row"><a class="nt-second ab-a" href="/p/${e(p.slug)}?v=A" target="_blank" rel="noopener">See A ↗</a><a class="nt-second ab-a" href="/p/${e(p.slug)}?v=B" target="_blank" rel="noopener">See B ↗</a></div>
     ${canEdit?`<div class="nt-row"><button type="button" class="nt-second" data-ab="pick" data-w="A">Keep A</button><button type="button" class="nt-second" data-ab="pick" data-w="B">Pick B</button>

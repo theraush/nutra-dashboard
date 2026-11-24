@@ -253,12 +253,59 @@ def auto_check_all():
     return msgs
 
 
+def diff(a, b, limit=8):
+    """Text that changed between version A and B, as [{'where', 'a', 'b'}] (paired by position in the content JSON)."""
+    import re as _re
+    out = []
+
+    def label(path):
+        p = '.'.join(str(x) for x in path)
+        for key, name in (('hero', 'Top photo'), ('header', 'Headline'), ('intro', 'Opening'), ('preview', 'Preview list'),
+                          ('product', 'Buy box'), ('easy_way', '"Easy way" section'), ('offer', 'Offer'), ('faq', 'FAQ'),
+                          ('changes', 'Article'), ('sections', 'Article'), ('why', '"Why listen" section')):
+            if p.startswith(key):
+                for t_, n_ in (('@cta', 'Mid-page buy box'), ('@figure', 'Animation'), ('@compare', 'Comparison table'),
+                               ('@steps', 'How-to steps'), ('@timeline', 'What to expect')):
+                    if t_ in p:
+                        return n_
+                return name
+        return p.split('.')[0]
+
+    def walk(x, y, path):
+        if len(out) >= limit:
+            return
+        if isinstance(x, dict) or isinstance(y, dict):
+            x, y = x if isinstance(x, dict) else {}, y if isinstance(y, dict) else {}
+            typ = x.get('type') or y.get('type')
+            if typ:
+                path = path + ['@' + str(typ)]
+            for k in list(dict.fromkeys(list(x) + list(y))):
+                walk(x.get(k), y.get(k), path + [k])
+        elif isinstance(x, list) or isinstance(y, list):
+            x, y = x if isinstance(x, list) else [], y if isinstance(y, list) else []
+            for i in range(max(len(x), len(y))):
+                walk(x[i] if i < len(x) else None, y[i] if i < len(y) else None, path + [i])
+        elif x != y and (isinstance(x, str) or isinstance(y, str)):
+            clean = lambda v: _re.sub(r'<[^>]+>', '', str(v or ''))[:220]
+            if 'url' in str(path[-1]) or 'image' in str(path[-1]):
+                out.append({'where': label(path), 'a': 'photo A', 'b': 'new photo'})
+            elif clean(x) != clean(y):
+                out.append({'where': label(path), 'a': clean(x), 'b': clean(y)})
+    walk(a or {}, b or {}, [])
+    return out
+
+
 def public(row):
     t = row.get('test')
     out = None
     if t:
         out = {k: t.get(k) for k in ('id', 'state', 'focus', 'note', 'by', 'created_at', 'ready_at', 'started_at', 'auto', 'error', 'photo')}
         out['focus_label'] = FOCUS_LABEL.get(t.get('focus'), t.get('focus'))
+        if t.get('b') and t.get('state') in ('ready', 'running'):
+            try:
+                out['diff'] = diff(row.get('content'), t['b'])
+            except Exception:
+                out['diff'] = []
         if t.get('state') == 'running':
             try:
                 out['results'] = results(row)
