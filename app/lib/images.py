@@ -171,10 +171,18 @@ def hf_configured():
 
 def _hf_soul(prompt, shape, deadline):
     import time
-    auth = {'Authorization': f"Key {os.environ['HF_API_KEY_ID']}:{os.environ['HF_API_KEY_SECRET']}", 'Content-Type': 'application/json',
+    kid, sec = os.environ['HF_API_KEY_ID'].strip(), os.environ['HF_API_KEY_SECRET'].strip()
+    auth = {'Authorization': f"Key {kid}:{sec}", 'Content-Type': 'application/json',
             'Idempotency-Key': uuid.uuid4().hex}
     body = {'prompt': prompt[:4000], 'aspect_ratio': HF_ASPECT.get(shape, '3:2'), 'resolution': '1080p', 'batch_size': 1, 'enhance_prompt': False}
-    sub = _post('https://api.higgsfield.ai/higgsfield-ai/soul/v2/standard', json.dumps(body).encode(), auth, timeout=60)
+    try:
+        sub = _post('https://api.higgsfield.ai/higgsfield-ai/soul/v2/standard', json.dumps(body).encode(), auth, timeout=60)
+    except ImageError as e:
+        if ' 401' in str(e) or ' 403' in str(e):
+            raise ImageError('Higgsfield 401: Higgsfield rejected the key (HF_API_KEY_ID / HF_API_KEY_SECRET). Use the ID and secret of the same key, no spaces.')
+        if ' 402' in str(e) or 'credit' in str(e).lower():
+            raise ImageError('Higgsfield: not enough API credits on the Higgsfield account.')
+        raise ImageError('Higgsfield ' + str(e).replace('Image API ', ''))
     status_url = sub.get('status_url') or f"https://api.higgsfield.ai/requests/{sub.get('request_id')}/status"
     wait = 4
     while time.time() < deadline:

@@ -30,6 +30,7 @@ ENGINE_TXT = {
     'higgsfield': ("Use engine 'higgsfield' for every row (Higgsfield SOUL makes the person and scene, then the server places the real "
                    "product into it). For these rows describe the person and scene WITHOUT the product in the prompt, and say where the product "
                    "should go in product_where (e.g. 'in her right hand', 'on the table next to the mug')."),
+    '_fallback': " If an engine 'higgsfield' call fails, make that row with engine 'openai' instead (describe the product in the prompt then) and carry on.",
     'mix': ("Alternate engines: odd rows engine 'openai', even rows engine 'higgsfield'. For 'higgsfield' rows describe the person and scene "
             "WITHOUT the product in the prompt and say where it goes in product_where (e.g. 'in her right hand'); the server places the "
             "real product into the photo."),
@@ -51,7 +52,7 @@ def request(row, count, user, base, tok, tok_hash, audience_text, system_prompt,
            + (f" These were made before, so do something new: {used}." if used else '') + "\n"
            "3) For each row POST $BASE/api/agent/$PAGE/image {prompt, shape:'landscape', refs:[the product image], engine, product_where} "
            "(up to 3 at a time). Write each prompt as a plain description of that real person, the moment and the place (the server adds "
-           "the realism rules). " + ENGINE_TXT.get(engine, ENGINE_TXT['openai']) + "\n"
+           "the realism rules). " + ENGINE_TXT.get(engine, ENGINE_TXT['openai']) + (ENGINE_TXT['_fallback'] if engine != 'openai' else '') + "\n"
            "4) Download and LOOK at every result. Reject it if: skin looks plastic or airbrushed, hands or fingers are wrong, the product "
            "label is garbled or different from the reference, there is any added text, it looks like AI art or a stock photo, or the person "
            "is outside the audience. Remake a rejected row once with a plainer, more specific prompt; drop it if it fails again.\n"

@@ -168,6 +168,15 @@ def friendly(err):
 
 def image_problem(pid, err):
     low = str(err).lower()
+    if 'higgsfield' in low:
+        if 'rejected the key' in low or '401' in low:
+            note(pid, 'Higgsfield photos failed: Higgsfield rejected the API key, so only OpenAI photos were made.',
+                 fix='In Vercel, check HF_API_KEY_ID and HF_API_KEY_SECRET are the ID and secret of the SAME Higgsfield key (no spaces), then tell Claude to redeploy.')
+        elif 'credit' in low:
+            note(pid, 'Higgsfield photos failed: the Higgsfield account has no API credits.', fix='Add API credits in Higgsfield, then make more options.')
+        else:
+            note(pid, 'Some Higgsfield photos failed (' + plain(err)[:120] + ').', fix='Make more options; OpenAI photos still work.')
+        return
     if 'openai_api_key' in low:
         note(pid, 'AI images are off because no OpenAI key is set, so the page uses only uploaded and vendor photos.',
              fix='Add OPENAI_API_KEY in Vercel, then press Redo images.', action='redo_images')
