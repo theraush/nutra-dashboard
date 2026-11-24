@@ -602,6 +602,9 @@ body.noscroll{overflow:hidden;}
 .hero-opt figcaption span{color:var(--fg2);font-size:12px;line-height:1.35}
 .hero-act{display:flex;align-items:center;gap:8px;padding:8px 10px 10px;margin-top:auto}
 .hero-act .nt-second{padding:6px 12px;font-size:13px}.hero-tick{display:flex;align-items:center;gap:5px;font-size:13px;color:var(--fg2);margin-left:auto}
+.hero-eng{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--fg2)}.hero-eng select{font:inherit;font-size:13px;padding:7px 8px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--fg)}
+.hero-badge{align-self:flex-start;font-style:normal;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 7px;border-radius:999px;background:var(--surface2);color:var(--fg2);margin:2px 0}
+.hero-badge.higgsfield{background:#efe7ff;color:#6b3fd1}
 .hero-on{font-size:12px;font-weight:700;color:var(--green)}
 .ab-diff summary{cursor:pointer;font-weight:600;font-size:14px}.ab-diff ul{list-style:none;padding:0;margin:8px 0 0;display:flex;flex-direction:column;gap:8px}
 .ab-diff li{font-size:13px;border:1px solid var(--border);border-radius:10px;padding:8px 10px;background:var(--surface)}
@@ -2274,11 +2277,12 @@ function heroHtml(p){const o=(p.hero_options||[]).slice().reverse(),j=p.hero_job
     :`<p class="nt-hint" style="margin:0">Get 5 or 10 different top photos (different person, place, moment and camera angle, all from your audience) and pick the best.</p>`;
   const grid=o.length?`<div class="hero-grid">${o.map(x=>{const on=p.hero_image===x.url,sel=heroSel.includes(x.id);
     return`<figure class="hero-opt${on?' on':''}${sel?' sel':''}"><a href="${e(x.url)}" target="_blank" rel="noopener" title="Open full size"><img src="${e(x.url)}" alt="${e(x.alt||x.caption||'Hero option')}" loading="lazy"></a>
-    <figcaption><b>${e([x.place,x.moment].filter(Boolean).join(' · ')||'Option')}</b><span>${e(x.person||'')}</span></figcaption>
+    <figcaption><b>${e([x.place,x.moment].filter(Boolean).join(' · ')||'Option')}</b>${x.engine?`<em class="hero-badge ${x.engine}">${x.engine==='higgsfield'?'Higgsfield':'OpenAI'}</em>`:''}<span>${e(x.person||'')}</span></figcaption>
     ${canEdit?`<div class="hero-act">${on?'<span class="hero-on">On the page</span>':`<button type="button" class="nt-second" data-hero="use" data-id="${e(x.id)}">Use this</button>`}
       <label class="hero-tick"><input type="checkbox" data-herosel="${e(x.id)}"${sel?' checked':''}> Test</label>
       <button type="button" class="pg-x" data-hero="remove" data-id="${e(x.id)}" aria-label="Remove this photo">×</button></div>`:''}</figure>`;}).join('')}</div>`:'';
-  const btns=canEdit?`<div class="nt-row">${busy?'':`<button type="button" class="${o.length?'nt-second':'nt-primary'}" data-hero="make" data-n="5">${o.length?'Make 5 more':'Make 5 options'}</button><button type="button" class="nt-second" data-hero="make" data-n="10">${o.length?'Make 10 more':'Make 10 options'}</button><span class="nt-hint">About $0.20 a photo · 3–10 min</span>`}
+  const engSel=ready.higgsfield?`<label class="hero-eng">Engine <select id="heroEngine"><option value="mix">Mix: half OpenAI, half Higgsfield</option><option value="higgsfield">Higgsfield SOUL</option><option value="openai">OpenAI GPT Image</option></select></label>`:'';
+  const btns=canEdit?`<div class="nt-row">${busy?'':`${engSel}<button type="button" class="${o.length?'nt-second':'nt-primary'}" data-hero="make" data-n="5">${o.length?'Make 5 more':'Make 5 options'}</button><button type="button" class="nt-second" data-hero="make" data-n="10">${o.length?'Make 10 more':'Make 10 options'}</button><span class="nt-hint">About $0.20 a photo · 3–10 min</span>`}
     ${heroSel.length?`<span style="flex:1"></span><button type="button" class="nt-primary" data-hero="test">${heroSel.length===2?'A/B test these 2':'A/B test vs current photo'}</button>`:''}</div>`:'';
   return`<section class="card nt-panel"><b>Hero photo options</b>${head}${grid}${btns}</section>`;}
 const AB_FOCUS=[['angle','Angle & headline','A different main hook and headline. Biggest lever.'],['intro','Opening','The first paragraphs under the photo.'],['offer','Offer framing','How the price, guarantee and buttons are pitched.'],['hormozi','Hormozi-style offer','Value math, full package, risk reversal, "obvious pick". Offer part only.'],['photo','Hero photo only','Same words, a new top photo. Tests the picture alone.'],['length','Shorter page','Same story, tighter. Tests if less is more.']];
@@ -2348,7 +2352,7 @@ async function refreshOpen(){if(mode!=='detail'||!openId)return;try{const j=awai
 async function tick(){if(typeof activeTab==='undefined'||activeTab!=='pages')return;if(mode==='detail')await refreshOpen();else if(mode==='list')await load();if(mode!=='new')render();}
 function startTimer(){clearInterval(timer);timer=setInterval(()=>{if(!document.hidden)tick();},10000);}
 async function hero(btn){const p=list.find(x=>x.id===openId);if(!p)return;const op=btn.dataset.hero,body={op};
-  if(op==='make')body.count=+btn.dataset.n;if(op==='use'||op==='remove')body.id=btn.dataset.id;if(op==='test')body.ids=heroSel.slice();
+  if(op==='make'){body.count=+btn.dataset.n;body.engine=(g('heroEngine')||{}).value||'openai';}if(op==='use'||op==='remove')body.id=btn.dataset.id;if(op==='test')body.ids=heroSel.slice();
   if(op==='remove'&&btn.dataset.sure!=='1'){btn.dataset.sure='1';btn.textContent='Remove?';return;}
   btn.disabled=true;try{const j=await api('/api/pages/'+p.id+'/heroes',body);Object.assign(p,j.page);if(op==='test')heroSel=[];
     toast(op==='make'?'Claude is making the photos':op==='use'?'Photo is on the page now':op==='test'?'A/B test ready: check it below, then press Start':'Removed');}

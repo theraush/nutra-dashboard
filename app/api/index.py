@@ -111,7 +111,7 @@ def api_pages(env, path, method, p, user):
         return jresp({'ok': False, 'error': 'signed out'}, 401)
     if path == '/api/pages' and method == 'GET':
         return jresp({'ok': True, 'pages': [pages.public(r) for r in pages.list_pages()],
-                      'ready': {'claude': agent.configured(), 'images': images.configured(),
+                      'ready': {'claude': agent.configured(), 'images': images.configured(), 'higgsfield': images.hf_configured(),
                                 'image_models': (db.kv_data('_system/image_models') or {}).get('ids', [])[:3]}})
     if method != 'POST' or not same_origin(env):
         return jresp({'ok': False}, 405)
@@ -184,8 +184,11 @@ def api_pages(env, path, method, p, user):
             if not images.configured():
                 return jresp({'ok': False, 'error': 'Add OPENAI_API_KEY in Vercel first.'}, 400)
             tok = secrets.token_urlsafe(24)
+            eng = str(p.get('engine') or 'openai')
+            if eng in ('higgsfield', 'mix') and not images.hf_configured():
+                return jresp({'ok': False, 'error': 'Add HF_API_KEY_ID and HF_API_KEY_SECRET in Vercel to use Higgsfield.'}, 400)
             r = heroes.request(row, p.get('count'), user, base_url(env), tok, pages.token_hash(tok),
-                               pages.audience_text(row.get('input') or {}), pages.system_prompt)
+                               pages.audience_text(row.get('input') or {}), pages.system_prompt, eng)
         elif op == 'use':
             r = heroes.use(row, str(p.get('id') or ''))
         elif op == 'test':
@@ -265,14 +268,17 @@ def api_agent(env, path, method, body):
         return jresp({'ok': ok} if ok else {'ok': False, 'error': 'phase must be research, writing, images, building or checking'}, 200 if ok else 400)
     if act == 'image':
         try:
+            eng = 'higgsfield' if str(data.get('engine') or '') == 'higgsfield' else 'openai'
             uid = images.generate(str(data.get('prompt') or '')[:6000], str(data.get('shape') or 'landscape'),
-                                  [str(x) for x in (data.get('refs') or [])][:4], 'claude:' + row['id'])
+                                  [str(x) for x in (data.get('refs') or [])][:4], 'claude:' + row['id'], eng,
+                                  str(data.get('product_where') or 'on the table, within reach'))
         except Exception as e:
             pages.log(row['id'], 'Image failed: ' + str(e)[:150])
             pages.image_problem(row['id'], e)
             return jresp({'ok': False, 'error': str(e)[:300] + ' (the team has been told; use uploaded or vendor photos and carry on)'}, 200)
         pages.log(row['id'], f'Image made with {images.LAST_MODEL}')
-        return jresp({'ok': True, 'url': f"{base_url(env)}/u/{uid}.png"})
+        ext = {'image/jpeg': 'jpg', 'image/webp': 'webp'}.get((db.q1('select mime from uploads where id = %s', (uid,)) or {}).get('mime'), 'png')
+        return jresp({'ok': True, 'url': f"{base_url(env)}/u/{uid}.{ext}", 'model': images.LAST_MODEL})
     if act == 'hero_option':
         return jresp(heroes.add_option(row, data, base_url(env)))
     if act == 'content':

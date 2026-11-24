@@ -25,7 +25,18 @@ def busy(row):
     return row['status'] == 'building' or (row.get('test') or {}).get('state') == 'building' or (row.get('hero_job') or {}).get('state') == 'building'
 
 
-def request(row, count, user, base, tok, tok_hash, audience_text, system_prompt):
+ENGINE_TXT = {
+    'openai': "Use engine 'openai' for every row.",
+    'higgsfield': ("Use engine 'higgsfield' for every row (Higgsfield SOUL makes the person and scene, then the server places the real "
+                   "product into it). For these rows describe the person and scene WITHOUT the product in the prompt, and say where the product "
+                   "should go in product_where (e.g. 'in her right hand', 'on the table next to the mug')."),
+    'mix': ("Alternate engines: odd rows engine 'openai', even rows engine 'higgsfield'. For 'higgsfield' rows describe the person and scene "
+            "WITHOUT the product in the prompt and say where it goes in product_where (e.g. 'in her right hand'); the server places the "
+            "real product into the photo."),
+}
+
+
+def request(row, count, user, base, tok, tok_hash, audience_text, system_prompt, engine='openai'):
     setup()
     n = 10 if int(count or 5) >= 10 else 5
     have = row.get('hero_options') or []
@@ -38,17 +49,18 @@ def request(row, count, user, base, tok, tok_hash, audience_text, system_prompt)
            "camera framing (close on hands and product, mid shot, over the shoulder, wide room). No two rows share a place or a moment. "
            "In every row the person is using the product or it is within reach, label readable."
            + (f" These were made before, so do something new: {used}." if used else '') + "\n"
-           "3) For each row POST $BASE/api/agent/$PAGE/image {prompt, shape:'landscape', refs:[the product image]} (up to 3 at a time). "
-           "Write each prompt as a plain description of that real person, the moment and the place (the server adds the realism rules).\n"
+           "3) For each row POST $BASE/api/agent/$PAGE/image {prompt, shape:'landscape', refs:[the product image], engine, product_where} "
+           "(up to 3 at a time). Write each prompt as a plain description of that real person, the moment and the place (the server adds "
+           "the realism rules). " + ENGINE_TXT.get(engine, ENGINE_TXT['openai']) + "\n"
            "4) Download and LOOK at every result. Reject it if: skin looks plastic or airbrushed, hands or fingers are wrong, the product "
            "label is garbled or different from the reference, there is any added text, it looks like AI art or a stock photo, or the person "
            "is outside the audience. Remake a rejected row once with a plainer, more specific prompt; drop it if it fails again.\n"
-           "5) POST each image that passes to $BASE/api/agent/$PAGE/hero_option {url, person, place, moment, camera, alt, caption} "
+           "5) POST each image that passes to $BASE/api/agent/$PAGE/hero_option {url, person, place, moment, camera, alt, caption, engine} "
            "(short plain words; caption <= 90 chars, describes the moment, never names or calls the person a customer).\n"
            f"6) Reply 'DONE: <number> options' and one line on anything the team should know.\n"
            + (audience_text + '\n' if audience_text else '') +
            f"\nPAGE={row['id']}\nBASE={base}\nPAGE_TOKEN={tok}")
-    job = {'state': 'building', 'count': n, 'started_at': iso(), 'by': user['email'], 'before': len(have)}
+    job = {'state': 'building', 'count': n, 'started_at': iso(), 'by': user['email'], 'before': len(have), 'engine': engine}
     try:
         alive = False
         if row.get('session_id'):
@@ -77,7 +89,8 @@ def add_option(row, data, base):
         return {'ok': False, 'error': 'no hero options were requested'}
     t = lambda k, n=120: str(data.get(k) or '').strip()[:n]
     opt = {'id': secrets.token_hex(4), 'url': url, 'person': t('person'), 'place': t('place'), 'moment': t('moment'), 'camera': t('camera'),
-           'alt': t('alt', 200), 'caption': t('caption', 90), 'at': iso()}
+           'alt': t('alt', 200), 'caption': t('caption', 90), 'at': iso(),
+           'engine': 'higgsfield' if str(data.get('engine') or '') == 'higgsfield' else 'openai'}
     db.q("""update pages set hero_options = (case when jsonb_array_length(hero_options) >= 40 then hero_options - 0 else hero_options end) || %s::jsonb,
             updated_at = now() where id = %s""", (db.J([opt]), row['id']))
     return {'ok': True, 'id': opt['id']}

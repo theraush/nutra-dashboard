@@ -7,6 +7,7 @@ SIZES = {'landscape': '1536x1024', 'square': '1024x1024', 'portrait': '1024x1536
 
 
 LAST_MODEL = None
+LAST_MODEL_OPENAI = None
 REALISM = ("\n\nPhoto style (must look like a real, unedited photo, not AI and not stock): candid documentary snapshot, as if taken by a "
            "friend on a recent phone or a 35mm camera; natural, slightly uneven window or room light with real shadows; true-to-life, "
            "slightly muted colours; realistic skin with pores, fine lines, natural age marks and small imperfections that match the "
@@ -92,18 +93,17 @@ def _fetch(url, limit=8_000_000):
         return data, (r.headers.get_content_type() or 'image/png')
 
 
-def generate(prompt, shape='landscape', refs=None, by='page-builder'):
+def _openai_image(prompt, shape='landscape', refs=None, pre_files=None):
+    """-> PNG bytes. pre_files: [(bytes, mime)] sent before the reference images (e.g. a photo to edit)."""
     key = os.environ.get('OPENAI_API_KEY')
     if not key:
         raise ImageError('OPENAI_API_KEY is not set in Vercel, so AI images are off. Use uploaded or vendor images.')
-    if str(by).startswith('claude:'):
-        prompt = prompt.strip() + REALISM
     auth = {'Authorization': f'Bearer {key}'}
     refs = [r for r in (refs or []) if r][:4]
-    ref_files = []
-    for i, u in enumerate(refs):
+    ref_files = [(i, d, m) for i, (d, m) in enumerate(pre_files or [])]
+    for u in refs:
         data, mime = _fetch(u)
-        ref_files.append((i, data, mime))
+        ref_files.append((len(ref_files), data, mime))
 
     def call(model, size, quality):
         if ref_files:
@@ -141,8 +141,8 @@ def generate(prompt, shape='landscape', refs=None, by='page-builder'):
                 else:
                     break
         if res is not None:
-            global LAST_MODEL
-            LAST_MODEL = model
+            global LAST_MODEL_OPENAI
+            LAST_MODEL_OPENAI = model
             if attempt:  # remember what works, so the next image goes straight to it
                 import datetime
                 ids = models(key)
@@ -155,11 +155,77 @@ def generate(prompt, shape='landscape', refs=None, by='page-builder'):
         raise last or ImageError('No image model available for this OpenAI key')
     item = (res.get('data') or [{}])[0]
     if item.get('b64_json'):
-        img = base64.b64decode(item['b64_json'])
-    elif item.get('url'):
-        img, _ = _fetch(item['url'], 20_000_000)
+        return base64.b64decode(item['b64_json'])
+    if item.get('url'):
+        return _fetch(item['url'], 20_000_000)[0]
+    raise ImageError('Image API returned no image')
+
+
+# ── Higgsfield (HF_API_KEY_ID + HF_API_KEY_SECRET): SOUL V2, its most realistic people photos ──
+HF_ASPECT = {'landscape': '3:2', 'square': '1:1', 'portrait': '2:3'}
+
+
+def hf_configured():
+    return bool(os.environ.get('HF_API_KEY_ID') and os.environ.get('HF_API_KEY_SECRET'))
+
+
+def _hf_soul(prompt, shape, deadline):
+    import time
+    auth = {'Authorization': f"Key {os.environ['HF_API_KEY_ID']}:{os.environ['HF_API_KEY_SECRET']}", 'Content-Type': 'application/json',
+            'Idempotency-Key': uuid.uuid4().hex}
+    body = {'prompt': prompt[:4000], 'aspect_ratio': HF_ASPECT.get(shape, '3:2'), 'resolution': '1080p', 'batch_size': 1, 'enhance_prompt': False}
+    sub = _post('https://api.higgsfield.ai/higgsfield-ai/soul/v2/standard', json.dumps(body).encode(), auth, timeout=60)
+    status_url = sub.get('status_url') or f"https://api.higgsfield.ai/requests/{sub.get('request_id')}/status"
+    wait = 4
+    while time.time() < deadline:
+        time.sleep(wait)
+        wait = min(8, wait + 1)
+        req = urllib.request.Request(status_url, headers={'Authorization': auth['Authorization']})
+        try:
+            with urllib.request.urlopen(req, timeout=20) as r:
+                st = json.loads(r.read())
+        except urllib.error.HTTPError as e:
+            raise ImageError(f'Higgsfield {e.code}: {e.read().decode(errors="replace")[:200]}')
+        s_ = st.get('status')
+        if s_ == 'completed':
+            url = ((st.get('images') or [{}])[0] or {}).get('url')
+            if not url:
+                raise ImageError('Higgsfield returned no image')
+            return _fetch(url, 25_000_000)
+        if s_ in ('failed', 'nsfw', 'canceled'):
+            raise ImageError(f'Higgsfield: {s_} {str(st.get("error") or "")[:150]}')
+    raise ImageError('Higgsfield took too long')
+
+
+PLACE_PRODUCT = ("Edit the FIRST image only: put the product from the SECOND image into the scene so it looks naturally photographed "
+                 "there ({where}). Copy the product and its label exactly from the second image, at a realistic size, with matching light, "
+                 "shadows and perspective. Keep the person, face, hands, clothes, room, light and framing of the first image exactly as they "
+                 "are. No added text.")
+
+
+def generate(prompt, shape='landscape', refs=None, by='page-builder', engine='openai', where='on the table, within reach'):
+    """Saves the image in uploads and returns its id. engine 'higgsfield': SOUL V2 makes the realistic photo, then OpenAI places
+    the real product (from refs) into it so the label is right."""
+    import time
+    global LAST_MODEL
+    if str(by).startswith('claude:'):
+        prompt = prompt.strip() + REALISM
+    if engine == 'higgsfield':
+        if not hf_configured():
+            raise ImageError('Higgsfield keys (HF_API_KEY_ID, HF_API_KEY_SECRET) are not set in Vercel.')
+        data, mime = _hf_soul(prompt, shape, time.time() + 150)
+        LAST_MODEL = 'higgsfield soul v2'
+        img, out_mime = data, mime
+        if refs and os.environ.get('OPENAI_API_KEY'):
+            try:
+                img = _openai_image(PLACE_PRODUCT.format(where=str(where)[:200]), shape, refs, pre_files=[(data, mime)])
+                out_mime = 'image/png'
+                LAST_MODEL = f'higgsfield soul v2 + {LAST_MODEL_OPENAI or "openai"} (product placed)'
+            except ImageError:
+                LAST_MODEL = 'higgsfield soul v2 (product not placed)'
     else:
-        raise ImageError('Image API returned no image')
+        img, out_mime = _openai_image(prompt, shape, refs), 'image/png'
+        LAST_MODEL = LAST_MODEL_OPENAI
     uid = secrets.token_urlsafe(18)
-    db.q('insert into uploads (id, mime, data, bytes, by_email) values (%s, %s, %s, %s, %s)', (uid, 'image/png', img, len(img), by))
+    db.q('insert into uploads (id, mime, data, bytes, by_email) values (%s, %s, %s, %s, %s)', (uid, out_mime, img, len(img), by))
     return uid
