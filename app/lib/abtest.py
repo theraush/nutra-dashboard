@@ -58,6 +58,8 @@ def parse_tid(v):
 # ── making version B ──
 def request_variant(row, focus, note, user, base, tok, tok_hash, photo=False, photo_note=''):
     setup()
+    from . import pages as _pages
+    _aud = _pages.audience_text(row.get('input') or {})
     if focus not in FOCUS:
         return {'ok': False, 'error': 'Pick what to test'}
     tid = secrets.token_hex(2)
@@ -78,7 +80,8 @@ def request_variant(row, focus, note, user, base, tok, tok_hash, photo=False, ph
     msg = (f"VARIANT: write version B of this page's copy for an A/B test. Page type: {'INFO (kind=info, INFO schema)' if row.get('kind') == 'info' else 'STORY advertorial'}.\n"
            f"Change ONLY {FOCUS[focus]}. Keep everything else exactly as it is: facts, prices, bundles and their URLs, product, ingredients,"
            f" figures, images, compliance text and the design. Make the change bold enough to matter (a real alternative, not a reworded copy).\n"
-           + photo_txt + (f"Team note: {test['note']}\n" if test['note'] else '') +
+           + photo_txt + (f"Team note: {test['note']}\n" if test['note'] else '')
+           + (_aud + '\n' if _aud else '') +
            f"GET $BASE/api/agent/$PAGE/content (that is version A), then POST the FULL content JSON of version B to "
            f"$BASE/api/agent/$PAGE/variant (same auth). Fix any problems it reports and POST again. Do NOT post to /content. "
            f"Then reply with 1-2 plain lines: what B changes and why it could win.\n\nPAGE={row['id']}\nBASE={base}\nPAGE_TOKEN={tok}")

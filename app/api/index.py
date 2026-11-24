@@ -127,7 +127,7 @@ def api_pages(env, path, method, p, user):
         lst = lambda k: [str(x).strip()[:1000] for x in (p.get(k) or []) if re.match(r'^https?://', str(x).strip())][:12]
         inp = {'url': url[:1000], 'kind': 'info' if p.get('kind') == 'info' else 'advertorial', 'name': str(p.get('name') or '').strip()[:80],
                'network': str(p.get('network') or '').strip()[:30], 'buy_links': lst('buy_links'), 'images': lst('images'),
-               'notes': str(p.get('notes') or '').strip()[:3000]}
+               'notes': str(p.get('notes') or '').strip()[:3000], 'audience': pages.clean_audience(p.get('audience'))}
         return jresp({'ok': True, 'page': pages.public(pages.create(inp, user, base_url(env)))})
     m = re.fullmatch(r'/api/pages/(pg_[A-Za-z0-9]{8,20})(?:/(status|changes|publish|delete|retry|stop|reopen|redo_images|dismiss|abtest))?', path)
     if not m:
@@ -159,6 +159,9 @@ def api_pages(env, path, method, p, user):
                'using the product, refs = [product.pack_image], plus hero.alt and hero.caption. Keep every other field exactly as it is.'
                if row.get('kind') == 'info' else
                'Make new AI images for every illustrative image (hero, section figures, expectations, closing and the three More from cards), using the product photo as a reference where the product appears. Keep all the text and prices exactly as they are.')
+        aud = pages.audience_text(row.get('input') or {})
+        if aud:
+            msg += ' ' + aud
         return jresp({'ok': True, 'page': pages.public(pages.request_changes(row, msg, user, base_url(env)))})
     if act == 'changes':
         text = str(p.get('text') or '').strip()

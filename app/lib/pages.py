@@ -201,6 +201,11 @@ STEPS
    (expectations block + note + journal), 07 FAQ (keep "Is <name> a real person?" → composite; is it a treatment (no); timeline (none
    guaranteed); medications (ask a pharmacist/doctor); one-time or subscription; returns). ~1,400–1,800 words, warm editorial voice,
    short paragraphs, a few bolded key lines.
+PHOTO REALISM (every AI photo, both page types): it must pass as a real photo a friend took, never as AI or stock.
+  Describe a specific real person (age, hair, build, clothes) of the AUDIENCE in a specific ordinary moment and place;
+  candid, mid-action, not looking at the camera; lived-in home with ordinary clutter; natural uneven light. The server adds
+  a realism block to every prompt, so spend your words on the person, the moment and the setting. No models, no perfect teeth,
+  no glamour. If an image comes back obviously fake, make it once more with a plainer, more specific prompt.
 3. images: about 10 images. Prefer the person's uploaded images (given in the job) and the vendor's own product photo for the
    packshot. Generate the rest: hero (section 01 scene, 16:10-ish landscape), struggle, turn, options (hands with the product, use the
    packshot as a ref), expectations (people of the audience's age with the product, ref), closing (friends walking outdoors), and one
@@ -281,6 +286,36 @@ def system_prompt():
     return SYSTEM + extra
 
 
+AUD_GENDER = {'women': 'women', 'men': 'men', 'both': 'men and women'}
+
+
+def clean_audience(a):
+    a = a if isinstance(a, dict) else {}
+    g = str(a.get('gender') or '').lower()
+    out = {'preset': str(a.get('preset') or '')[:40], 'gender': g if g in AUD_GENDER else '',
+           'age': re.sub(r'[^0-9+\- ]', '', str(a.get('age') or ''))[:12], 'country': str(a.get('country') or '')[:40],
+           'notes': str(a.get('notes') or '').strip()[:600]}
+    return out if any(out[k] for k in ('gender', 'age', 'country', 'notes')) else None
+
+
+def audience_label(a):
+    if not a:
+        return ''
+    return ' · '.join(x for x in ((AUD_GENDER.get(a.get('gender'), '').capitalize() + (' ' + a['age'] if a.get('age') else '')).strip(),
+                                  a.get('country') or '') if x)
+
+
+def audience_text(i):
+    a = (i or {}).get('audience')
+    if not a:
+        return ''
+    t = f"AUDIENCE (from the team's ad targeting): {audience_label(a)}."
+    if a.get('notes'):
+        t += f" More about them: {a['notes']}."
+    return t + (" Every person in every photo must look like this audience: same gender, an age inside this range, everyday looks,"
+                " clothes and a home or setting typical for them in this country. Write the copy, examples and tag for them too.")
+
+
 def job_text(row, tok, base):
     i = row['input'] or {}
     kind = 'info' if row['kind'] == 'info' else 'advertorial'
@@ -298,6 +333,8 @@ def job_text(row, tok, base):
         lines.append('Images uploaded by the team (use these first; the first is usually the product):\n' + '\n'.join(i['images']))
     if i.get('notes'):
         lines.append(f"Notes from the team: {i['notes']}")
+    if i.get('audience'):
+        lines.append(audience_text(i))
     lines.append('Start with: POST progress {"phase":"research"}.')
     return '\n'.join(lines)
 
@@ -343,7 +380,8 @@ def request_changes(row, text, user, base):
     revs = (row.get('revisions') or []) + [{'at': iso(now()), 'by': user['email'], 'text': text[:2000]}]
     db.q("""update pages set status = 'building', phase = 'starting', error = null, token_hash = %s, revisions = %s,
             started_at = now(), finished_at = null, updated_at = now() where id = %s""", (token_hash(tok), db.J(revs), row['id']))
-    msg = f"CHANGES: {text}\n\nPage type: {'INFO (kind=info, INFO schema)' if row.get('kind') == 'info' else 'STORY advertorial'}\nPAGE={row['id']}\nBASE={base}\nPAGE_TOKEN={tok} (new token; the old one no longer works)"
+    aud = audience_text(row.get('input') or {})
+    msg = f"CHANGES: {text}\n{aud}\n\nPage type: {'INFO (kind=info, INFO schema)' if row.get('kind') == 'info' else 'STORY advertorial'}\nPAGE={row['id']}\nBASE={base}\nPAGE_TOKEN={tok} (new token; the old one no longer works)"
     try:
         alive = False
         if row.get('session_id'):

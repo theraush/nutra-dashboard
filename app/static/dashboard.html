@@ -589,6 +589,11 @@ body.noscroll{overflow:hidden;}
 .ab-t td,.ab-t th{padding:8px 12px}.hi-wrap.ab-wrap{overflow-x:auto}.ab-t td.num{font-weight:600}
 .ab-verdict{margin:0;font-weight:600}.ab-verdict.win{color:var(--green)}
 @media(max-width:700px){.ab-t thead{display:table-header-group}.hi-table.ab-t,.ab-t tbody{display:table;width:100%}.ab-t tbody{display:table-row-group}.ab-t tr{display:table-row}.ab-t td,.ab-t th{display:table-cell;padding:8px 8px;white-space:normal}.ab-t td .nt-hint{display:block}}
+.pg-aud{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 8px}
+.pg-audp{font:inherit;font-size:13px;font-weight:500;padding:6px 12px;border-radius:999px;border:1px solid var(--border);background:var(--surface);color:var(--fg);cursor:pointer}
+.pg-audp.on{border-color:var(--accent);background:var(--accent-lt);color:var(--accent);font-weight:600}
+.nt-g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}@media(max-width:600px){.nt-g3{grid-template-columns:1fr}}
+.pg-audn{margin-top:8px}
 .pg-kinds{border:0;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
 .pg-kind{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--border);background:var(--surface);border-radius:12px;padding:12px 14px;cursor:pointer}
 .pg-kind:has(input:checked){border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
@@ -2195,6 +2200,14 @@ function cardsHtml(){if(!list.length)return`<div class="pg-empty">No pages yet. 
 function renderList(){g('pgRows').innerHTML=cardsHtml();
   const s=g('pgSetup');const miss=[!ready.claude&&'the Anthropic API key (ANTHROPIC_API_KEY)',!ready.images&&'the OpenAI key for AI images (OPENAI_API_KEY; optional, pages then use your uploaded and vendor images)'].filter(Boolean);
   s.hidden=!miss.length;s.textContent=miss.length?'Not set up yet in Vercel: '+miss.join(' and ')+'.':'';g('pgNew').disabled=!canEdit||!ready.claude;}
+const AUD_PRESETS=[{label:'Women 55–70 · US',gender:'women',age:'55-70',country:'United States',notes:'Retired or close to it, empty nesters, often grandparents'},
+  {label:'Men 55–70 · US',gender:'men',age:'55-70',country:'United States',notes:'Retired or close to it, practical, likes straight talk'},
+  {label:'Women 40–55 · US',gender:'women',age:'45-54',country:'United States',notes:'Busy, working, kids at home or just left'},
+  {label:'Men 40–55 · US',gender:'men',age:'45-54',country:'United States',notes:'Busy, working, desk job, wants energy back'},
+  {label:'Adults 60+ · US',gender:'both',age:'65+',country:'United States',notes:'Retired couples, active, family-focused'},
+  {label:'Custom',gender:'',age:'',country:'',notes:''}];
+function setAud(i){const f=g('pgForm'),a=AUD_PRESETS[i];if(!f||!a)return;document.querySelectorAll('[data-aud]').forEach(b=>b.classList.toggle('on',+b.dataset.aud===i));
+  if(a.gender){f.elements.aud_gender.value=a.gender;f.elements.aud_age.value=a.age;f.elements.aud_country.value=a.country;f.elements.aud_notes.value=a.notes;}else{f.elements.aud_notes.value='';f.elements.aud_notes.focus();}f.dataset.preset=a.label;}
 function formHtml(){return`<div class="nt-head"><button type="button" class="nt-link" data-pgback>← All pages</button><div style="flex:1 1 260px;min-width:0"><h1>Build a new page</h1><div class="nt-sub">Claude researches the product, writes the story, makes the images and builds the page. About 20 minutes; you can close this tab.</div></div></div>
   <form class="card nt-panel" id="pgForm" autocomplete="off">
   <fieldset class="pg-kinds"><legend class="nt-f" style="padding:0">Page type</legend>
@@ -2204,6 +2217,12 @@ function formHtml(){return`<div class="nt-head"><button type="button" class="nt-
   <label class="nt-f">Product link * <span class="nt-hint">sales page, VSL or your affiliate checkout link</span><input type="url" name="url" required placeholder="https://…"></label>
   <div class="nt-g2"><label class="nt-f">Product name <span class="nt-hint">optional</span><input name="name" placeholder="e.g. CardioFlush LT"></label>
   <label class="nt-f">Network<select name="network"><option value="jvzoo">JVZoo</option><option value="clickbank">ClickBank</option><option value="digistore">Digistore24</option><option value="buygoods">BuyGoods</option><option value="wealthpay">WealthPay</option><option value="other">Other</option></select></label></div>
+  <div class="nt-f">Audience <span class="nt-hint">who your ads target; the photos and copy are made for them</span>
+    <div class="pg-aud" id="pgAud">${AUD_PRESETS.map((a,i)=>`<button type="button" class="pg-audp${i===0?' on':''}" data-aud="${i}">${e(a.label)}</button>`).join('')}</div>
+    <div class="nt-g3"><label class="nt-f">Gender<select name="aud_gender"><option value="women">Women</option><option value="men">Men</option><option value="both">Both</option></select></label>
+    <label class="nt-f">Age<select name="aud_age">${['25-34','35-44','45-54','45-64','55-64','55-70','60-75','65+'].map(x=>`<option${x==='55-70'?' selected':''}>${x}</option>`).join('')}</select></label>
+    <label class="nt-f">Country<select name="aud_country">${['United States','Canada','United Kingdom','Australia','Germany','Other'].map(x=>`<option>${x}</option>`).join('')}</select></label></div>
+    <input name="aud_notes" class="pg-audn" placeholder="More about them (optional), e.g. retired, suburbs, grandkids, likes walking" maxlength="600"></div>
   <label class="nt-f">Affiliate buy links per bundle <span class="nt-hint">optional, one per line; leave empty if the link above is your affiliate link</span><textarea name="buy" rows="3"></textarea></label>
   <div class="nt-f">Product images <span class="nt-hint">optional; the product photo first</span>
     <div class="nt-drop"><label class="nt-second nt-filebtn">Upload images<input type="file" id="pgFiles" accept="image/jpeg,image/png,image/webp" multiple hidden></label><span class="nt-hint">JPG, PNG or WebP, up to 10</span></div>
@@ -2252,7 +2271,7 @@ function abHtml(p){if(!canEdit&&!p.test&&!(p.tests_done||[]).length)return'';con
       <label class="ab-auto" style="margin:0"><input type="checkbox" id="abAutoRun"${t.auto?' checked':''}> Auto-pick winner</label></div>`:''}`;}
   return`<section class="card nt-panel"><b>A/B test the copy</b>${body}${past}</section>`;}
 function detailHtml(p){const head=`<div class="nt-head"><button type="button" class="nt-link" data-pgback>← All pages</button><div style="flex:1 1 260px;min-width:0"><h1>${e(p.name||p.input.name||'New page')}</h1>
-  <div class="nt-sub"><a href="${e(p.input.url)}" target="_blank" rel="noopener">${e(p.input.url)}</a></div></div>${chip(p)}</div>`;
+  <div class="nt-sub"><a href="${e(p.input.url)}" target="_blank" rel="noopener">${e(p.input.url)}</a>${p.input.audience?` · Audience: ${e([({women:'Women',men:'Men',both:'Men & women'})[p.input.audience.gender]||'',p.input.audience.age,p.input.audience.country].filter(Boolean).join(' '))}`:''}</div></div>${chip(p)}</div>`;
   const url=location.origin+'/p/'+p.slug;
   if(p.status==='building'){const ph=p.phases||[],i=Math.max(0,ph.findIndex(x=>x.id===p.phase)),m=left(p),at=new Date(Date.now()+m*60000);
     if(p.has_content&&p.phase==='checking')return head+`<section class="card nt-panel"><span class="nt-eyebrow" style="color:var(--accent)">ALMOST DONE</span><div class="pg-count">~1 min <small>Claude is doing a final check</small></div>
@@ -2278,7 +2297,7 @@ function detailHtml(p){const head=`<div class="nt-head"><button type="button" cl
     <div class="nt-row"><button type="button" class="nt-primary" data-pgact="changes">Send changes</button><span class="nt-hint">Claude updates the page in about 7 minutes.</span><span style="flex:1"></span><button type="button" class="nt-link nt-del" data-pgact="delete">Delete page</button></div></section>`:''}`;}
 function render(){if(mode==='list'){g('pgList').hidden=false;g('pgDetail').hidden=true;renderList();return;}
   g('pgList').hidden=true;g('pgDetail').hidden=false;
-  if(mode==='new'){g('pgDetail').innerHTML=formHtml();thumbs();return;}
+  if(mode==='new'){g('pgDetail').innerHTML=formHtml();thumbs();setAud(0);return;}
   const p=list.find(x=>x.id===openId);if(!p){mode='list';render();return;}
   const keep=g('pgChanges')&&g('pgChanges').value;const hadFrame=document.querySelector('#pgDetail iframe');const sig=p.status+p.updated_at+view+p.published+JSON.stringify(p.test||'')+((p.tests_done||[]).length);
   if(hadFrame&&g('pgDetail').dataset.sig===sig)return;g('pgDetail').dataset.sig=sig;g('pgDetail').innerHTML=detailHtml(p);if(keep&&g('pgChanges'))g('pgChanges').value=keep;}
@@ -2306,12 +2325,12 @@ async function act(a){const p=list.find(x=>x.id===openId);if(!p)return;
 async function submit(ev){ev.preventDefault();const f=ev.target,v=n=>(f.elements[n].value||'').trim();
   if(ups.some(u=>!u.url&&!u.err)){toast('Wait until the images finish uploading');return;}
   const btn=f.querySelector('button[type=submit]');btn.disabled=true;btn.textContent='Starting Claude…';
-  try{const kind=(f.querySelector('input[name=kind]:checked')||{}).value||'advertorial';const j=await api('/api/pages',{kind,url:v('url'),name:v('name'),network:v('network'),buy_links:v('buy').split(/\s*\n\s*/).filter(Boolean),images:ups.filter(u=>u.url).map(u=>u.url),notes:v('notes')});
+  try{const kind=(f.querySelector('input[name=kind]:checked')||{}).value||'advertorial';const audience={preset:f.dataset.preset||'',gender:v('aud_gender'),age:v('aud_age'),country:v('aud_country'),notes:v('aud_notes')};const j=await api('/api/pages',{kind,audience,url:v('url'),name:v('name'),network:v('network'),buy_links:v('buy').split(/\s*\n\s*/).filter(Boolean),images:ups.filter(u=>u.url).map(u=>u.url),notes:v('notes')});
     list.unshift(j.page);ups=[];openId=j.page.id;mode=j.page.status==='failed'?'detail':'detail';render();}
   catch(err){toast(err.message);btn.disabled=false;btn.textContent='Build page';}}
 window.pgShow=async()=>{await load();render();startTimer();};
 window.pgInit=()=>{canEdit=['owner','editor'].includes(me().role)||!window.NUTRA_HOSTED;
-  g('pagesView').addEventListener('click',ev=>{const abb=ev.target.closest('[data-ab]');if(abb){ab(abb);return;}
+  g('pagesView').addEventListener('click',ev=>{const abb=ev.target.closest('[data-ab]');if(abb){ab(abb);return;}const au=ev.target.closest('[data-aud]');if(au){setAud(+au.dataset.aud);return;}
     const c=ev.target.closest('[data-pg]'),b=ev.target.closest('[data-pgback]'),a=ev.target.closest('[data-pgact]'),vw=ev.target.closest('[data-view]'),un=ev.target.closest('[data-unpg]'),cp=ev.target.closest('[data-copy]');
     if(c){openId=c.dataset.pg;mode='detail';g('pgDetail').dataset.sig='';render();refreshOpen().then(render);window.scrollTo(0,0);}
     else if(b){mode='list';load().then(render);}else if(a)act(a.dataset.pgact);else if(vw){view=vw.dataset.view;g('pgDetail').dataset.sig='';render();}

@@ -7,6 +7,14 @@ SIZES = {'landscape': '1536x1024', 'square': '1024x1024', 'portrait': '1024x1536
 
 
 LAST_MODEL = None
+REALISM = ("\n\nPhoto style (must look like a real, unedited photo, not AI and not stock): candid documentary snapshot, as if taken by a "
+           "friend on a recent phone or a 35mm camera; natural, slightly uneven window or room light with real shadows; true-to-life, "
+           "slightly muted colours; realistic skin with pores, fine lines, natural age marks and small imperfections that match the "
+           "person's age; real, slightly creased everyday clothes; a lived-in, ordinary home or place with normal clutter; natural "
+           "depth of field and faint grain; relaxed, unposed body language, eyes not on the camera; correct hands with five fingers. "
+           "Avoid: airbrushed or plastic skin, glossy CGI look, perfect symmetry, model looks, stock-photo smiles, studio or HDR "
+           "lighting, oversaturated colours, extra or warped fingers, any text, captions, logos or watermarks other than the "
+           "product's own label exactly as in the reference.")
 
 
 class ImageError(Exception):
@@ -88,6 +96,8 @@ def generate(prompt, shape='landscape', refs=None, by='page-builder'):
     key = os.environ.get('OPENAI_API_KEY')
     if not key:
         raise ImageError('OPENAI_API_KEY is not set in Vercel, so AI images are off. Use uploaded or vendor images.')
+    if str(by).startswith('claude:'):
+        prompt = prompt.strip() + REALISM
     auth = {'Authorization': f'Bearer {key}'}
     refs = [r for r in (refs or []) if r][:4]
     ref_files = []
