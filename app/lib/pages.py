@@ -1,7 +1,7 @@
 """Page builder jobs: the dashboard creates a page, a Claude Managed Agents session researches the product, makes
 images and posts the page content back; the server renders it with lib/advertorial.py and hosts it at /p/<slug>."""
 import os, json, re, secrets, hashlib, datetime, urllib.request, base64
-from . import db, agent, advertorial, infoad, abtest
+from . import db, agent, advertorial, infoad, abtest, heroes
 
 SCHEMA = """
 create table if not exists pages (
@@ -29,6 +29,7 @@ STALE_MIN = 75  # a build with no news for this long is marked failed
 def setup():
     db.conn().execute(SCHEMA)
     abtest.setup()
+    heroes.setup()
 
 
 def now():
@@ -54,6 +55,7 @@ def public(row, full=False):
                 'log': (row.get('log') or [])[-12:], 'has_content': bool(row.get('content')),
                 'notes': row.get('notes') or [], 'summary': row.get('summary')})
     out.update(abtest.public(row))
+    out.update(heroes.public(row))
     if full:
         out['content'] = row.get('content')
     return out
@@ -227,6 +229,9 @@ COMPLIANCE (ad platforms review these pages; non-negotiable)
 - offer.billing must match the checkout: "one-time" or "subscription". If it rebills, set billing_note to the exact terms (amount,
   interval, cancel) and say so in offer.disclosure and the FAQ; never call a subscription a one-time purchase.
 - offer.disclosure states the real terms: how it's billed, the return policy handled by the vendor, shipping shown at checkout. Bundle URLs exactly as found (affiliate id intact). Badges: 6 = "Best value", 3 = "Most popular".
+
+HERO OPTIONS: a message starting "HEROES:" asks for several hero photo options. Follow its steps; never post /content or
+/variant for it, only /image and /hero_option.
 
 VARIANT REQUESTS: a message starting "VARIANT:" asks for version B of a finished page for an A/B test. Follow it exactly:
 GET the current content (version A), change only what it names, keep every fact, price, bundle URL, figure and the

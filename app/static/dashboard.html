@@ -594,6 +594,15 @@ body.noscroll{overflow:hidden;}
 .pg-audp.on{border-color:var(--accent);background:var(--accent-lt);color:var(--accent);font-weight:600}
 .nt-g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}@media(max-width:600px){.nt-g3{grid-template-columns:1fr}}
 .pg-audn{margin-top:8px}
+.hero-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.hero-opt{margin:0;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--surface);display:flex;flex-direction:column}
+.hero-opt.on{border:2px solid var(--green)}.hero-opt.sel{border:2px solid var(--accent)}
+.hero-opt img{display:block;width:100%;aspect-ratio:3/2;object-fit:cover;background:var(--surface2)}
+.hero-opt figcaption{padding:8px 10px 0;font-size:13px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.hero-opt figcaption span{color:var(--fg2);font-size:12px;line-height:1.35}
+.hero-act{display:flex;align-items:center;gap:8px;padding:8px 10px 10px;margin-top:auto}
+.hero-act .nt-second{padding:6px 12px;font-size:13px}.hero-tick{display:flex;align-items:center;gap:5px;font-size:13px;color:var(--fg2);margin-left:auto}
+.hero-on{font-size:12px;font-weight:700;color:var(--green)}
 .pg-kinds{border:0;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
 .pg-kind{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--border);background:var(--surface);border-radius:12px;padding:12px 14px;cursor:pointer}
 .pg-kind:has(input:checked){border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
@@ -2251,6 +2260,24 @@ function notesHtml(p){const ns=p.notes||[];if(!ns.length&&!p.summary)return'';
   return`<section class="card nt-panel">${warn.length?`<b>⚠️ Check before running ads (${warn.length})</b><ul class="pg-notes">${warn.map(item).join('')}</ul>`:''}
     ${info.length?`<b>Good to know</b><ul class="pg-notes">${info.map(item).join('')}</ul>`:''}
     ${p.summary?`<details class="pg-sum"><summary>Claude's summary</summary><p>${e(p.summary)}</p></details>`:''}</section>`;}
+let heroSel=[];
+function heroHtml(p){const o=(p.hero_options||[]).slice().reverse(),j=p.hero_job||{},busy=j.state==='building';
+  if(!canEdit&&!o.length)return'';
+  const made=busy?Math.max(0,(p.hero_options||[]).length-(j.before||0)):0;
+  heroSel=heroSel.filter(id=>o.some(x=>x.id===id));
+  const head=busy?`<p style="margin:0"><b>Claude is making ${j.count} photos</b> · ${made} ready so far. Each is checked for a real, non-AI look before it shows up here.</p>`
+    :j.state==='failed'?`<p style="margin:0" class="hi-neg">No photos were made: ${e(j.error||'Claude stopped.')}</p>`
+    :o.length?`<p class="nt-hint" style="margin:0">${o.length} option${o.length===1?'':'s'}. Click <b>Use this</b> to put a photo on the page, or tick 1–2 and test them.</p>`
+    :`<p class="nt-hint" style="margin:0">Get 5 or 10 different top photos (different person, place, moment and camera angle, all from your audience) and pick the best.</p>`;
+  const grid=o.length?`<div class="hero-grid">${o.map(x=>{const on=p.hero_image===x.url,sel=heroSel.includes(x.id);
+    return`<figure class="hero-opt${on?' on':''}${sel?' sel':''}"><a href="${e(x.url)}" target="_blank" rel="noopener" title="Open full size"><img src="${e(x.url)}" alt="${e(x.alt||x.caption||'Hero option')}" loading="lazy"></a>
+    <figcaption><b>${e([x.place,x.moment].filter(Boolean).join(' · ')||'Option')}</b><span>${e(x.person||'')}</span></figcaption>
+    ${canEdit?`<div class="hero-act">${on?'<span class="hero-on">On the page</span>':`<button type="button" class="nt-second" data-hero="use" data-id="${e(x.id)}">Use this</button>`}
+      <label class="hero-tick"><input type="checkbox" data-herosel="${e(x.id)}"${sel?' checked':''}> Test</label>
+      <button type="button" class="pg-x" data-hero="remove" data-id="${e(x.id)}" aria-label="Remove this photo">×</button></div>`:''}</figure>`;}).join('')}</div>`:'';
+  const btns=canEdit?`<div class="nt-row">${busy?'':`<button type="button" class="${o.length?'nt-second':'nt-primary'}" data-hero="make" data-n="5">${o.length?'Make 5 more':'Make 5 options'}</button><button type="button" class="nt-second" data-hero="make" data-n="10">${o.length?'Make 10 more':'Make 10 options'}</button><span class="nt-hint">About $0.20 a photo · 3–10 min</span>`}
+    ${heroSel.length?`<span style="flex:1"></span><button type="button" class="nt-primary" data-hero="test">${heroSel.length===2?'A/B test these 2':'A/B test vs current photo'}</button>`:''}</div>`:'';
+  return`<section class="card nt-panel"><b>Hero photo options</b>${head}${grid}${btns}</section>`;}
 const AB_FOCUS=[['angle','Angle & headline','A different main hook and headline. Biggest lever.'],['intro','Opening','The first paragraphs under the photo.'],['offer','Offer framing','How the price, guarantee and buttons are pitched.'],['hormozi','Hormozi-style offer','Value math, full package, risk reversal, "obvious pick". Offer part only.'],['photo','Hero photo only','Same words, a new top photo. Tests the picture alone.'],['length','Shorter page','Same story, tighter. Tests if less is more.']];
 const pct=v=>v==null?'—':(v*100).toFixed(1)+'%';
 function abHtml(p){if(!canEdit&&!p.test&&!(p.tests_done||[]).length)return'';const t=p.test,done=(p.tests_done||[]).slice().reverse();
@@ -2297,7 +2324,7 @@ function detailHtml(p){const head=`<div class="nt-head"><button type="button" cl
   return head+`<div class="nt-row" style="justify-content:space-between"><div class="pg-tabs" role="tablist" aria-label="Preview"><button type="button" role="tab" data-view="desktop" aria-selected="${view==='desktop'}" aria-pressed="${view==='desktop'}"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="1.5" y="2.5" width="13" height="9" rx="1.2"/><path d="M5.5 14h5M8 11.5V14"/></svg>Desktop</button><button type="button" role="tab" data-view="phone" aria-selected="${view==='phone'}" aria-pressed="${view==='phone'}"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="4" y="1.5" width="8" height="13" rx="1.6"/><path d="M7 12.5h2"/></svg>Mobile</button></div>
     <div class="nt-row"><a class="nt-second" style="display:inline-flex;align-items:center;text-decoration:none" href="/p/${e(p.slug)}" target="_blank" rel="noopener">Open page ↗</a>
     ${canEdit?`<button type="button" class="${p.published?'nt-second':'nt-primary'}" data-pgact="${p.published?'unpublish':'publish'}">${p.published?'Unpublish':'Publish'}</button>`:''}</div></div>
-    ${notesHtml(p)}${view==='phone'?`<div class="pg-phone"><div class="pg-phone-body"><span class="pg-notch" aria-hidden="true"></span><iframe class="pg-frame phone" src="/p/${e(p.slug)}?t=${encodeURIComponent(p.updated_at||'')}" title="Mobile preview (390 × 844, iPhone size)"></iframe></div><p class="nt-hint" style="text-align:center;margin:8px 0 0">iPhone size · 390 × 844 · scroll inside the phone</p></div>`:`<iframe class="pg-frame" src="/p/${e(p.slug)}?t=${encodeURIComponent(p.updated_at||'')}" title="Desktop preview"></iframe>`}
+    ${notesHtml(p)}${heroHtml(p)}${view==='phone'?`<div class="pg-phone"><div class="pg-phone-body"><span class="pg-notch" aria-hidden="true"></span><iframe class="pg-frame phone" src="/p/${e(p.slug)}?t=${encodeURIComponent(p.updated_at||'')}" title="Mobile preview (390 × 844, iPhone size)"></iframe></div><p class="nt-hint" style="text-align:center;margin:8px 0 0">iPhone size · 390 × 844 · scroll inside the phone</p></div>`:`<iframe class="pg-frame" src="/p/${e(p.slug)}?t=${encodeURIComponent(p.updated_at||'')}" title="Desktop preview"></iframe>`}
     <section class="card nt-panel"><b>${p.published?'Live link':'Link (works once published)'}</b><div class="pg-link"><code>${e(url)}</code><button type="button" class="nt-second" data-copy="${e(url)}">Copy link</button></div>
     <p class="nt-hint" style="margin:0">Use it as the ad's website URL. Add <b>?utm_content={{ad.id}}</b> so sales show per ad. Clicks on the buy buttons are tracked once the page is published.</p></section>
     ${abHtml(p)}
@@ -2307,12 +2334,18 @@ function render(){if(mode==='list'){g('pgList').hidden=false;g('pgDetail').hidde
   g('pgList').hidden=true;g('pgDetail').hidden=false;
   if(mode==='new'){g('pgDetail').innerHTML=formHtml();thumbs();setAud(0);return;}
   const p=list.find(x=>x.id===openId);if(!p){mode='list';render();return;}
-  const keep=g('pgChanges')&&g('pgChanges').value;const hadFrame=document.querySelector('#pgDetail iframe');const sig=p.status+p.updated_at+view+p.published+JSON.stringify(p.test||'')+((p.tests_done||[]).length);
+  const keep=g('pgChanges')&&g('pgChanges').value;const hadFrame=document.querySelector('#pgDetail iframe');const sig=p.status+p.updated_at+view+p.published+JSON.stringify(p.test||'')+((p.tests_done||[]).length)+JSON.stringify(p.hero_job||'')+(p.hero_options||[]).length+(p.hero_image||'')+heroSel.join(',');
   if(hadFrame&&g('pgDetail').dataset.sig===sig)return;g('pgDetail').dataset.sig=sig;g('pgDetail').innerHTML=detailHtml(p);if(keep&&g('pgChanges'))g('pgChanges').value=keep;}
 async function load(){try{const j=await api('/api/pages');list=j.pages||[];ready=j.ready||ready;}catch(err){g('pgSetup').hidden=false;g('pgSetup').textContent='Pages could not load: '+err.message;}}
 async function refreshOpen(){if(mode!=='detail'||!openId)return;try{const j=await api('/api/pages/'+openId+'/status',{});const i=list.findIndex(x=>x.id===openId);if(i>=0)list[i]=j.page;else list.unshift(j.page);}catch(err){}}
 async function tick(){if(typeof activeTab==='undefined'||activeTab!=='pages')return;if(mode==='detail')await refreshOpen();else if(mode==='list')await load();if(mode!=='new')render();}
 function startTimer(){clearInterval(timer);timer=setInterval(()=>{if(!document.hidden)tick();},10000);}
+async function hero(btn){const p=list.find(x=>x.id===openId);if(!p)return;const op=btn.dataset.hero,body={op};
+  if(op==='make')body.count=+btn.dataset.n;if(op==='use'||op==='remove')body.id=btn.dataset.id;if(op==='test')body.ids=heroSel.slice();
+  if(op==='remove'&&btn.dataset.sure!=='1'){btn.dataset.sure='1';btn.textContent='Remove?';return;}
+  btn.disabled=true;try{const j=await api('/api/pages/'+p.id+'/heroes',body);Object.assign(p,j.page);if(op==='test')heroSel=[];
+    toast(op==='make'?'Claude is making the photos':op==='use'?'Photo is on the page now':op==='test'?'A/B test ready: check it below, then press Start':'Removed');}
+  catch(err){toast(err.message);btn.disabled=false;}g('pgDetail').dataset.sig='';render();}
 async function ab(btn){const p=list.find(x=>x.id===openId);if(!p)return;const op=btn.dataset.ab;const body={op};
   if(op==='make'){body.focus=(document.querySelector('input[name=abFocus]:checked')||{}).value;body.note=(g('abNote')||{}).value||'';body.photo=!!(g('abPhoto')||{}).checked||body.focus==='photo';body.photo_note=(g('abPhotoNote')||{}).value||'';}
   if(op==='start')body.auto=!!(g('abAuto')||{}).checked;
@@ -2338,7 +2371,7 @@ async function submit(ev){ev.preventDefault();const f=ev.target,v=n=>(f.elements
   catch(err){toast(err.message);btn.disabled=false;btn.textContent='Build page';}}
 window.pgShow=async()=>{await load();render();startTimer();};
 window.pgInit=()=>{canEdit=['owner','editor'].includes(me().role)||!window.NUTRA_HOSTED;
-  g('pagesView').addEventListener('click',ev=>{const abb=ev.target.closest('[data-ab]');if(abb){ab(abb);return;}const au=ev.target.closest('[data-aud]');if(au){setAud(+au.dataset.aud);return;}
+  g('pagesView').addEventListener('click',ev=>{const hb=ev.target.closest('[data-hero]');if(hb){hero(hb);return;}const abb=ev.target.closest('[data-ab]');if(abb){ab(abb);return;}const au=ev.target.closest('[data-aud]');if(au){setAud(+au.dataset.aud);return;}
     const c=ev.target.closest('[data-pg]'),b=ev.target.closest('[data-pgback]'),a=ev.target.closest('[data-pgact]'),vw=ev.target.closest('[data-view]'),un=ev.target.closest('[data-unpg]'),cp=ev.target.closest('[data-copy]');
     if(c){openId=c.dataset.pg;mode='detail';g('pgDetail').dataset.sig='';render();refreshOpen().then(render);window.scrollTo(0,0);}
     else if(b){mode='list';load().then(render);}else if(a)act(a.dataset.pgact);else if(vw){view=vw.dataset.view;g('pgDetail').dataset.sig='';render();}
@@ -2346,6 +2379,7 @@ window.pgInit=()=>{canEdit=['owner','editor'].includes(me().role)||!window.NUTRA
     else if(cp){try{navigator.clipboard.writeText(cp.dataset.copy).then(()=>toast('Copied'),()=>{});}catch(err){}}
     const dm=ev.target.closest('[data-dismiss]');if(dm){const p=list.find(x=>x.id===openId);api('/api/pages/'+openId+'/dismiss',{index:+dm.dataset.dismiss}).then(j=>{Object.assign(p,j.page);g('pgDetail').dataset.sig='';render();}).catch(err=>toast(err.message));}});
   g('pagesView').addEventListener('change',ev=>{if(ev.target.id==='pgFiles'){upload(ev.target.files);ev.target.value='';}
+    if(ev.target.dataset&&ev.target.dataset.herosel){const id=ev.target.dataset.herosel;heroSel=ev.target.checked?[...heroSel.filter(x=>x!==id),id].slice(-2):heroSel.filter(x=>x!==id);g('pgDetail').dataset.sig='';render();return;}
     if(ev.target.id==='abPhoto'||ev.target.name==='abFocus'){const on=(g('abPhoto')||{}).checked||((document.querySelector('input[name=abFocus]:checked')||{}).value==='photo');if(g('abPhotoNote'))g('abPhotoNote').hidden=!on;if(g('abPhoto')&&ev.target.name==='abFocus'&&ev.target.value==='photo')g('abPhoto').checked=true;}
     if(ev.target.id==='abAutoRun'){const p=list.find(x=>x.id===openId);api('/api/pages/'+openId+'/abtest',{op:'auto',auto:ev.target.checked}).then(j=>{Object.assign(p,j.page);toast(ev.target.checked?'Auto-pick on':'Auto-pick off');}).catch(err=>toast(err.message));}});
   g('pagesView').addEventListener('submit',ev=>{if(ev.target.id==='pgForm')submit(ev);});

@@ -4,7 +4,7 @@ from http.cookies import SimpleCookie
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
-from lib import db, auth, postback, sync, pages, images, advertorial, agent, infoad, history, abtest  # noqa: E402
+from lib import db, auth, postback, sync, pages, images, advertorial, agent, infoad, history, abtest, heroes  # noqa: E402
 
 STATIC = os.path.join(ROOT, 'static')
 PATH_RE = re.compile(r'^[A-Za-z0-9_\-.~:@+]{1,200}/[A-Za-z0-9_\-.~:@+]{1,200}$')
@@ -129,7 +129,7 @@ def api_pages(env, path, method, p, user):
                'network': str(p.get('network') or '').strip()[:30], 'buy_links': lst('buy_links'), 'images': lst('images'),
                'notes': str(p.get('notes') or '').strip()[:3000], 'audience': pages.clean_audience(p.get('audience'))}
         return jresp({'ok': True, 'page': pages.public(pages.create(inp, user, base_url(env)))})
-    m = re.fullmatch(r'/api/pages/(pg_[A-Za-z0-9]{8,20})(?:/(status|changes|publish|delete|retry|stop|reopen|redo_images|dismiss|abtest))?', path)
+    m = re.fullmatch(r'/api/pages/(pg_[A-Za-z0-9]{8,20})(?:/(status|changes|publish|delete|retry|stop|reopen|redo_images|dismiss|abtest|heroes))?', path)
     if not m:
         return jresp({'ok': False}, 404)
     row = pages.get(m.group(1))
@@ -137,7 +137,7 @@ def api_pages(env, path, method, p, user):
         return jresp({'ok': False, 'error': 'Page not found'}, 404)
     act = m.group(2) or 'status'
     if act == 'status':
-        return jresp({'ok': True, 'page': pages.public(abtest.check_building(pages.check(row)))})
+        return jresp({'ok': True, 'page': pages.public(heroes.check(abtest.check_building(pages.check(row))))})
     if not editor:
         return jresp({'ok': False, 'error': 'View only'}, 403)
     if act == 'reopen':
@@ -150,6 +150,8 @@ def api_pages(env, path, method, p, user):
             notes.pop(i)
             db.q('update pages set notes = %s where id = %s', (db.J(notes), row['id']))
         return jresp({'ok': True, 'page': pages.public(pages.get(row['id']))})
+    if act in ('redo_images', 'changes') and heroes.busy(row) and row['status'] != 'building':
+        return jresp({'ok': False, 'error': 'Claude is busy on this page (hero photos or version B). Wait until it is done.'}, 409)
     if act == 'redo_images':
         if row['status'] == 'building':
             return jresp({'ok': False, 'error': 'Claude is still working on this page.'}, 409)
@@ -172,6 +174,29 @@ def api_pages(env, path, method, p, user):
         if not row.get('content'):
             return jresp({'ok': False, 'error': 'This page has no content yet. Use Try again instead.'}, 409)
         return jresp({'ok': True, 'page': pages.public(pages.request_changes(row, text, user, base_url(env)))})
+    if act == 'heroes':
+        op = str(p.get('op') or '')
+        if op == 'make':
+            if not row.get('content') or row['status'] == 'building':
+                return jresp({'ok': False, 'error': 'The page must be ready first.'}, 409)
+            if heroes.busy(row):
+                return jresp({'ok': False, 'error': 'Claude is already working on this page. Wait until it is done.'}, 409)
+            if not images.configured():
+                return jresp({'ok': False, 'error': 'Add OPENAI_API_KEY in Vercel first.'}, 400)
+            tok = secrets.token_urlsafe(24)
+            r = heroes.request(row, p.get('count'), user, base_url(env), tok, pages.token_hash(tok),
+                               pages.audience_text(row.get('input') or {}), pages.system_prompt)
+        elif op == 'use':
+            r = heroes.use(row, str(p.get('id') or ''))
+        elif op == 'test':
+            r = heroes.test(row, [str(x) for x in (p.get('ids') or [])])
+        elif op == 'remove':
+            r = heroes.remove(row, str(p.get('id') or ''))
+        else:
+            return jresp({'ok': False, 'error': 'Unknown action'}, 400)
+        if not r.get('ok'):
+            return jresp(r, 400)
+        return jresp({'ok': True, 'page': pages.public(pages.get(row['id']))})
     if act == 'abtest':
         op = str(p.get('op') or '')
         if op == 'make':
@@ -179,6 +204,8 @@ def api_pages(env, path, method, p, user):
                 return jresp({'ok': False, 'error': 'The page must be ready before you can test a version B.'}, 409)
             if (row.get('test') or {}).get('state') in ('building', 'running'):
                 return jresp({'ok': False, 'error': 'A test is already in progress on this page.'}, 409)
+            if (row.get('hero_job') or {}).get('state') == 'building':
+                return jresp({'ok': False, 'error': 'Claude is making hero photos for this page. Wait until they are done.'}, 409)
             if not agent.configured():
                 return jresp({'ok': False, 'error': 'ANTHROPIC_API_KEY is not set in Vercel yet.'}, 400)
             tok = secrets.token_urlsafe(24)
@@ -218,7 +245,7 @@ def api_pages(env, path, method, p, user):
 
 
 def api_agent(env, path, method, body):
-    m = re.fullmatch(r'/api/agent/(pg_[A-Za-z0-9]{8,20})/(progress|image|content|fail|note|variant)', path)
+    m = re.fullmatch(r'/api/agent/(pg_[A-Za-z0-9]{8,20})/(progress|image|content|fail|note|variant|hero_option)', path)
     if not m:
         return jresp({'ok': False}, 404)
     row = pages.agent_row(m.group(1), env.get('HTTP_AUTHORIZATION'))
@@ -246,7 +273,11 @@ def api_agent(env, path, method, body):
             return jresp({'ok': False, 'error': str(e)[:300] + ' (the team has been told; use uploaded or vendor photos and carry on)'}, 200)
         pages.log(row['id'], f'Image made with {images.LAST_MODEL}')
         return jresp({'ok': True, 'url': f"{base_url(env)}/u/{uid}.png"})
+    if act == 'hero_option':
+        return jresp(heroes.add_option(row, data, base_url(env)))
     if act == 'content':
+        if (row.get('hero_job') or {}).get('state') == 'building' and row['status'] != 'building':
+            return jresp({'ok': False, 'problems': ['this is a HEROES request: POST each photo to /api/agent/<page>/hero_option, not /content']})
         if (row.get('test') or {}).get('state') == 'building' and row['status'] != 'building':
             return jresp({'ok': False, 'problems': ['this is a VARIANT request: POST version B to /api/agent/<page>/variant, not /content']})
         return jresp(pages.deliver(row, data, base_url(env)))

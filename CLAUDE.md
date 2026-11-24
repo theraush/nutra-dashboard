@@ -27,6 +27,8 @@ https://nutra-dashboard-taupe.vercel.app). Pushing to `main` deploys automatical
   - `lib/abtest.py` — **copy A/B tests** on built pages: Claude writes version B (`/api/agent/<page>/variant`), `/p/<slug>`
     splits 50/50 with a sticky cookie, tid gets `~<test><A|B>` (postback strips it into `events.variant`), views in `ab_stats`.
     Hourly sync auto-picks a winner (7+ days, 500+ views each, 95%) when the page has auto on.
+  - `lib/heroes.py` — **hero photo options**: Claude casts 5/10 different audience-matched photos, checks each, posts good ones
+    to `/api/agent/<page>/hero_option`; the team picks one (`Use this`) or A/B tests 1–2 of them. Audience comes from the new-page form.
   - `static/dashboard.html` — the page. `static/shim.js` gives it `window.claude.use('db'|'user')` backed by `/api/db`.
   - `app/README.md` — env vars and routes.
 - `dashboard.html` (repo root) — same page, used by the old Claude artifact. **After editing the page, copy it to
