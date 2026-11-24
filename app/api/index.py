@@ -179,7 +179,7 @@ def api_pages(env, path, method, p, user):
             if not agent.configured():
                 return jresp({'ok': False, 'error': 'ANTHROPIC_API_KEY is not set in Vercel yet.'}, 400)
             tok = secrets.token_urlsafe(24)
-            r = abtest.request_variant(row, str(p.get('focus') or ''), p.get('note'), user, base_url(env), tok, pages.token_hash(tok))
+            r = abtest.request_variant(row, str(p.get('focus') or ''), p.get('note'), user, base_url(env), tok, pages.token_hash(tok), bool(p.get('photo')), p.get('photo_note'))
         elif op == 'start':
             r = abtest.start(row, p.get('auto', True))
         elif op == 'auto':

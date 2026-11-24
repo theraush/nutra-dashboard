@@ -23,8 +23,9 @@ FOCUS = {'angle': 'the angle and headline: a different main mistake/hook, a new 
                      'say which bundle is the obvious pick and show the math. One line of light edge is fine ("the 6-pack math is almost '
                      'unfair"). Never: "should be illegal", "insane", hype, fake scarcity or deadlines, invented bonuses or discounts, '
                      'guarantees the vendor does not give, or any health/weight promise. Short, punchy, plain words.'),
+         'photo': 'nothing in the text: keep every word of version A (this test is about the hero photo only)',
          'length': 'a shorter page: tighten every section, drop the weakest block, keep all figures, facts, offer and FAQ essentials'}
-FOCUS_LABEL = {'angle': 'Angle & headline', 'intro': 'Opening', 'offer': 'Offer framing', 'hormozi': 'Hormozi-style offer', 'length': 'Shorter page'}
+FOCUS_LABEL = {'angle': 'Angle & headline', 'intro': 'Opening', 'offer': 'Offer framing', 'hormozi': 'Hormozi-style offer', 'photo': 'Hero photo only', 'length': 'Shorter page'}
 MIN_DAYS, MIN_VIEWS, SURE = 7, 500, 0.95
 CODE_RE = re.compile(r'^[0-9a-f]{4}[AB]$')
 TID_RE = re.compile(r'^(.*)~([0-9a-f]{4}[AB])$')
@@ -55,17 +56,29 @@ def parse_tid(v):
 
 
 # ── making version B ──
-def request_variant(row, focus, note, user, base, tok, tok_hash):
+def request_variant(row, focus, note, user, base, tok, tok_hash, photo=False, photo_note=''):
     setup()
     if focus not in FOCUS:
         return {'ok': False, 'error': 'Pick what to test'}
     tid = secrets.token_hex(2)
     test = {'id': tid, 'state': 'building', 'focus': focus, 'note': str(note or '')[:500], 'by': user['email'], 'created_at': iso(),
-            'auto': True}
+            'auto': True, 'photo': bool(photo or focus == 'photo'), 'photo_note': str(photo_note or '')[:500]}
+    if test['photo']:
+        from . import images
+        if not images.configured():
+            return {'ok': False, 'error': 'A new photo needs OPENAI_API_KEY in Vercel.'}
+    photo_txt = ''
+    if test['photo']:
+        photo_txt = ("ALSO make a NEW hero photo for version B with the image endpoint (shape landscape, refs = [the product/pack image]) and "
+                     "put it in hero.image (story pages: hero.image too), with a new hero.alt and hero.caption. Follow the hero photo rules "
+                     "(real-looking person of the audience using the product, natural light, no text, no bodies-for-weight, no doctors). "
+                     "Make it a clearly different picture from A (different scene, moment or person) that fits B's copy. "
+                     + (f"Photo idea from the team: {test['photo_note']}. " if test['photo_note'] else '')
+                     + "This photo is the only image you may change.\n")
     msg = (f"VARIANT: write version B of this page's copy for an A/B test. Page type: {'INFO (kind=info, INFO schema)' if row.get('kind') == 'info' else 'STORY advertorial'}.\n"
            f"Change ONLY {FOCUS[focus]}. Keep everything else exactly as it is: facts, prices, bundles and their URLs, product, ingredients,"
            f" figures, images, compliance text and the design. Make the change bold enough to matter (a real alternative, not a reworded copy).\n"
-           + (f"Team note: {test['note']}\n" if test['note'] else '') +
+           + photo_txt + (f"Team note: {test['note']}\n" if test['note'] else '') +
            f"GET $BASE/api/agent/$PAGE/content (that is version A), then POST the FULL content JSON of version B to "
            f"$BASE/api/agent/$PAGE/variant (same auth). Fix any problems it reports and POST again. Do NOT post to /content. "
            f"Then reply with 1-2 plain lines: what B changes and why it could win.\n\nPAGE={row['id']}\nBASE={base}\nPAGE_TOKEN={tok}")
@@ -241,7 +254,7 @@ def public(row):
     t = row.get('test')
     out = None
     if t:
-        out = {k: t.get(k) for k in ('id', 'state', 'focus', 'note', 'by', 'created_at', 'ready_at', 'started_at', 'auto', 'error')}
+        out = {k: t.get(k) for k in ('id', 'state', 'focus', 'note', 'by', 'created_at', 'ready_at', 'started_at', 'auto', 'error', 'photo')}
         out['focus_label'] = FOCUS_LABEL.get(t.get('focus'), t.get('focus'))
         if t.get('state') == 'running':
             try:

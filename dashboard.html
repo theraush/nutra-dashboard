@@ -582,8 +582,8 @@ body.noscroll{overflow:hidden;}
 .hi-modal[hidden]{display:none}
 .hi-box{max-width:440px;width:100%;padding:20px;display:flex;flex-direction:column;gap:12px}
 .hi-box h2{margin:0;font-size:19px}.hi-what{margin:0;padding-left:18px;color:var(--fg2);font-size:14px;line-height:1.6}
-.ab-focus{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}
-#abNote{width:100%;font:inherit;font-size:14px;padding:9px 12px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--fg)}
+.ab-focus{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}@media(max-width:700px){.ab-focus{grid-template-columns:1fr}}
+#abNote,.ab-pnote{width:100%;font:inherit;font-size:14px;padding:9px 12px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--fg)}
 .ab-auto{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--fg2)}
 .ab-a{display:inline-flex;align-items:center;text-decoration:none}
 .ab-t td,.ab-t th{padding:8px 12px}.hi-wrap.ab-wrap{overflow-x:auto}.ab-t td.num{font-weight:600}
@@ -2224,7 +2224,7 @@ function notesHtml(p){const ns=p.notes||[];if(!ns.length&&!p.summary)return'';
   return`<section class="card nt-panel">${warn.length?`<b>⚠️ Check before running ads (${warn.length})</b><ul class="pg-notes">${warn.map(item).join('')}</ul>`:''}
     ${info.length?`<b>Good to know</b><ul class="pg-notes">${info.map(item).join('')}</ul>`:''}
     ${p.summary?`<details class="pg-sum"><summary>Claude's summary</summary><p>${e(p.summary)}</p></details>`:''}</section>`;}
-const AB_FOCUS=[['angle','Angle & headline','A different main hook and headline. Biggest lever.'],['intro','Opening','The first paragraphs under the photo.'],['offer','Offer framing','How the price, guarantee and buttons are pitched.'],['hormozi','Hormozi-style offer','Value math, full package, risk reversal, "obvious pick". Offer part only.'],['length','Shorter page','Same story, tighter. Tests if less is more.']];
+const AB_FOCUS=[['angle','Angle & headline','A different main hook and headline. Biggest lever.'],['intro','Opening','The first paragraphs under the photo.'],['offer','Offer framing','How the price, guarantee and buttons are pitched.'],['hormozi','Hormozi-style offer','Value math, full package, risk reversal, "obvious pick". Offer part only.'],['photo','Hero photo only','Same words, a new top photo. Tests the picture alone.'],['length','Shorter page','Same story, tighter. Tests if less is more.']];
 const pct=v=>v==null?'—':(v*100).toFixed(1)+'%';
 function abHtml(p){if(!canEdit&&!p.test&&!(p.tests_done||[]).length)return'';const t=p.test,done=(p.tests_done||[]).slice().reverse();
   const past=done.length?`<details class="pg-sum"><summary>Past tests (${done.length})</summary>${done.map(d=>`<p><b>${e(d.focus_label||d.focus)}</b>: version <b>${e(d.winner)}</b> won${d.how==='auto'?' (picked automatically)':''} · ${new Date(d.ended_at).toLocaleDateString([], {month:'short',day:'numeric'})}${d.results&&d.results.verdict?`<br><span class="nt-hint">${e(d.results.verdict)}</span>`:''}</p>`).join('')}</details>`:'';
@@ -2232,10 +2232,12 @@ function abHtml(p){if(!canEdit&&!p.test&&!(p.tests_done||[]).length)return'';con
   if(!t){body=canEdit?`<p class="nt-hint" style="margin:0">Claude writes version B with one part of the copy changed. Same link, same design: half your visitors see A, half see B.</p>
     <div class="ab-focus">${AB_FOCUS.map(([id,l,d],i)=>`<label class="pg-kind"><input type="radio" name="abFocus" value="${id}"${i===0?' checked':''}><span><b>${l}</b><small>${d}</small></span></label>`).join('')}</div>
     <input id="abNote" placeholder="Optional idea for B, e.g. lead with the 60-day guarantee" maxlength="500">
+    <label class="ab-auto"><input type="checkbox" id="abPhoto"> Also make a new hero photo for B</label>
+    <input id="abPhotoNote" class="ab-pnote" placeholder="Optional photo idea, e.g. a man in his 60s at his desk, morning light" maxlength="500" hidden>
     <div class="nt-row"><button type="button" class="nt-primary" data-ab="make">Make version B</button><span class="nt-hint">About 5–8 minutes</span></div>`:'<p class="nt-hint" style="margin:0">No test running.</p>';}
   else if(t.state==='building')body=`<p style="margin:0"><b>Claude is writing version B</b> (${e(t.focus_label)}). About 5–8 minutes; this updates by itself.</p>${canEdit?'<div class="nt-row"><button type="button" class="nt-link nt-del" data-ab="discard">Cancel</button></div>':''}`;
   else if(t.state==='failed')body=`<p style="margin:0" class="hi-neg">Version B wasn't made: ${e(t.error||'Claude stopped.')}</p>${canEdit?'<div class="nt-row"><button type="button" class="nt-second" data-ab="discard">Clear and try again</button></div>':''}`;
-  else if(t.state==='ready')body=`<p style="margin:0"><b>Version B is ready</b> (${e(t.focus_label)}). Check both, then start.</p>
+  else if(t.state==='ready')body=`<p style="margin:0"><b>Version B is ready</b> (${e(t.focus_label)}${t.photo?' + new hero photo':''}). Check both, then start.</p>
     <div class="nt-row"><a class="nt-second ab-a" href="/p/${e(p.slug)}?v=A" target="_blank" rel="noopener">Preview A ↗</a><a class="nt-second ab-a" href="/p/${e(p.slug)}?v=B" target="_blank" rel="noopener">Preview B ↗</a></div>
     ${canEdit?`<label class="ab-auto"><input type="checkbox" id="abAuto" checked> Pick the winner automatically (after 7+ days, 500+ visitors each, 95% sure)</label>
     <div class="nt-row"><button type="button" class="nt-primary" data-ab="start"${p.published?'':' disabled title="Publish the page first"'}>Start 50/50 test</button>${p.published?'':'<span class="nt-hint">Publish the page first</span>'}<span style="flex:1"></span><button type="button" class="nt-link nt-del" data-ab="discard">Throw away B</button></div>`:''}`;
@@ -2285,7 +2287,7 @@ async function refreshOpen(){if(mode!=='detail'||!openId)return;try{const j=awai
 async function tick(){if(typeof activeTab==='undefined'||activeTab!=='pages')return;if(mode==='detail')await refreshOpen();else if(mode==='list')await load();if(mode!=='new')render();}
 function startTimer(){clearInterval(timer);timer=setInterval(()=>{if(!document.hidden)tick();},10000);}
 async function ab(btn){const p=list.find(x=>x.id===openId);if(!p)return;const op=btn.dataset.ab;const body={op};
-  if(op==='make'){body.focus=(document.querySelector('input[name=abFocus]:checked')||{}).value;body.note=(g('abNote')||{}).value||'';}
+  if(op==='make'){body.focus=(document.querySelector('input[name=abFocus]:checked')||{}).value;body.note=(g('abNote')||{}).value||'';body.photo=!!(g('abPhoto')||{}).checked||body.focus==='photo';body.photo_note=(g('abPhotoNote')||{}).value||'';}
   if(op==='start')body.auto=!!(g('abAuto')||{}).checked;
   if(op==='pick'){const w=btn.dataset.w;if(btn.dataset.sure!=='1'){btn.dataset.sure='1';btn.textContent=w==='B'?'Click again: B becomes the page':'Click again: keep A, end test';return;}body.winner=w;}
   if(op==='discard'&&btn.dataset.sure!=='1'){btn.dataset.sure='1';btn.textContent='Click again to confirm';return;}
@@ -2317,6 +2319,7 @@ window.pgInit=()=>{canEdit=['owner','editor'].includes(me().role)||!window.NUTRA
     else if(cp){try{navigator.clipboard.writeText(cp.dataset.copy).then(()=>toast('Copied'),()=>{});}catch(err){}}
     const dm=ev.target.closest('[data-dismiss]');if(dm){const p=list.find(x=>x.id===openId);api('/api/pages/'+openId+'/dismiss',{index:+dm.dataset.dismiss}).then(j=>{Object.assign(p,j.page);g('pgDetail').dataset.sig='';render();}).catch(err=>toast(err.message));}});
   g('pagesView').addEventListener('change',ev=>{if(ev.target.id==='pgFiles'){upload(ev.target.files);ev.target.value='';}
+    if(ev.target.id==='abPhoto'||ev.target.name==='abFocus'){const on=(g('abPhoto')||{}).checked||((document.querySelector('input[name=abFocus]:checked')||{}).value==='photo');if(g('abPhotoNote'))g('abPhotoNote').hidden=!on;if(g('abPhoto')&&ev.target.name==='abFocus'&&ev.target.value==='photo')g('abPhoto').checked=true;}
     if(ev.target.id==='abAutoRun'){const p=list.find(x=>x.id===openId);api('/api/pages/'+openId+'/abtest',{op:'auto',auto:ev.target.checked}).then(j=>{Object.assign(p,j.page);toast(ev.target.checked?'Auto-pick on':'Auto-pick off');}).catch(err=>toast(err.message));}});
   g('pagesView').addEventListener('submit',ev=>{if(ev.target.id==='pgForm')submit(ev);});
   g('pgNew').addEventListener('click',()=>{mode='new';ups=[];render();window.scrollTo(0,0);});};
