@@ -37,11 +37,20 @@ ENGINE_TXT = {
 }
 
 
-def request(row, count, user, base, tok, tok_hash, audience_text, system_prompt, engine='openai'):
+def request(row, count, user, base, tok, tok_hash, audience_text, system_prompt, engine='openai', brief='', like_id=''):
     setup()
     n = 10 if int(count or 5) >= 10 else 5
     have = row.get('hero_options') or []
     used = '; '.join(f"{o.get('person', '')} / {o.get('place', '')} / {o.get('moment', '')}" for o in have[-20:])
+    brief = str(brief or '').strip()[:600]
+    like = next((o for o in have if o['id'] == like_id), None)
+    team = ''
+    if brief:
+        team += (f"TEAM BRIEF (the most important rule: EVERY row must match it; vary faces, places, moments and framing only within it): {brief}\n")
+    if like:
+        team += (f"STYLE REFERENCE: the team liked this option: {like.get('person', '')} / {like.get('place', '')} / {like.get('moment', '')} ({like['url']}). "
+                 "Match its look (realism, light, framing, how the product is held) but with different people and places. For OpenAI rows pass "
+                 "refs:[the product image, " + like['url'] + "] and say in the prompt that the second image is only a style reference, not a person to copy.\n")
     msg = (f"HEROES: make {n} hero photo OPTIONS for this page so the team can pick one. Do NOT change or re-post the page content.\n"
            "1) GET $BASE/api/agent/$PAGE/content to see the product, the angle and product.pack_image (or the pack/product image).\n"
            f"2) Write a casting sheet of {n} rows. Every row is a DIFFERENT person (face, hair colour and style, skin tone, build, glasses or "
@@ -58,10 +67,11 @@ def request(row, count, user, base, tok, tok_hash, audience_text, system_prompt,
            "is outside the audience. Remake a rejected row once with a plainer, more specific prompt; drop it if it fails again.\n"
            "5) POST each image that passes to $BASE/api/agent/$PAGE/hero_option {url, person, place, moment, camera, alt, caption, engine} "
            "(short plain words; caption <= 90 chars, describes the moment, never names or calls the person a customer).\n"
-           f"6) Reply 'DONE: <number> options' and one line on anything the team should know.\n"
+           f"6) Reply 'DONE: <number> options' and one line on anything the team should know.\n" + team
            + (audience_text + '\n' if audience_text else '') +
            f"\nPAGE={row['id']}\nBASE={base}\nPAGE_TOKEN={tok}")
-    job = {'state': 'building', 'count': n, 'started_at': iso(), 'by': user['email'], 'before': len(have), 'engine': engine}
+    job = {'state': 'building', 'count': n, 'started_at': iso(), 'by': user['email'], 'before': len(have), 'engine': engine,
+           'brief': brief, 'like': like_id if like else ''}
     try:
         alive = False
         if row.get('session_id'):
@@ -161,5 +171,5 @@ def remove(row, oid):
 
 
 def public(row):
-    return {'hero_options': row.get('hero_options') or [], 'hero_job': {k: v for k, v in (row.get('hero_job') or {}).items() if k != 'session_id'} or None,
+    return {'hero_brief': (row.get('hero_job') or {}).get('brief') or '', 'hero_options': row.get('hero_options') or [], 'hero_job': {k: v for k, v in (row.get('hero_job') or {}).items() if k != 'session_id'} or None,
             'hero_image': ((row.get('content') or {}).get('hero') or {}).get('image')}

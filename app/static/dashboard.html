@@ -600,11 +600,14 @@ body.noscroll{overflow:hidden;}
 .hero-opt img{display:block;width:100%;aspect-ratio:3/2;object-fit:cover;background:var(--surface2)}
 .hero-opt figcaption{padding:8px 10px 0;font-size:13px;display:flex;flex-direction:column;gap:2px;min-width:0}
 .hero-opt figcaption span{color:var(--fg2);font-size:12px;line-height:1.35}
-.hero-act{display:flex;align-items:center;gap:8px;padding:8px 10px 10px;margin-top:auto}
+.hero-act{display:flex;align-items:center;flex-wrap:wrap;gap:6px 10px;padding:8px 10px 10px;margin-top:auto}
 .hero-act .nt-second{padding:6px 12px;font-size:13px}.hero-tick{display:flex;align-items:center;gap:5px;font-size:13px;color:var(--fg2);margin-left:auto}
 .hero-eng{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--fg2)}.hero-eng select{font:inherit;font-size:13px;padding:7px 8px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--fg)}
 .hero-badge{align-self:flex-start;font-style:normal;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 7px;border-radius:999px;background:var(--surface2);color:var(--fg2);margin:2px 0}
 .hero-badge.higgsfield{background:#efe7ff;color:#6b3fd1}
+.hero-brief{display:flex;flex-direction:column;gap:8px}.hero-brief textarea{width:100%;font:inherit;font-size:14px;padding:9px 12px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--fg);resize:vertical}
+.hero-like{display:flex;align-items:center;gap:10px;font-size:13px;border:1px solid var(--accent);border-radius:10px;padding:6px 8px;background:var(--accent-lt)}.hero-like img{width:54px;height:36px;object-fit:cover;border-radius:6px}.hero-like span{flex:1;min-width:0}
+.hero-act .nt-link{font-size:12px;padding:0;white-space:nowrap}
 .hero-on{font-size:12px;font-weight:700;color:var(--green)}
 .ab-diff summary{cursor:pointer;font-weight:600;font-size:14px}.ab-diff ul{list-style:none;padding:0;margin:8px 0 0;display:flex;flex-direction:column;gap:8px}
 .ab-diff li{font-size:13px;border:1px solid var(--border);border-radius:10px;padding:8px 10px;background:var(--surface)}
@@ -2270,7 +2273,7 @@ function notesHtml(p){const ns=p.notes||[];if(!ns.length&&!p.summary)return'';
   return`<section class="card nt-panel">${warn.length?`<b>⚠️ Check before running ads (${warn.length})</b><ul class="pg-notes">${warn.map(item).join('')}</ul>`:''}
     ${info.length?`<b>Good to know</b><ul class="pg-notes">${info.map(item).join('')}</ul>`:''}
     ${p.summary?`<details class="pg-sum"><summary>Claude's summary</summary><p>${e(p.summary)}</p></details>`:''}</section>`;}
-let heroSel=[];
+let heroSel=[],heroLike='',heroBriefDraft=null;
 function heroHtml(p){const o=(p.hero_options||[]).slice().reverse(),j=p.hero_job||{},busy=j.state==='building';
   if(!canEdit&&!o.length)return'';
   const made=busy?Math.max(0,(p.hero_options||[]).length-(j.before||0)):0;
@@ -2283,10 +2286,15 @@ function heroHtml(p){const o=(p.hero_options||[]).slice().reverse(),j=p.hero_job
     return`<figure class="hero-opt${on?' on':''}${sel?' sel':''}"><a href="${e(x.url)}" target="_blank" rel="noopener" title="Open full size"><img src="${e(x.url)}" alt="${e(x.alt||x.caption||'Hero option')}" loading="lazy"></a>
     <figcaption><b>${e([x.place,x.moment].filter(Boolean).join(' · ')||'Option')}</b>${x.engine?`<em class="hero-badge ${x.engine}">${x.engine==='higgsfield'?'Higgsfield':'OpenAI'}</em>`:''}<span>${e(x.person||'')}</span></figcaption>
     ${canEdit?`<div class="hero-act">${on?'<span class="hero-on">On the page</span>':`<button type="button" class="nt-second" data-hero="use" data-id="${e(x.id)}">Use this</button>`}
+      <button type="button" class="nt-link" data-herolike="${e(x.id)}" title="Make new photos in this style">More like this</button>
       <label class="hero-tick"><input type="checkbox" data-herosel="${e(x.id)}"${sel?' checked':''}> Test</label>
       <button type="button" class="pg-x" data-hero="remove" data-id="${e(x.id)}" aria-label="Remove this photo">×</button></div>`:''}</figure>`;}).join('')}</div>`:'';
   const engSel=ready.higgsfield?`<label class="hero-eng">Engine <select id="heroEngine"><option value="mix">Mix: half OpenAI, half Higgsfield</option><option value="higgsfield">Higgsfield SOUL</option><option value="openai">OpenAI GPT Image</option></select></label>`:'';
-  const btns=canEdit?`<div class="nt-row">${busy?'':`${engSel}<button type="button" class="${o.length?'nt-second':'nt-primary'}" data-hero="make" data-n="5">${o.length?'Make 5 more':'Make 5 options'}</button><button type="button" class="nt-second" data-hero="make" data-n="10">${o.length?'Make 10 more':'Make 10 options'}</button><span class="nt-hint">About $0.20 a photo · 3–10 min</span>`}
+  const likeO=o.find(x=>x.id===heroLike);
+  const briefBox=canEdit&&!busy?`<div class="hero-brief"><label class="nt-f" style="margin:0">Your idea for the photos <span class="nt-hint">optional; every photo will follow it</span>
+    <textarea id="heroBrief" rows="2" maxlength="600" placeholder="e.g. A realistic couple, 60+, holding the bottle together on their porch, like real grandparents">${e(heroBriefDraft!==null?heroBriefDraft:(p.hero_brief||''))}</textarea></label>
+    ${likeO?`<div class="hero-like"><img src="${e(likeO.url)}" alt=""><span>Style like: <b>${e(likeO.place||'this photo')}</b> · different people and places</span><button type="button" class="pg-x" data-herolike="" aria-label="Clear style">×</button></div>`:''}</div>`:'';
+  const btns=canEdit?`${briefBox}<div class="nt-row">${busy?'':`${engSel}<button type="button" class="${o.length?'nt-second':'nt-primary'}" data-hero="make" data-n="5">${o.length?'Make 5 more':'Make 5 options'}</button><button type="button" class="nt-second" data-hero="make" data-n="10">${o.length?'Make 10 more':'Make 10 options'}</button><span class="nt-hint">About $0.20 a photo · 3–10 min</span>`}
     ${heroSel.length?`<span style="flex:1"></span><button type="button" class="nt-primary" data-hero="test">${heroSel.length===2?'A/B test these 2':'A/B test vs current photo'}</button>`:''}</div>`:'';
   return`<section class="card nt-panel"><b>Hero photo options</b>${head}${grid}${btns}</section>`;}
 const domState={};
@@ -2368,7 +2376,7 @@ function render(){if(mode==='list'){g('pgList').hidden=false;g('pgDetail').hidde
   g('pgList').hidden=true;g('pgDetail').hidden=false;
   if(mode==='new'){g('pgDetail').innerHTML=formHtml();thumbs();setAud(0);return;}
   const p=list.find(x=>x.id===openId);if(!p){mode='list';render();return;}
-  const keep=g('pgChanges')&&g('pgChanges').value;const hadFrame=document.querySelector('#pgDetail iframe');const sig=JSON.stringify(domState[p.id]||'')+(p.domain||'')+p.status+p.updated_at+view+p.published+JSON.stringify(p.test||'')+((p.tests_done||[]).length)+JSON.stringify(p.hero_job||'')+(p.hero_options||[]).length+(p.hero_image||'')+heroSel.join(',');
+  const keep=g('pgChanges')&&g('pgChanges').value;const hadFrame=document.querySelector('#pgDetail iframe');const sig=JSON.stringify(domState[p.id]||'')+(p.domain||'')+p.status+p.updated_at+view+p.published+JSON.stringify(p.test||'')+((p.tests_done||[]).length)+JSON.stringify(p.hero_job||'')+(p.hero_options||[]).length+(p.hero_image||'')+heroSel.join(',')+heroLike;
   if(hadFrame&&g('pgDetail').dataset.sig===sig)return;g('pgDetail').dataset.sig=sig;g('pgDetail').innerHTML=detailHtml(p);if(keep&&g('pgChanges'))g('pgChanges').value=keep;}
 async function load(){try{const j=await api('/api/pages');list=j.pages||[];ready=j.ready||ready;}catch(err){g('pgSetup').hidden=false;g('pgSetup').textContent='Pages could not load: '+err.message;}}
 async function refreshOpen(){if(mode!=='detail'||!openId)return;try{const j=await api('/api/pages/'+openId+'/status',{});const i=list.findIndex(x=>x.id===openId);if(i>=0)list[i]=j.page;else list.unshift(j.page);}catch(err){}}
@@ -2379,10 +2387,10 @@ async function dom(btn){const p=list.find(x=>x.id===openId);if(!p)return;const o
     else if(op==='check'){domState[p.id]={checking:true};g('pgDetail').dataset.sig='';render();const j=await api('/api/pages/'+p.id+'/domain_check',{});domState[p.id]={connected:!!j.connected,why:j.why||''};toast(j.connected?'Connected':'Not connected yet');}}
   catch(err){toast(err.message);if(domState[p.id]&&domState[p.id].checking)delete domState[p.id];}g('pgDetail').dataset.sig='';render();}
 async function hero(btn){const p=list.find(x=>x.id===openId);if(!p)return;const op=btn.dataset.hero,body={op};
-  if(op==='make'){body.count=+btn.dataset.n;body.engine=(g('heroEngine')||{}).value||'openai';}if(op==='use'||op==='remove')body.id=btn.dataset.id;if(op==='test')body.ids=heroSel.slice();
+  if(op==='make'){body.count=+btn.dataset.n;body.engine=(g('heroEngine')||{}).value||'openai';body.brief=(g('heroBrief')||{}).value||'';body.like=heroLike;}if(op==='use'||op==='remove')body.id=btn.dataset.id;if(op==='test')body.ids=heroSel.slice();
   if(op==='remove'&&btn.dataset.sure!=='1'){btn.dataset.sure='1';btn.textContent='Remove?';return;}
   btn.disabled=true;try{const j=await api('/api/pages/'+p.id+'/heroes',body);Object.assign(p,j.page);if(op==='test')heroSel=[];
-    toast(op==='make'?'Claude is making the photos':op==='use'?'Photo is on the page now':op==='test'?'A/B test ready: check it below, then press Start':'Removed');}
+    if(op==='make'){heroLike='';heroBriefDraft=null;}toast(op==='make'?'Claude is making the photos':op==='use'?'Photo is on the page now':op==='test'?'A/B test ready: check it below, then press Start':'Removed');}
   catch(err){toast(err.message);btn.disabled=false;}g('pgDetail').dataset.sig='';render();}
 async function ab(btn){const p=list.find(x=>x.id===openId);if(!p)return;const op=btn.dataset.ab;const body={op};
   if(op==='make'){body.focus=(document.querySelector('input[name=abFocus]:checked')||{}).value;body.note=(g('abNote')||{}).value||'';body.photo=!!(g('abPhoto')||{}).checked||body.focus==='photo';body.photo_note=(g('abPhotoNote')||{}).value||'';}
@@ -2409,7 +2417,7 @@ async function submit(ev){ev.preventDefault();const f=ev.target,v=n=>(f.elements
   catch(err){toast(err.message);btn.disabled=false;btn.textContent='Build page';}}
 window.pgShow=async()=>{await load();render();startTimer();};
 window.pgInit=()=>{canEdit=['owner','editor'].includes(me().role)||!window.NUTRA_HOSTED;
-  g('pagesView').addEventListener('click',ev=>{const db_=ev.target.closest('[data-dom]');if(db_){dom(db_);return;}const hb=ev.target.closest('[data-hero]');if(hb){hero(hb);return;}const abb=ev.target.closest('[data-ab]');if(abb){ab(abb);return;}const au=ev.target.closest('[data-aud]');if(au){setAud(+au.dataset.aud);return;}
+  g('pagesView').addEventListener('click',ev=>{const db_=ev.target.closest('[data-dom]');if(db_){dom(db_);return;}const hl=ev.target.closest('[data-herolike]');if(hl){heroBriefDraft=(g('heroBrief')||{}).value??null;heroLike=hl.dataset.herolike;g('pgDetail').dataset.sig='';render();if(heroLike){const b=g('heroBrief');b&&b.scrollIntoView({block:'center'});toast('Style picked: add your idea (optional), then Make 5 or 10');}return;}const hb=ev.target.closest('[data-hero]');if(hb){hero(hb);return;}const abb=ev.target.closest('[data-ab]');if(abb){ab(abb);return;}const au=ev.target.closest('[data-aud]');if(au){setAud(+au.dataset.aud);return;}
     const c=ev.target.closest('[data-pg]'),b=ev.target.closest('[data-pgback]'),a=ev.target.closest('[data-pgact]'),vw=ev.target.closest('[data-view]'),un=ev.target.closest('[data-unpg]'),cp=ev.target.closest('[data-copy]');
     if(c){openId=c.dataset.pg;mode='detail';g('pgDetail').dataset.sig='';render();refreshOpen().then(render);window.scrollTo(0,0);}
     else if(b){mode='list';load().then(render);}else if(a)act(a.dataset.pgact);else if(vw){view=vw.dataset.view;g('pgDetail').dataset.sig='';render();}
@@ -2421,6 +2429,7 @@ window.pgInit=()=>{canEdit=['owner','editor'].includes(me().role)||!window.NUTRA
     if(ev.target.id==='abPhoto'||ev.target.name==='abFocus'){const on=(g('abPhoto')||{}).checked||((document.querySelector('input[name=abFocus]:checked')||{}).value==='photo');if(g('abPhotoNote'))g('abPhotoNote').hidden=!on;if(g('abPhoto')&&ev.target.name==='abFocus'&&ev.target.value==='photo')g('abPhoto').checked=true;}
     if(ev.target.id==='abAutoRun'){const p=list.find(x=>x.id===openId);api('/api/pages/'+openId+'/abtest',{op:'auto',auto:ev.target.checked}).then(j=>{Object.assign(p,j.page);toast(ev.target.checked?'Auto-pick on':'Auto-pick off');}).catch(err=>toast(err.message));}});
   g('pagesView').addEventListener('submit',ev=>{if(ev.target.id==='pgForm')submit(ev);});
+  g('pagesView').addEventListener('input',ev=>{if(ev.target.id==='heroBrief')heroBriefDraft=ev.target.value;});
   g('pgNew').addEventListener('click',()=>{mode='new';ups=[];render();window.scrollTo(0,0);});};
 })();
 // ── New Tests: the 6-step product-test guide. Docs live in tests/<id>; Claude does the work and writes back. ──

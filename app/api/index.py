@@ -195,7 +195,8 @@ def api_pages(env, path, method, p, user):
             if eng in ('higgsfield', 'mix') and not images.hf_configured():
                 return jresp({'ok': False, 'error': 'Add HF_API_KEY_ID and HF_API_KEY_SECRET in Vercel to use Higgsfield.'}, 400)
             r = heroes.request(row, p.get('count'), user, base_url(env), tok, pages.token_hash(tok),
-                               pages.audience_text(row.get('input') or {}), pages.system_prompt, eng)
+                               pages.audience_text(row.get('input') or {}), pages.system_prompt, eng,
+                               str(p.get('brief') or ''), str(p.get('like') or ''))
         elif op == 'use':
             r = heroes.use(row, str(p.get('id') or ''))
         elif op == 'test':
