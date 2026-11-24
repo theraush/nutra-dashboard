@@ -169,26 +169,48 @@ def hf_configured():
     return bool(os.environ.get('HF_API_KEY_ID') and os.environ.get('HF_API_KEY_SECRET'))
 
 
-def hf_check():
-    """Free key check: ask for the status of a request that doesn't exist. 401/403 = bad key, anything else = key accepted."""
-    if not hf_configured():
-        return {'ok': False, 'why': 'HF_API_KEY_ID / HF_API_KEY_SECRET are not set'}
-    kid, sec = os.environ['HF_API_KEY_ID'].strip(), os.environ['HF_API_KEY_SECRET'].strip()
-    req = urllib.request.Request('https://api.higgsfield.ai/requests/00000000-0000-0000-0000-000000000000/status',
-                                 headers={'Authorization': f'Key {kid}:{sec}'})
+def _hf_auth(style):
+    kid, sec = os.environ.get('HF_API_KEY_ID', '').strip(), os.environ.get('HF_API_KEY_SECRET', '').strip()
+    return {'key': {'Authorization': f'Key {kid}:{sec}'},
+            'key_swapped': {'Authorization': f'Key {sec}:{kid}'},
+            'headers': {'hf-api-key': kid, 'hf-secret': sec},
+            'bearer': {'Authorization': f'Bearer {sec}'},
+            'bearer_id': {'Authorization': f'Bearer {kid}'}}[style]
+
+
+def _hf_try(style):
+    req = urllib.request.Request('https://api.higgsfield.ai/requests/00000000-0000-0000-0000-000000000000/status', headers=_hf_auth(style))
     try:
         with urllib.request.urlopen(req, timeout=15) as r:
-            return {'ok': True, 'code': r.status}
+            return r.status
     except urllib.error.HTTPError as e:
-        return {'ok': e.code not in (401, 403), 'code': e.code, 'why': e.read().decode(errors='replace')[:120] if e.code in (401, 403) else ''}
-    except Exception as e:
-        return {'ok': False, 'why': f'unreachable: {e}'[:120]}
+        return e.code
+    except Exception:
+        return 0
+
+
+def hf_style():
+    st = (db.kv_data('_system/hf_auth') or {}).get('style')
+    return st or 'key'
+
+
+def hf_check():
+    """Free key check: ask for the status of a request that doesn't exist. 401/403 = bad key. Tries the known login formats."""
+    if not hf_configured():
+        return {'ok': False, 'why': 'HF_API_KEY_ID / HF_API_KEY_SECRET are not set'}
+    tried = {}
+    for style in ('key', 'key_swapped', 'headers', 'bearer', 'bearer_id'):
+        code = _hf_try(style)
+        tried[style] = code
+        if code and code not in (401, 403):
+            db.kv_set('_system/hf_auth', {'style': style})
+            return {'ok': True, 'style': style, 'code': code, 'tried': tried}
+    return {'ok': False, 'tried': tried, 'why': 'Higgsfield rejected the key in every login format'}
 
 
 def _hf_soul(prompt, shape, deadline):
     import time
-    kid, sec = os.environ['HF_API_KEY_ID'].strip(), os.environ['HF_API_KEY_SECRET'].strip()
-    auth = {'Authorization': f"Key {kid}:{sec}", 'Content-Type': 'application/json',
+    auth = {**_hf_auth(hf_style()), 'Content-Type': 'application/json',
             'Idempotency-Key': uuid.uuid4().hex}
     body = {'prompt': prompt[:4000], 'aspect_ratio': HF_ASPECT.get(shape, '3:2'), 'resolution': '1080p', 'batch_size': 1, 'enhance_prompt': False}
     try:
@@ -204,7 +226,7 @@ def _hf_soul(prompt, shape, deadline):
     while time.time() < deadline:
         time.sleep(wait)
         wait = min(8, wait + 1)
-        req = urllib.request.Request(status_url, headers={'Authorization': auth['Authorization']})
+        req = urllib.request.Request(status_url, headers=_hf_auth(hf_style()))
         try:
             with urllib.request.urlopen(req, timeout=20) as r:
                 st = json.loads(r.read())
