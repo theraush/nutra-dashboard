@@ -184,6 +184,10 @@ def _hf_try(style):
         with urllib.request.urlopen(req, timeout=15) as r:
             return r.status
     except urllib.error.HTTPError as e:
+        body = e.read().decode(errors='replace')[:300].lower()
+        if e.code == 422 and ('authorization' in body or 'header' in body or 'missing' in body):
+            return 401  # FastAPI 'field required: authorization' = we were not logged in
+        _hf_try.last = body[:160]
         return e.code
     except Exception:
         return 0
@@ -204,7 +208,7 @@ def hf_check():
         tried[style] = code
         if code and code not in (401, 403):
             db.kv_set('_system/hf_auth', {'style': style})
-            return {'ok': True, 'style': style, 'code': code, 'tried': tried}
+            return {'ok': True, 'style': style, 'code': code, 'tried': tried, 'body': getattr(_hf_try, 'last', '')}
     return {'ok': False, 'tried': tried, 'why': 'Higgsfield rejected the key in every login format'}
 
 
