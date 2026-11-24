@@ -129,7 +129,7 @@ def api_pages(env, path, method, p, user):
                'network': str(p.get('network') or '').strip()[:30], 'buy_links': lst('buy_links'), 'images': lst('images'),
                'notes': str(p.get('notes') or '').strip()[:3000], 'audience': pages.clean_audience(p.get('audience'))}
         return jresp({'ok': True, 'page': pages.public(pages.create(inp, user, base_url(env)))})
-    m = re.fullmatch(r'/api/pages/(pg_[A-Za-z0-9]{8,20})(?:/(status|changes|publish|delete|retry|stop|reopen|redo_images|dismiss|abtest|heroes))?', path)
+    m = re.fullmatch(r'/api/pages/(pg_[A-Za-z0-9]{8,20})(?:/(status|changes|publish|delete|retry|stop|reopen|redo_images|dismiss|abtest|heroes|domain|domain_check))?', path)
     if not m:
         return jresp({'ok': False}, 404)
     row = pages.get(m.group(1))
@@ -174,6 +174,13 @@ def api_pages(env, path, method, p, user):
         if not row.get('content'):
             return jresp({'ok': False, 'error': 'This page has no content yet. Use Try again instead.'}, 409)
         return jresp({'ok': True, 'page': pages.public(pages.request_changes(row, text, user, base_url(env)))})
+    if act == 'domain':
+        r = pages.set_domain(row, p.get('domain'))
+        if not r.get('ok'):
+            return jresp(r, 400)
+        return jresp({'ok': True, 'page': pages.public(pages.get(row['id']))})
+    if act == 'domain_check':
+        return jresp(pages.check_domain(row))
     if act == 'heroes':
         op = str(p.get('op') or '')
         if op == 'make':
@@ -297,12 +304,12 @@ def api_agent(env, path, method, body):
         return jresp({'ok': True})
 
 
-def serve_page(slug, user, env=None, p=None):
+def serve_page(slug, user, env=None, p=None, custom=False):
     pages.setup()
     row = db.q1('select id, slug, kind, content, published, delivered_at, test from pages where slug = %s', (slug,))
     if not row or not row.get('content'):
         return Resp(404, 'Not found', 'text/plain')
-    if not row['published'] and not user:
+    if not row['published'] and (not user or custom):
         return Resp(404, 'Not found', 'text/plain')
     t = row.get('test') or {}
     cname = f"ab_{t.get('id')}" if t.get('id') else ''
@@ -312,7 +319,7 @@ def serve_page(slug, user, env=None, p=None):
     testing = t.get('state') == 'running'
     hdrs = [('Cache-Control', 'no-store' if (not row['published'] or testing or forced) else 'public, max-age=60')]
     if set_v:
-        hdrs.append(('Set-Cookie', f'{cname}={set_v}; Path=/p/{row["slug"]}; Max-Age=7776000; SameSite=Lax' + ('; Secure' if SECURE else '')))
+        hdrs.append(('Set-Cookie', f'{cname}={set_v}; Path={"/" if custom else "/p/" + row["slug"]}; Max-Age=7776000; SameSite=Lax' + ('; Secure' if SECURE else '')))
     if row.get('kind') == 'info':
         d = (row.get('delivered_at') or pages.now()).date()
         html_ = infoad.render(content, row['id'], preview=not row['published'], date=d)
@@ -542,6 +549,27 @@ def route(env):
     body = env['wsgi.input'].read(n) if n else b''
     p = params_of(env, body)
     host = env.get('HTTP_HOST', '')
+
+    # a page on the team's own domain (brain.example.com): only the page, its images and its tracking live there
+    if host and not pages.is_dash_host(host):
+        crow = pages.by_domain(host)
+        if path == '/api/public/domain-check':
+            return jresp({'ok': bool(crow), 'page': crow['id'] if crow else None})
+        if crow and path in ('/', '') and method in ('GET', 'HEAD'):
+            return serve_page(crow['slug'], None, env, p, custom=True)
+        if path == '/api/public/page-click':
+            return page_click(env, body)
+        if path == '/api/public/page-view':
+            return page_view(env, body)
+        m_up2 = re.fullmatch(r'/u/([A-Za-z0-9_-]{20,40})(?:\.(?:jpg|png|webp))?', path)
+        if m_up2 and method in ('GET', 'HEAD'):
+            r = db.q1('select mime, data from uploads where id = %s', (m_up2.group(1),))
+            if r:
+                return Resp(200, bytes(r['data']), r['mime'], [('Cache-Control', 'public, max-age=31536000, immutable')])
+        if path in ('/favicon.ico', '/robots.txt'):
+            return Resp(200 if path == '/robots.txt' else 404, 'User-agent: *\nAllow: /\n' if path == '/robots.txt' else '', 'text/plain')
+        if path not in ('/api/public/postback', '/api/public/jvzoo-postback', '/api/health'):
+            return Resp(404, 'Not found', 'text/plain')
 
     if path == '/api/health':
         try:

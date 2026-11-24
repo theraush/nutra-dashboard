@@ -13,6 +13,8 @@ create table if not exists pages (
 alter table pages add column if not exists notes jsonb not null default '[]';
 alter table pages add column if not exists delivered_at timestamptz;
 alter table pages add column if not exists summary text;
+alter table pages add column if not exists domain text;
+create unique index if not exists pages_domain_uq on pages (domain) where domain is not null;
 """
 
 # phase -> (label, typical minutes). The dashboard's countdown sums the phases still ahead.
@@ -48,7 +50,7 @@ def public(row, full=False):
     if not row:
         return None
     phases = CHANGE_PHASES if (row.get('revisions') or []) and row['status'] in ('queued', 'building') else INFO_PHASES if row.get('kind') == 'info' else PHASES
-    out = {k: row.get(k) for k in ('id', 'slug', 'kind', 'name', 'status', 'phase', 'error', 'published', 'created_by')}
+    out = {k: row.get(k) for k in ('id', 'slug', 'kind', 'name', 'status', 'phase', 'error', 'published', 'created_by', 'domain')}
     out.update({'input': row.get('input') or {}, 'started_at': iso(row.get('started_at')), 'finished_at': iso(row.get('finished_at')),
                 'updated_at': iso(row.get('updated_at')), 'created_at': iso(row.get('created_at')),
                 'phases': [{'id': p, 'label': l, 'minutes': m} for p, l, m in phases], 'revisions': len(row.get('revisions') or []),
@@ -64,6 +66,63 @@ def public(row, full=False):
 def get(pid):
     setup()
     return db.q1('select * from pages where id = %s', (pid,))
+
+
+DOMAIN_RE = re.compile(r'^(?=.{4,253}$)([a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,24}$')
+DASH_HOSTS = ('nutra.palmtreemedia.co', 'localhost', '127.0.0.1')
+
+
+def clean_domain(d):
+    d = re.sub(r'^https?://', '', str(d or '').strip().lower()).split('/')[0].split(':')[0].strip('.')
+    return d if DOMAIN_RE.match(d) else ''
+
+
+def is_dash_host(host):
+    h = (host or '').split(':')[0].lower()
+    return h in DASH_HOSTS or h.endswith('.vercel.app')
+
+
+def by_domain(host):
+    h = (host or '').split(':')[0].lower()
+    setup()
+    return db.q1('select * from pages where domain = %s', (h,)) or (db.q1('select * from pages where domain = %s', (h[4:],)) if h.startswith('www.') else None)
+
+
+def set_domain(row, domain):
+    if not domain:
+        db.q('update pages set domain = null, updated_at = now() where id = %s', (row['id'],))
+        return {'ok': True}
+    d = clean_domain(domain)
+    if not d:
+        return {'ok': False, 'error': 'That is not a valid domain. Use e.g. brain.yourdomain.com'}
+    if d.endswith('palmtreemedia.co') or d.endswith('vercel.app'):
+        return {'ok': False, 'error': 'Use one of your own Namecheap domains.'}
+    other = db.q1('select id, name from pages where domain = %s and id <> %s', (d, row['id']))
+    if other:
+        return {'ok': False, 'error': f"{d} is already used by the page {other.get('name') or other['id']}."}
+    db.q('update pages set domain = %s, updated_at = now() where id = %s', (d, row['id']))
+    return {'ok': True}
+
+
+def check_domain(row):
+    """Does https://<domain> reach this app and this page?"""
+    d = row.get('domain')
+    if not d:
+        return {'ok': False, 'connected': False, 'why': 'No domain set.'}
+    try:
+        req = urllib.request.Request(f'https://{d}/api/public/domain-check', headers={'User-Agent': 'nutra-domain-check'})
+        with urllib.request.urlopen(req, timeout=10) as r:
+            j = json.loads(r.read(4000) or b'{}')
+        ok = j.get('page') == row['id']
+        return {'ok': True, 'connected': ok, 'why': '' if ok else 'The domain answers, but not with this page yet.'}
+    except urllib.error.HTTPError as e:
+        return {'ok': True, 'connected': False, 'why': f'The domain answers with an error ({e.code}). Step 2 (Vercel) is probably not done yet.'}
+    except Exception as e:
+        msg = str(e).lower()
+        why = ('The domain does not point to Vercel yet. Finish step 1 (nameservers can take up to 24 hours).' if ('name' in msg or 'resolve' in msg or 'nodename' in msg)
+               else 'No secure connection yet. Vercel issues the certificate a few minutes after step 2.' if 'ssl' in msg or 'certificate' in msg
+               else 'Not reachable yet. Check steps 1 and 2, then try again in a few minutes.')
+        return {'ok': True, 'connected': False, 'why': why}
 
 
 def list_pages():

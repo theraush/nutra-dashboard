@@ -31,6 +31,9 @@ https://nutra-dashboard-taupe.vercel.app). Pushing to `main` deploys automatical
     to `/api/agent/<page>/hero_option`; the team picks one (`Use this`) or A/B tests 1–2 of them. Audience comes from the new-page form.
     Engines: OpenAI (newest gpt-image model the key has) or Higgsfield SOUL V2 (`HF_API_KEY_ID`/`HF_API_KEY_SECRET`) + OpenAI edit that
     places the real product into the SOUL photo; "mix" alternates.
+  - **Custom domains**: `pages.domain` (e.g. brain.example.com). On a non-dashboard Host the router serves only that page at `/`,
+    its `/u/` images, tracking beacons and `/api/public/domain-check`; everything else 404s. Vlad points Namecheap nameservers
+    to Vercel and adds `example.com` + `*.example.com` in Vercel Domains (steps shown in the page's "Your own domain" box).
   - `static/dashboard.html` — the page. `static/shim.js` gives it `window.claude.use('db'|'user')` backed by `/api/db`.
   - `app/README.md` — env vars and routes.
 - `dashboard.html` (repo root) — same page, used by the old Claude artifact. **After editing the page, copy it to

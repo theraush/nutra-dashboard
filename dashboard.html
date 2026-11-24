@@ -609,6 +609,10 @@ body.noscroll{overflow:hidden;}
 .ab-diff summary{cursor:pointer;font-weight:600;font-size:14px}.ab-diff ul{list-style:none;padding:0;margin:8px 0 0;display:flex;flex-direction:column;gap:8px}
 .ab-diff li{font-size:13px;border:1px solid var(--border);border-radius:10px;padding:8px 10px;background:var(--surface)}
 .ab-dl{display:flex;flex-direction:column;gap:3px;margin-top:4px}.ab-old{color:var(--fg2);text-decoration:line-through;text-decoration-color:rgba(0,0,0,.25)}.ab-new{color:var(--fg)}
+.dom-in{flex:1 1 240px;min-width:0;font:inherit;font-size:14px;padding:9px 12px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--fg)}
+.dom-ok{color:var(--green);font-weight:600}.dom-no{color:var(--amber);font-weight:600}
+.dom-steps summary{cursor:pointer;font-weight:600;font-size:14px}.dom-steps ol{margin:10px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:12px;font-size:14px;line-height:1.5}
+.dom-copy{display:flex;align-items:center;gap:8px;margin:4px 0}.dom-copy code{background:var(--surface2);padding:4px 8px;border-radius:6px;font-size:13px}.dom-copy .nt-second{padding:4px 10px;font-size:12px}
 .pg-kinds{border:0;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
 .pg-kind{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--border);background:var(--surface);border-radius:12px;padding:12px 14px;cursor:pointer}
 .pg-kind:has(input:checked){border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
@@ -2285,6 +2289,24 @@ function heroHtml(p){const o=(p.hero_options||[]).slice().reverse(),j=p.hero_job
   const btns=canEdit?`<div class="nt-row">${busy?'':`${engSel}<button type="button" class="${o.length?'nt-second':'nt-primary'}" data-hero="make" data-n="5">${o.length?'Make 5 more':'Make 5 options'}</button><button type="button" class="nt-second" data-hero="make" data-n="10">${o.length?'Make 10 more':'Make 10 options'}</button><span class="nt-hint">About $0.20 a photo · 3–10 min</span>`}
     ${heroSel.length?`<span style="flex:1"></span><button type="button" class="nt-primary" data-hero="test">${heroSel.length===2?'A/B test these 2':'A/B test vs current photo'}</button>`:''}</div>`:'';
   return`<section class="card nt-panel"><b>Hero photo options</b>${head}${grid}${btns}</section>`;}
+const domState={};
+function rootOf(d){const p=String(d||'').split('.');return p.length>2?p.slice(-2).join('.'):d;}
+function domainHtml(p){if(!canEdit&&!p.domain)return'';const d=p.domain,st=domState[p.id]||{},root=rootOf(d);
+  const status=d?(st.connected?'<span class="dom-ok">● Connected</span>':st.checking?'<span class="nt-hint">Checking…</span>':st.why?`<span class="dom-no">● Not connected yet</span> <span class="nt-hint">${e(st.why)}</span>`:'<span class="nt-hint">Not checked yet</span>'):'';
+  const steps=d?`<details class="dom-steps"${st.connected?'':' open'}><summary>How to connect ${e(d)} (about 5 minutes + waiting)</summary><ol>
+    <li><b>Namecheap</b> (once per domain): Domain List → <b>Manage</b> next to <b>${e(root)}</b> → <b>Nameservers</b> → choose <b>Custom DNS</b> → enter
+      <div class="dom-copy"><code>ns1.vercel-dns.com</code><button type="button" class="nt-second" data-copy="ns1.vercel-dns.com">Copy</button></div>
+      <div class="dom-copy"><code>ns2.vercel-dns.com</code><button type="button" class="nt-second" data-copy="ns2.vercel-dns.com">Copy</button></div>
+      → click the green <b>✓</b>. It can take 10 minutes to 24 hours to take effect.<br><span class="nt-hint">If you use email on this domain, tell Claude first: its email records then need to move to Vercel.</span></li>
+    <li><b>Vercel</b> (once per domain): <a href="https://vercel.com/vlad-raush/nutra-dashboard/settings/domains" target="_blank" rel="noopener">nutra-dashboard → Settings → Domains ↗</a> → <b>Add</b> these two, one at a time (if asked, pick "Connect to an environment: Production"):
+      <div class="dom-copy"><code>${e(root)}</code><button type="button" class="nt-second" data-copy="${e(root)}">Copy</button></div>
+      <div class="dom-copy"><code>*.${e(root)}</code><button type="button" class="nt-second" data-copy="*.${e(root)}">Copy</button></div>
+      <span class="nt-hint">The second one makes every future subdomain (like brain.${e(root)}, glp.${e(root)}) work with no extra steps.</span></li>
+    <li><b>Here:</b> press <b>Check connection</b>. When it's green, use <code>https://${e(d)}/?utm_content={{ad.id}}</code> as the ad's website URL.</li></ol></details>`:'';
+  return`<section class="card nt-panel"><b>Your own domain</b><p class="nt-hint" style="margin:0">Show this page on your own Namecheap domain instead of nutra.palmtreemedia.co. Tip: use one neutral domain and give each page its own subdomain, e.g. <code>brain.yourdomain.com</code>.</p>
+    ${canEdit?`<div class="nt-row"><input id="domInput" class="dom-in" placeholder="brain.yourdomain.com" value="${e(d||'')}"><button type="button" class="nt-primary" data-dom="save">${d?'Change':'Save'}</button>${d?'<button type="button" class="nt-second" data-dom="check">Check connection</button><button type="button" class="nt-link nt-del" data-dom="clear">Remove</button>':''}</div>`:''}
+    ${d?`<div>${status}${st.connected?` · <a href="https://${e(d)}" target="_blank" rel="noopener">https://${e(d)} ↗</a>`:''}</div>`:''}${steps}
+    ${d&&!p.published?'<p class="nt-hint" style="margin:0">The domain shows the page only after you press <b>Publish</b>.</p>':''}</section>`;}
 const AB_FOCUS=[['angle','Angle & headline','A different main hook and headline. Biggest lever.'],['intro','Opening','The first paragraphs under the photo.'],['offer','Offer framing','How the price, guarantee and buttons are pitched.'],['hormozi','Hormozi-style offer','Value math, full package, risk reversal, "obvious pick". Offer part only.'],['photo','Hero photo only','Same words, a new top photo. Tests the picture alone.'],['length','Shorter page','Same story, tighter. Tests if less is more.']];
 const pct=v=>v==null?'—':(v*100).toFixed(1)+'%';
 function diffHtml(t,closed){const d=t.diff||[];if(!d.length)return t.state==='ready'?'<p class="hi-neg" style="margin:0">Claude made no visible change in B. Throw it away and try again.</p>':'';
@@ -2318,7 +2340,7 @@ function abHtml(p){if(!canEdit&&!p.test&&!(p.tests_done||[]).length)return'';con
   return`<section class="card nt-panel"><b>A/B test the copy</b>${body}${past}</section>`;}
 function detailHtml(p){const head=`<div class="nt-head"><button type="button" class="nt-link" data-pgback>← All pages</button><div style="flex:1 1 260px;min-width:0"><h1>${e(p.name||p.input.name||'New page')}</h1>
   <div class="nt-sub"><a href="${e(p.input.url)}" target="_blank" rel="noopener">${e(p.input.url)}</a>${p.input.audience?` · Audience: ${e([({women:'Women',men:'Men',both:'Men & women'})[p.input.audience.gender]||'',p.input.audience.age,p.input.audience.country].filter(Boolean).join(' '))}`:''}</div></div>${chip(p)}</div>`;
-  const url=location.origin+'/p/'+p.slug;
+  const url=p.domain&&(domState[p.id]||{}).connected?'https://'+p.domain+'/':location.origin+'/p/'+p.slug;
   if(p.status==='building'){const ph=p.phases||[],i=Math.max(0,ph.findIndex(x=>x.id===p.phase)),m=left(p),at=new Date(Date.now()+m*60000);
     if(p.has_content&&p.phase==='checking')return head+`<section class="card nt-panel"><span class="nt-eyebrow" style="color:var(--accent)">ALMOST DONE</span><div class="pg-count">~1 min <small>Claude is doing a final check</small></div>
       <p class="nt-hint" style="margin:0">The page is built. <a href="/p/${e(p.slug)}" target="_blank" rel="noopener">Peek at it ↗</a></p></section>`+notesHtml(p);
@@ -2338,6 +2360,7 @@ function detailHtml(p){const head=`<div class="nt-head"><button type="button" cl
     ${notesHtml(p)}${heroHtml(p)}${view==='phone'?`<div class="pg-phone"><div class="pg-phone-body"><span class="pg-notch" aria-hidden="true"></span><iframe class="pg-frame phone" src="/p/${e(p.slug)}?t=${encodeURIComponent(p.updated_at||'')}" title="Mobile preview (390 × 844, iPhone size)"></iframe></div><p class="nt-hint" style="text-align:center;margin:8px 0 0">iPhone size · 390 × 844 · scroll inside the phone</p></div>`:`<iframe class="pg-frame" src="/p/${e(p.slug)}?t=${encodeURIComponent(p.updated_at||'')}" title="Desktop preview"></iframe>`}
     <section class="card nt-panel"><b>${p.published?'Live link':'Link (works once published)'}</b><div class="pg-link"><code>${e(url)}</code><button type="button" class="nt-second" data-copy="${e(url)}">Copy link</button></div>
     <p class="nt-hint" style="margin:0">Use it as the ad's website URL. Add <b>?utm_content={{ad.id}}</b> so sales show per ad. Clicks on the buy buttons are tracked once the page is published.</p></section>
+    ${domainHtml(p)}
     ${abHtml(p)}
     ${canEdit?`<section class="card nt-panel"><b>Request changes</b><textarea id="pgChanges" rows="3" placeholder="e.g. Make the headline about memory, shorter opening, use the second uploaded photo as hero"></textarea>
     <div class="nt-row"><button type="button" class="nt-primary" data-pgact="changes">Send changes</button><span class="nt-hint">Claude updates the page in about 7 minutes.</span><span style="flex:1"></span><button type="button" class="nt-link nt-del" data-pgact="delete">Delete page</button></div></section>`:''}`;}
@@ -2345,12 +2368,16 @@ function render(){if(mode==='list'){g('pgList').hidden=false;g('pgDetail').hidde
   g('pgList').hidden=true;g('pgDetail').hidden=false;
   if(mode==='new'){g('pgDetail').innerHTML=formHtml();thumbs();setAud(0);return;}
   const p=list.find(x=>x.id===openId);if(!p){mode='list';render();return;}
-  const keep=g('pgChanges')&&g('pgChanges').value;const hadFrame=document.querySelector('#pgDetail iframe');const sig=p.status+p.updated_at+view+p.published+JSON.stringify(p.test||'')+((p.tests_done||[]).length)+JSON.stringify(p.hero_job||'')+(p.hero_options||[]).length+(p.hero_image||'')+heroSel.join(',');
+  const keep=g('pgChanges')&&g('pgChanges').value;const hadFrame=document.querySelector('#pgDetail iframe');const sig=JSON.stringify(domState[p.id]||'')+(p.domain||'')+p.status+p.updated_at+view+p.published+JSON.stringify(p.test||'')+((p.tests_done||[]).length)+JSON.stringify(p.hero_job||'')+(p.hero_options||[]).length+(p.hero_image||'')+heroSel.join(',');
   if(hadFrame&&g('pgDetail').dataset.sig===sig)return;g('pgDetail').dataset.sig=sig;g('pgDetail').innerHTML=detailHtml(p);if(keep&&g('pgChanges'))g('pgChanges').value=keep;}
 async function load(){try{const j=await api('/api/pages');list=j.pages||[];ready=j.ready||ready;}catch(err){g('pgSetup').hidden=false;g('pgSetup').textContent='Pages could not load: '+err.message;}}
 async function refreshOpen(){if(mode!=='detail'||!openId)return;try{const j=await api('/api/pages/'+openId+'/status',{});const i=list.findIndex(x=>x.id===openId);if(i>=0)list[i]=j.page;else list.unshift(j.page);}catch(err){}}
 async function tick(){if(typeof activeTab==='undefined'||activeTab!=='pages')return;if(mode==='detail')await refreshOpen();else if(mode==='list')await load();if(mode!=='new')render();}
 function startTimer(){clearInterval(timer);timer=setInterval(()=>{if(!document.hidden)tick();},10000);}
+async function dom(btn){const p=list.find(x=>x.id===openId);if(!p)return;const op=btn.dataset.dom;
+  try{if(op==='save'||op==='clear'){const j=await api('/api/pages/'+p.id+'/domain',{domain:op==='clear'?'':(g('domInput')||{}).value||''});Object.assign(p,j.page);delete domState[p.id];toast(op==='clear'?'Domain removed':'Saved. Follow the steps below.');}
+    else if(op==='check'){domState[p.id]={checking:true};g('pgDetail').dataset.sig='';render();const j=await api('/api/pages/'+p.id+'/domain_check',{});domState[p.id]={connected:!!j.connected,why:j.why||''};toast(j.connected?'Connected':'Not connected yet');}}
+  catch(err){toast(err.message);if(domState[p.id]&&domState[p.id].checking)delete domState[p.id];}g('pgDetail').dataset.sig='';render();}
 async function hero(btn){const p=list.find(x=>x.id===openId);if(!p)return;const op=btn.dataset.hero,body={op};
   if(op==='make'){body.count=+btn.dataset.n;body.engine=(g('heroEngine')||{}).value||'openai';}if(op==='use'||op==='remove')body.id=btn.dataset.id;if(op==='test')body.ids=heroSel.slice();
   if(op==='remove'&&btn.dataset.sure!=='1'){btn.dataset.sure='1';btn.textContent='Remove?';return;}
@@ -2382,7 +2409,7 @@ async function submit(ev){ev.preventDefault();const f=ev.target,v=n=>(f.elements
   catch(err){toast(err.message);btn.disabled=false;btn.textContent='Build page';}}
 window.pgShow=async()=>{await load();render();startTimer();};
 window.pgInit=()=>{canEdit=['owner','editor'].includes(me().role)||!window.NUTRA_HOSTED;
-  g('pagesView').addEventListener('click',ev=>{const hb=ev.target.closest('[data-hero]');if(hb){hero(hb);return;}const abb=ev.target.closest('[data-ab]');if(abb){ab(abb);return;}const au=ev.target.closest('[data-aud]');if(au){setAud(+au.dataset.aud);return;}
+  g('pagesView').addEventListener('click',ev=>{const db_=ev.target.closest('[data-dom]');if(db_){dom(db_);return;}const hb=ev.target.closest('[data-hero]');if(hb){hero(hb);return;}const abb=ev.target.closest('[data-ab]');if(abb){ab(abb);return;}const au=ev.target.closest('[data-aud]');if(au){setAud(+au.dataset.aud);return;}
     const c=ev.target.closest('[data-pg]'),b=ev.target.closest('[data-pgback]'),a=ev.target.closest('[data-pgact]'),vw=ev.target.closest('[data-view]'),un=ev.target.closest('[data-unpg]'),cp=ev.target.closest('[data-copy]');
     if(c){openId=c.dataset.pg;mode='detail';g('pgDetail').dataset.sig='';render();refreshOpen().then(render);window.scrollTo(0,0);}
     else if(b){mode='list';load().then(render);}else if(a)act(a.dataset.pgact);else if(vw){view=vw.dataset.view;g('pgDetail').dataset.sig='';render();}
