@@ -91,6 +91,17 @@ def request(row, count, user, base, tok, tok_hash, audience_text, system_prompt,
     return {'ok': True}
 
 
+def tally(row, key):
+    """Live progress for the dashboard: count photos taken ('shot') or failed ('misses') while a hero job runs."""
+    if (row.get('hero_job') or {}).get('state') != 'building' or key not in ('shot', 'misses'):
+        return
+    try:
+        db.q(f"""update pages set hero_job = hero_job || jsonb_build_object('{key}', coalesce((hero_job->>'{key}')::int, 0) + 1, 'last_at', %s::text)
+                 where id = %s and hero_job->>'state' = 'building'""", (iso(), row['id']))
+    except Exception:
+        pass
+
+
 def add_option(row, data, base):
     setup()
     url = str(data.get('url') or '')

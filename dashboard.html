@@ -609,6 +609,37 @@ body.noscroll{overflow:hidden;}
 .hero-like{display:flex;align-items:center;gap:10px;font-size:13px;border:1px solid var(--accent);border-radius:10px;padding:6px 8px;background:var(--accent-lt)}.hero-like img{width:54px;height:36px;object-fit:cover;border-radius:6px}.hero-like span{flex:1;min-width:0}
 .hero-act .nt-link{font-size:12px;padding:0;white-space:nowrap}
 .hero-on{font-size:12px;font-weight:700;color:var(--green)}
+.hj{border:1px solid var(--accent);background:var(--accent-lt);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.hj-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.hj-top b{font-size:15px}
+.hj-dot{width:10px;height:10px;border-radius:50%;background:var(--accent);flex:none;animation:hjPulse 1.4s ease-in-out infinite}
+@keyframes hjPulse{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 55%,transparent)}50%{box-shadow:0 0 0 7px transparent}}
+.hj-time{margin-left:auto;font-variant-numeric:tabular-nums;font-size:13px;font-weight:600;color:var(--fg2);background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:3px 10px}
+.hj-bar{height:8px;border-radius:999px;background:var(--surface);overflow:hidden;border:1px solid var(--border)}
+.hj-bar i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--accent),color-mix(in srgb,var(--accent) 60%,#fff),var(--accent));background-size:200% 100%;animation:hjFlow 1.6s linear infinite;transition:width .8s ease}
+@keyframes hjFlow{to{background-position:-200% 0}}
+.hj-steps{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px}
+.hj-steps li{display:flex;align-items:center;gap:7px;color:var(--fg2)}
+.hj-steps li::before{content:"";width:16px;height:16px;border-radius:50%;border:2px solid var(--border);box-sizing:border-box;flex:none}
+.hj-steps li.done{color:var(--fg)}.hj-steps li.done::before{border:0;background:var(--green) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.5l2.5 2.5L12 5.5' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/14px no-repeat}
+.hj-steps li.now{color:var(--fg);font-weight:600}.hj-steps li.now::before{border-color:var(--accent);border-top-color:transparent;animation:hjSpin .8s linear infinite}
+@keyframes hjSpin{to{transform:rotate(360deg)}}
+.hj-meta{display:flex;flex-wrap:wrap;gap:6px;font-size:12px}.hj-meta span{background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:3px 9px;color:var(--fg2);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hj-done{display:flex;align-items:center;gap:10px;border:1px solid var(--green);border-radius:12px;padding:10px 14px;font-size:14px;background:color-mix(in srgb,var(--green) 10%,var(--surface))}
+.hero-opt.ph{border-style:dashed}
+.ph-img{position:relative;width:100%;box-sizing:border-box;aspect-ratio:3/2;background:var(--surface2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--fg2);font-size:13px;font-weight:600;overflow:hidden;text-align:center;padding:0 10px}
+.ph-img svg{width:30px;height:30px}
+.hero-opt.ph.shoot .ph-img,.hero-opt.ph.check .ph-img{color:var(--accent)}
+.hero-opt.ph.shoot .ph-img::after,.hero-opt.ph.check .ph-img::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,color-mix(in srgb,var(--surface) 70%,transparent) 50%,transparent 70%);background-size:220% 100%;animation:hjShine 1.5s linear infinite}
+@keyframes hjShine{from{background-position:120% 0}to{background-position:-120% 0}}
+.hero-opt.ph.shoot svg{animation:hjSnap 1.6s ease-in-out infinite}@keyframes hjSnap{0%,80%,100%{transform:scale(1)}88%{transform:scale(.85)}}
+.hero-opt.ph.check svg{animation:hjLook 2s ease-in-out infinite}@keyframes hjLook{0%,100%{transform:translateX(-5px)}50%{transform:translateX(5px)}}
+.hero-opt.ph.wait{opacity:.6}
+.ph-lines{padding:10px;display:flex;flex-direction:column;gap:7px}.ph-lines i{display:block;height:9px;border-radius:5px;background:var(--surface2)}.ph-lines i:last-child{width:60%}
+.hero-new{align-self:flex-start;font-style:normal;font-size:10px;font-weight:800;letter-spacing:.06em;padding:2px 7px;border-radius:999px;background:var(--accent);color:#fff}
+.hero-opt.pop{animation:hjPop .55s cubic-bezier(.2,.9,.3,1.3)}@keyframes hjPop{from{opacity:0;transform:scale(.9) translateY(8px)}to{opacity:1;transform:none}}
+.hero-old>summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--fg2);padding:4px 0 10px}
+.nt-spin{display:inline-block;width:12px;height:12px;border:2px solid currentColor;border-top-color:transparent;border-radius:50%;animation:hjSpin .8s linear infinite;vertical-align:-2px;margin-right:6px}
+@media (prefers-reduced-motion:reduce){.hj-dot,.hj-bar i,.hj-steps li.now::before,.hero-opt.ph .ph-img::after,.hero-opt.ph svg,.hero-opt.pop,.nt-spin{animation:none!important}}
 .ab-diff summary{cursor:pointer;font-weight:600;font-size:14px}.ab-diff ul{list-style:none;padding:0;margin:8px 0 0;display:flex;flex-direction:column;gap:8px}
 .ab-diff li{font-size:13px;border:1px solid var(--border);border-radius:10px;padding:8px 10px;background:var(--surface)}
 .ab-dl{display:flex;flex-direction:column;gap:3px;margin-top:4px}.ab-old{color:var(--fg2);text-decoration:line-through;text-decoration-color:rgba(0,0,0,.25)}.ab-new{color:var(--fg)}
@@ -2273,30 +2304,56 @@ function notesHtml(p){const ns=p.notes||[];if(!ns.length&&!p.summary)return'';
   return`<section class="card nt-panel">${warn.length?`<b>⚠️ Check before running ads (${warn.length})</b><ul class="pg-notes">${warn.map(item).join('')}</ul>`:''}
     ${info.length?`<b>Good to know</b><ul class="pg-notes">${info.map(item).join('')}</ul>`:''}
     ${p.summary?`<details class="pg-sum"><summary>Claude's summary</summary><p>${e(p.summary)}</p></details>`:''}</section>`;}
-let heroSel=[],heroLike='',heroBriefDraft=null;
-function heroHtml(p){const o=(p.hero_options||[]).slice().reverse(),j=p.hero_job||{},busy=j.state==='building';
-  if(!canEdit&&!o.length)return'';
-  const made=busy?Math.max(0,(p.hero_options||[]).length-(j.before||0)):0;
-  heroSel=heroSel.filter(id=>o.some(x=>x.id===id));
-  const head=busy?`<p style="margin:0"><b>Claude is making ${j.count} photos</b> · ${made} ready so far. Each is checked for a real, non-AI look before it shows up here.</p>`
-    :j.state==='failed'?`<p style="margin:0" class="hi-neg">No photos were made: ${e(j.error||'Claude stopped.')}</p>`
-    :o.length?`<p class="nt-hint" style="margin:0">${o.length} option${o.length===1?'':'s'}. Click <b>Use this</b> to put a photo on the page, or tick 1–2 and test them.</p>`
-    :`<p class="nt-hint" style="margin:0">Get 5 or 10 different top photos (different person, place, moment and camera angle, all from your audience) and pick the best.</p>`;
-  const grid=o.length?`<div class="hero-grid">${o.map(x=>{const on=p.hero_image===x.url,sel=heroSel.includes(x.id);
-    return`<figure class="hero-opt${on?' on':''}${sel?' sel':''}"><a href="${e(x.url)}" target="_blank" rel="noopener" title="Open full size"><img src="${e(x.url)}" alt="${e(x.alt||x.caption||'Hero option')}" loading="lazy"></a>
-    <figcaption><b>${e([x.place,x.moment].filter(Boolean).join(' · ')||'Option')}</b>${x.engine?`<em class="hero-badge ${x.engine}">${x.engine==='higgsfield'?'Higgsfield':'OpenAI'}</em>`:''}<span>${e(x.person||'')}</span></figcaption>
-    ${canEdit?`<div class="hero-act">${on?'<span class="hero-on">On the page</span>':`<button type="button" class="nt-second" data-hero="use" data-id="${e(x.id)}">Use this</button>`}
+let heroSel=[],heroLike='',heroBriefDraft=null;const heroSeen=new Set();let heroSeenPage='';
+const HJ_ICON={shoot:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.6-2.2h6.8L17 8h3v11H4z"/><circle cx="12" cy="13.2" r="3.6"/></svg>',
+  check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5 5"/></svg>',
+  wait:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 7.5V12l3 2"/></svg>'};
+function hjAgo(iso){const t=Date.parse(iso||'');if(!t)return'';const s=Math.max(0,Math.round((Date.now()-t)/1000));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
+function heroCard(p,x,isNew,pop){const on=p.hero_image===x.url,sel=heroSel.includes(x.id);
+  return`<figure class="hero-opt${on?' on':''}${sel?' sel':''}${pop?' pop':''}"><a href="${e(x.url)}" target="_blank" rel="noopener" title="Open full size"><img src="${e(x.url)}" alt="${e(x.alt||x.caption||'Hero option')}" loading="lazy"></a>
+    <figcaption><b>${e([x.place,x.moment].filter(Boolean).join(' · ')||'Option')}</b><span style="display:flex;gap:5px">${isNew?'<em class="hero-new">NEW</em>':''}${x.engine?`<em class="hero-badge ${x.engine}">${x.engine==='higgsfield'?'Higgsfield':'OpenAI'}</em>`:''}</span><span>${e(x.person||'')}</span></figcaption>
+    ${canEdit?`<div class="hero-act">${on?'<span class="hero-on">✓ On the page</span>':`<button type="button" class="nt-second" data-hero="use" data-id="${e(x.id)}">Use this</button>`}
       <button type="button" class="nt-link" data-herolike="${e(x.id)}" title="Make new photos in this style">More like this</button>
       <label class="hero-tick"><input type="checkbox" data-herosel="${e(x.id)}"${sel?' checked':''}> Test</label>
-      <button type="button" class="pg-x" data-hero="remove" data-id="${e(x.id)}" aria-label="Remove this photo">×</button></div>`:''}</figure>`;}).join('')}</div>`:'';
+      <button type="button" class="pg-x" data-hero="remove" data-id="${e(x.id)}" aria-label="Remove this photo">×</button></div>`:''}</figure>`;}
+function heroHtml(p){return`<div id="heroBox">${heroInner(p)}</div>`;}
+function heroInner(p){const all=p.hero_options||[],j=p.hero_job||{},busy=j.state==='building';
+  if(!canEdit&&!all.length)return'';
+  if(heroSeenPage!==p.id){heroSeenPage=p.id;heroSeen.clear();all.forEach(x=>heroSeen.add(x.id));}
+  heroSel=heroSel.filter(id=>all.some(x=>x.id===id));
+  const since=Date.parse(j.started_at||'')||0,recent=j.state==='done'&&Date.now()-(Date.parse(j.ended_at||'')||0)<45*60e3;
+  const isNew=x=>(busy||recent)&&since&&Date.parse(x.at||'')>=since;
+  const fresh=all.filter(isNew).reverse(),old=all.filter(x=>!isNew(x)).reverse();
+  const card=x=>{const pop=!heroSeen.has(x.id);heroSeen.add(x.id);return heroCard(p,x,isNew(x),pop);};
+  let top='',grid='';
+  if(busy){const n=j.count||5,made=Math.min(n,fresh.length),shot=+j.shot||0,pend=n-made;
+    const inCheck=Math.max(0,Math.min(shot-made,3,pend)),inShoot=Math.max(0,Math.min(3-inCheck,pend-inCheck)),planning=!shot&&!made;
+    const pct=planning?Math.min(12,4+(Date.now()-since)/15000):Math.min(97,10+88*(made*.65+Math.min(shot,n)*.35)/n);
+    const eng={mix:'Mix: OpenAI + Higgsfield',higgsfield:'Higgsfield SOUL',openai:'OpenAI'}[j.engine]||'OpenAI';
+    const st=(k,t)=>`<li class="${k}">${t}</li>`;
+    top=`<div class="hj" role="status" aria-live="polite"><div class="hj-top"><span class="hj-dot" aria-hidden="true"></span><b>Claude is making ${n} photos</b><span class="hj-time" data-since="${e(j.started_at||'')}" title="Time since you pressed Make">${hjAgo(j.started_at)}</span></div>
+      <div class="hj-bar"><i style="width:${pct.toFixed(0)}%"></i></div>
+      <ol class="hj-steps">${st(planning?'now':'done',`Plan ${n} different people & places`)}${st(planning?'':made>=n?'done':'now',`Take the photos${shot?` · ${shot} taken`:''}`)}${st(shot?(made>=n?'done':'now'):'',`Check each for a real look · ${made} of ${n} ready`)}</ol>
+      <div class="hj-meta"><span>Engine: ${e(eng)}</span>${j.brief?`<span title="${e(j.brief)}">Your idea: ${e(j.brief)}</span>`:''}${j.like?'<span>Style: like the photo you picked</span>':''}${+j.misses?`<span>${+j.misses} photo${+j.misses===1?'':'s'} failed, retrying</span>`:''}<span>Usually 3–10 min · you can leave this page</span></div></div>`;
+    const slot=(k,i)=>`<figure class="hero-opt ph ${k}" aria-hidden="true"><div class="ph-img">${HJ_ICON[k]}<span>${k==='shoot'?'Taking the photo…':k==='check'?'Checking for a real look…':'Photo '+(made+i+1)+' · in line'}</span></div><div class="ph-lines"><i></i><i></i></div></figure>`;
+    const slots=[];for(let i=0;i<pend;i++)slots.push(slot(planning?'wait':i<inCheck?'check':i<inCheck+inShoot?'shoot':'wait',i));
+    grid=`<div class="hero-grid">${fresh.map(card).join('')}${slots.join('')}</div>`;}
+  else{if(j.state==='failed')top=`<p style="margin:0" class="hi-neg">No photos were made: ${e(j.error||'Claude stopped.')}</p>`;
+    else if(recent&&fresh.length)top=`<div class="hj-done" role="status"><b>✓ ${fresh.length} new photo${fresh.length===1?'':'s'} ready</b><span class="nt-hint">Marked <b>NEW</b>. Click <b>Use this</b> to put one on the page, or tick 1–2 to A/B test.</span></div>`;
+    else top=all.length?`<p class="nt-hint" style="margin:0">${all.length} option${all.length===1?'':'s'}. Click <b>Use this</b> to put a photo on the page, or tick 1–2 and test them.</p>`
+      :`<p class="nt-hint" style="margin:0">Get 5 or 10 different top photos (different person, place, moment and camera angle, all from your audience) and pick the best.</p>`;
+    if(fresh.length)grid=`<div class="hero-grid">${fresh.map(card).join('')}</div>`;}
+  if(old.length){const g2=`<div class="hero-grid">${old.map(card).join('')}</div>`;
+    grid+=(busy||fresh.length)?`<details class="hero-old"${busy?'':' open'}><summary>Earlier photos (${old.length})</summary>${g2}</details>`:g2;}
   const engSel=ready.higgsfield?`<label class="hero-eng">Engine <select id="heroEngine"><option value="mix">Mix: half OpenAI, half Higgsfield</option><option value="higgsfield">Higgsfield SOUL</option><option value="openai">OpenAI GPT Image</option></select></label>`:'';
-  const likeO=o.find(x=>x.id===heroLike);
+  const likeO=all.find(x=>x.id===heroLike);
   const briefBox=canEdit&&!busy?`<div class="hero-brief"><label class="nt-f" style="margin:0">Your idea for the photos <span class="nt-hint">optional; every photo will follow it</span>
     <textarea id="heroBrief" rows="2" maxlength="600" placeholder="e.g. A realistic couple, 60+, holding the bottle together on their porch, like real grandparents">${e(heroBriefDraft!==null?heroBriefDraft:(p.hero_brief||''))}</textarea></label>
     ${likeO?`<div class="hero-like"><img src="${e(likeO.url)}" alt=""><span>Style like: <b>${e(likeO.place||'this photo')}</b> · different people and places</span><button type="button" class="pg-x" data-herolike="" aria-label="Clear style">×</button></div>`:''}</div>`:'';
-  const btns=canEdit?`${briefBox}<div class="nt-row">${busy?'':`${engSel}<button type="button" class="${o.length?'nt-second':'nt-primary'}" data-hero="make" data-n="5">${o.length?'Make 5 more':'Make 5 options'}</button><button type="button" class="nt-second" data-hero="make" data-n="10">${o.length?'Make 10 more':'Make 10 options'}</button><span class="nt-hint">About $0.20 a photo · 3–10 min</span>`}
+  const btns=canEdit?`${briefBox}<div class="nt-row">${busy?'':`${engSel}<button type="button" class="${all.length?'nt-second':'nt-primary'}" data-hero="make" data-n="5">${all.length?'Make 5 more':'Make 5 options'}</button><button type="button" class="nt-second" data-hero="make" data-n="10">${all.length?'Make 10 more':'Make 10 options'}</button><span class="nt-hint">About $0.20 a photo · 3–10 min</span>`}
     ${heroSel.length?`<span style="flex:1"></span><button type="button" class="nt-primary" data-hero="test">${heroSel.length===2?'A/B test these 2':'A/B test vs current photo'}</button>`:''}</div>`:'';
-  return`<section class="card nt-panel"><b>Hero photo options</b>${head}${grid}${btns}</section>`;}
+  return`<section class="card nt-panel"><b>Hero photo options</b>${top}${grid}${btns}</section>`;}
+setInterval(()=>{document.querySelectorAll('.hj-time[data-since]').forEach(t=>{t.textContent=hjAgo(t.dataset.since);});},1000);
 const domState={};
 function rootOf(d){const p=String(d||'').split('.');return p.length>2?p.slice(-2).join('.'):d;}
 function domainHtml(p){if(!canEdit&&!p.domain)return'';const d=p.domain,st=domState[p.id]||{},root=rootOf(d);
@@ -2376,12 +2433,17 @@ function render(){if(mode==='list'){g('pgList').hidden=false;g('pgDetail').hidde
   g('pgList').hidden=true;g('pgDetail').hidden=false;
   if(mode==='new'){g('pgDetail').innerHTML=formHtml();thumbs();setAud(0);return;}
   const p=list.find(x=>x.id===openId);if(!p){mode='list';render();return;}
-  const keep=g('pgChanges')&&g('pgChanges').value;const hadFrame=document.querySelector('#pgDetail iframe');const sig=JSON.stringify(domState[p.id]||'')+(p.domain||'')+p.status+p.updated_at+view+p.published+JSON.stringify(p.test||'')+((p.tests_done||[]).length)+JSON.stringify(p.hero_job||'')+(p.hero_options||[]).length+(p.hero_image||'')+heroSel.join(',')+heroLike;
-  if(hadFrame&&g('pgDetail').dataset.sig===sig)return;g('pgDetail').dataset.sig=sig;g('pgDetail').innerHTML=detailHtml(p);if(keep&&g('pgChanges'))g('pgChanges').value=keep;}
+  const keep=g('pgChanges')&&g('pgChanges').value;const hadFrame=document.querySelector('#pgDetail iframe');
+  const hsig=JSON.stringify(p.hero_job||'')+(p.hero_options||[]).map(x=>x.id).join(',')+heroSel.join(',')+heroLike;
+  const sig=JSON.stringify(domState[p.id]||'')+view+JSON.stringify({...p,hero_options:0,hero_job:0,hero_brief:0,updated_at:0,log:p.status==='building'?p.log:0});
+  const box=g('heroBox');
+  if(hadFrame&&box&&g('pgDetail').dataset.sig===sig){if(box.dataset.sig!==hsig){const f=document.activeElement&&document.activeElement.id==='heroBrief';box.innerHTML=heroInner(p);box.dataset.sig=hsig;if(f&&g('heroBrief'))g('heroBrief').focus();}return;}
+  g('pgDetail').dataset.sig=sig;g('pgDetail').innerHTML=detailHtml(p);if(g('heroBox'))g('heroBox').dataset.sig=hsig;if(keep&&g('pgChanges'))g('pgChanges').value=keep;}
 async function load(){try{const j=await api('/api/pages');list=j.pages||[];ready=j.ready||ready;}catch(err){g('pgSetup').hidden=false;g('pgSetup').textContent='Pages could not load: '+err.message;}}
 async function refreshOpen(){if(mode!=='detail'||!openId)return;try{const j=await api('/api/pages/'+openId+'/status',{});const i=list.findIndex(x=>x.id===openId);if(i>=0)list[i]=j.page;else list.unshift(j.page);}catch(err){}}
 async function tick(){if(typeof activeTab==='undefined'||activeTab!=='pages')return;if(mode==='detail')await refreshOpen();else if(mode==='list')await load();if(mode!=='new')render();}
-function startTimer(){clearInterval(timer);timer=setInterval(()=>{if(!document.hidden)tick();},10000);}
+function heroBusyOpen(){const p=mode==='detail'&&list.find(x=>x.id===openId);return!!(p&&p.hero_job&&p.hero_job.state==='building');}
+function startTimer(){clearInterval(timer);let n=0;timer=setInterval(()=>{if(document.hidden)return;n++;if(n%10===0||(heroBusyOpen()&&n%4===0))tick();},1000);}
 async function dom(btn){const p=list.find(x=>x.id===openId);if(!p)return;const op=btn.dataset.dom;
   try{if(op==='save'||op==='clear'){const j=await api('/api/pages/'+p.id+'/domain',{domain:op==='clear'?'':(g('domInput')||{}).value||''});Object.assign(p,j.page);delete domState[p.id];toast(op==='clear'?'Domain removed':'Saved. Follow the steps below.');}
     else if(op==='check'){domState[p.id]={checking:true};g('pgDetail').dataset.sig='';render();const j=await api('/api/pages/'+p.id+'/domain_check',{});domState[p.id]={connected:!!j.connected,why:j.why||''};toast(j.connected?'Connected':'Not connected yet');}}
@@ -2389,7 +2451,7 @@ async function dom(btn){const p=list.find(x=>x.id===openId);if(!p)return;const o
 async function hero(btn){const p=list.find(x=>x.id===openId);if(!p)return;const op=btn.dataset.hero,body={op};
   if(op==='make'){body.count=+btn.dataset.n;body.engine=(g('heroEngine')||{}).value||'openai';body.brief=(g('heroBrief')||{}).value||'';body.like=heroLike;}if(op==='use'||op==='remove')body.id=btn.dataset.id;if(op==='test')body.ids=heroSel.slice();
   if(op==='remove'&&btn.dataset.sure!=='1'){btn.dataset.sure='1';btn.textContent='Remove?';return;}
-  btn.disabled=true;try{const j=await api('/api/pages/'+p.id+'/heroes',body);Object.assign(p,j.page);if(op==='test')heroSel=[];
+  btn.disabled=true;if(op==='make')btn.innerHTML='<span class="nt-spin"></span>Starting…';try{const j=await api('/api/pages/'+p.id+'/heroes',body);Object.assign(p,j.page);if(op==='test')heroSel=[];
     if(op==='make'){heroLike='';heroBriefDraft=null;}toast(op==='make'?'Claude is making the photos':op==='use'?'Photo is on the page now':op==='test'?'A/B test ready: check it below, then press Start':'Removed');}
   catch(err){toast(err.message);btn.disabled=false;}g('pgDetail').dataset.sig='';render();}
 async function ab(btn){const p=list.find(x=>x.id===openId);if(!p)return;const op=btn.dataset.ab;const body={op};

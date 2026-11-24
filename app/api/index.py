@@ -283,8 +283,10 @@ def api_agent(env, path, method, body):
         except Exception as e:
             pages.log(row['id'], 'Image failed: ' + str(e)[:150])
             pages.image_problem(row['id'], e)
+            heroes.tally(row, 'misses')
             return jresp({'ok': False, 'error': str(e)[:300] + ' (the team has been told; use uploaded or vendor photos and carry on)'}, 200)
         pages.log(row['id'], f'Image made with {images.LAST_MODEL}')
+        heroes.tally(row, 'shot')
         ext = {'image/jpeg': 'jpg', 'image/webp': 'webp'}.get((db.q1('select mime from uploads where id = %s', (uid,)) or {}).get('mime'), 'png')
         return jresp({'ok': True, 'url': f"{base_url(env)}/u/{uid}.{ext}", 'model': images.LAST_MODEL})
     if act == 'hero_option':
