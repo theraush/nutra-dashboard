@@ -154,7 +154,11 @@ def api_pages(env, path, method, p, user):
             return jresp({'ok': False, 'error': 'Claude is still working on this page.'}, 409)
         if not images.configured():
             return jresp({'ok': False, 'error': 'Add OPENAI_API_KEY in Vercel first.'}, 400)
-        return jresp({'ok': True, 'page': pages.public(pages.request_changes(row, 'Make new AI images for every illustrative image (hero, section figures, expectations, closing and the three More from cards), using the product photo as a reference where the product appears. Keep all the text and prices exactly as they are.', user, base_url(env)))})
+        msg = ('Make the hero photo now (hero.image), following the INFO rules for it: one landscape photo of a person of the audience '
+               'using the product, refs = [product.pack_image], plus hero.alt and hero.caption. Keep every other field exactly as it is.'
+               if row.get('kind') == 'info' else
+               'Make new AI images for every illustrative image (hero, section figures, expectations, closing and the three More from cards), using the product photo as a reference where the product appears. Keep all the text and prices exactly as they are.')
+        return jresp({'ok': True, 'page': pages.public(pages.request_changes(row, msg, user, base_url(env)))})
     if act == 'changes':
         text = str(p.get('text') or '').strip()
         if len(text) < 3:
