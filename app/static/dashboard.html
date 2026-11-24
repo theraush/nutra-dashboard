@@ -609,6 +609,7 @@ body.noscroll{overflow:hidden;}
 .hero-like{display:flex;align-items:center;gap:10px;font-size:13px;border:1px solid var(--accent);border-radius:10px;padding:6px 8px;background:var(--accent-lt)}.hero-like img{width:54px;height:36px;object-fit:cover;border-radius:6px}.hero-like span{flex:1;min-width:0}
 .hero-act .nt-link{font-size:12px;padding:0;white-space:nowrap}
 .hero-on{font-size:12px;font-weight:700;color:var(--green)}
+.hero-maker{display:flex;flex-direction:column;gap:10px;border:1px solid var(--border);border-radius:12px;padding:12px 14px;background:var(--surface2)}
 .hj{border:1px solid var(--accent);background:var(--accent-lt);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
 .hj-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.hj-top b{font-size:15px}
 .hj-dot{width:10px;height:10px;border-radius:50%;background:var(--accent);flex:none;animation:hjPulse 1.4s ease-in-out infinite}
@@ -2347,12 +2348,12 @@ function heroInner(p){const all=p.hero_options||[],j=p.hero_job||{},busy=j.state
     grid+=(busy||fresh.length)?`<details class="hero-old"${busy?'':' open'}><summary>Earlier photos (${old.length})</summary>${g2}</details>`:g2;}
   const engSel=ready.higgsfield?`<label class="hero-eng">Engine <select id="heroEngine"><option value="mix">Mix: half OpenAI, half Higgsfield</option><option value="higgsfield">Higgsfield SOUL</option><option value="openai">OpenAI GPT Image</option></select></label>`:'';
   const likeO=all.find(x=>x.id===heroLike);
-  const briefBox=canEdit&&!busy?`<div class="hero-brief"><label class="nt-f" style="margin:0">Your idea for the photos <span class="nt-hint">optional; every photo will follow it</span>
+  const briefBox=canEdit&&!busy?`<div class="hero-brief"><label class="nt-f" style="margin:0"><span>✏️ <b>Describe the photos you want</b> <span class="nt-hint">optional · every new photo will follow it</span></span>
     <textarea id="heroBrief" rows="2" maxlength="600" placeholder="e.g. A realistic couple, 60+, holding the bottle together on their porch, like real grandparents">${e(heroBriefDraft!==null?heroBriefDraft:(p.hero_brief||''))}</textarea></label>
     ${likeO?`<div class="hero-like"><img src="${e(likeO.url)}" alt=""><span>Style like: <b>${e(likeO.place||'this photo')}</b> · different people and places</span><button type="button" class="pg-x" data-herolike="" aria-label="Clear style">×</button></div>`:''}</div>`:'';
-  const btns=canEdit?`${briefBox}<div class="nt-row">${busy?'':`${engSel}<button type="button" class="${all.length?'nt-second':'nt-primary'}" data-hero="make" data-n="5">${all.length?'Make 5 more':'Make 5 options'}</button><button type="button" class="nt-second" data-hero="make" data-n="10">${all.length?'Make 10 more':'Make 10 options'}</button><span class="nt-hint">About $0.20 a photo · 3–10 min</span>`}
-    ${heroSel.length?`<span style="flex:1"></span><button type="button" class="nt-primary" data-hero="test">${heroSel.length===2?'A/B test these 2':'A/B test vs current photo'}</button>`:''}</div>`:'';
-  return`<section class="card nt-panel"><b>Hero photo options</b>${top}${grid}${btns}</section>`;}
+  const maker=canEdit&&!busy?`<div class="hero-maker">${briefBox}<div class="nt-row">${engSel}<button type="button" class="nt-primary" data-hero="make" data-n="5">${all.length?'Make 5 more':'Make 5 options'}</button><button type="button" class="nt-second" data-hero="make" data-n="10">${all.length?'Make 10 more':'Make 10 options'}</button><span class="nt-hint">About $0.20 a photo · 3–10 min</span></div></div>`:'';
+  const testRow=canEdit&&heroSel.length?`<div class="nt-row" style="justify-content:flex-end"><button type="button" class="nt-primary" data-hero="test">${heroSel.length===2?'A/B test these 2':'A/B test vs current photo'}</button></div>`:'';
+  return`<section class="card nt-panel"><b>Hero photo options</b>${maker}${top}${grid}${testRow}</section>`;}
 setInterval(()=>{document.querySelectorAll('.hj-time[data-since]').forEach(t=>{t.textContent=hjAgo(t.dataset.since);});},1000);
 const domState={};
 function rootOf(d){const p=String(d||'').split('.');return p.length>2?p.slice(-2).join('.'):d;}
