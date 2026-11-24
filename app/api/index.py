@@ -756,6 +756,10 @@ def route(env):
     m_p = re.fullmatch(r'/p/([a-z0-9-]{1,60})', path)
     if m_p and method in ('GET', 'HEAD'):
         return serve_page(m_p.group(1), user, env, p)
+    if path == '/api/images-check':
+        if not user or user['role'] not in ('owner', 'editor'):
+            return jresp({'ok': False}, 403)
+        return jresp({'higgsfield': images.hf_check(), 'openai': bool(os.environ.get('OPENAI_API_KEY'))})
     if path == '/api/pages-selftest':
         if not user or user['role'] != 'owner' or method != 'POST' or not same_origin(env):
             return jresp({'ok': False}, 403)

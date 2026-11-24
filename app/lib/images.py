@@ -169,6 +169,22 @@ def hf_configured():
     return bool(os.environ.get('HF_API_KEY_ID') and os.environ.get('HF_API_KEY_SECRET'))
 
 
+def hf_check():
+    """Free key check: ask for the status of a request that doesn't exist. 401/403 = bad key, anything else = key accepted."""
+    if not hf_configured():
+        return {'ok': False, 'why': 'HF_API_KEY_ID / HF_API_KEY_SECRET are not set'}
+    kid, sec = os.environ['HF_API_KEY_ID'].strip(), os.environ['HF_API_KEY_SECRET'].strip()
+    req = urllib.request.Request('https://api.higgsfield.ai/requests/00000000-0000-0000-0000-000000000000/status',
+                                 headers={'Authorization': f'Key {kid}:{sec}'})
+    try:
+        with urllib.request.urlopen(req, timeout=15) as r:
+            return {'ok': True, 'code': r.status}
+    except urllib.error.HTTPError as e:
+        return {'ok': e.code not in (401, 403), 'code': e.code, 'why': e.read().decode(errors='replace')[:120] if e.code in (401, 403) else ''}
+    except Exception as e:
+        return {'ok': False, 'why': f'unreachable: {e}'[:120]}
+
+
 def _hf_soul(prompt, shape, deadline):
     import time
     kid, sec = os.environ['HF_API_KEY_ID'].strip(), os.environ['HF_API_KEY_SECRET'].strip()
