@@ -6,6 +6,9 @@ from . import db
 SIZES = {'landscape': '1536x1024', 'square': '1024x1024', 'portrait': '1024x1536'}
 
 
+LAST_MODEL = None
+
+
 class ImageError(Exception):
     pass
 
@@ -128,6 +131,8 @@ def generate(prompt, shape='landscape', refs=None, by='page-builder'):
                 else:
                     break
         if res is not None:
+            global LAST_MODEL
+            LAST_MODEL = model
             if attempt:  # remember what works, so the next image goes straight to it
                 import datetime
                 ids = models(key)

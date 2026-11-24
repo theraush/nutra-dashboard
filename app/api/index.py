@@ -111,7 +111,8 @@ def api_pages(env, path, method, p, user):
         return jresp({'ok': False, 'error': 'signed out'}, 401)
     if path == '/api/pages' and method == 'GET':
         return jresp({'ok': True, 'pages': [pages.public(r) for r in pages.list_pages()],
-                      'ready': {'claude': agent.configured(), 'images': images.configured()}})
+                      'ready': {'claude': agent.configured(), 'images': images.configured(),
+                                'image_models': (db.kv_data('_system/image_models') or {}).get('ids', [])[:3]}})
     if method != 'POST' or not same_origin(env):
         return jresp({'ok': False}, 405)
     editor = user['role'] in ('owner', 'editor')
@@ -240,6 +241,7 @@ def api_agent(env, path, method, body):
             pages.log(row['id'], 'Image failed: ' + str(e)[:150])
             pages.image_problem(row['id'], e)
             return jresp({'ok': False, 'error': str(e)[:300] + ' (the team has been told; use uploaded or vendor photos and carry on)'}, 200)
+        pages.log(row['id'], f'Image made with {images.LAST_MODEL}')
         return jresp({'ok': True, 'url': f"{base_url(env)}/u/{uid}.png"})
     if act == 'content':
         if (row.get('test') or {}).get('state') == 'building' and row['status'] != 'building':
