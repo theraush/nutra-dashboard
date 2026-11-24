@@ -162,7 +162,7 @@ def api_pages(env, path, method, p, user):
         aud = pages.audience_text(row.get('input') or {})
         if aud:
             msg += ' ' + aud
-        return jresp({'ok': True, 'page': pages.public(pages.request_changes(row, msg, user, base_url(env)))})
+        return jresp({'ok': True, 'page': pages.public(pages.request_changes(row, msg, user, base_url(env), keep_notes=True))})
     if act == 'changes':
         text = str(p.get('text') or '').strip()
         if len(text) < 3:

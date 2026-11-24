@@ -374,8 +374,11 @@ def create(inp, user, base):
     return get(pid)
 
 
-def request_changes(row, text, user, base):
-    db.q("update pages set notes = (select coalesce(jsonb_agg(n), '[]'::jsonb) from jsonb_array_elements(notes) n where n->>'kind' = 'info') where id = %s", (row['id'],))
+def request_changes(row, text, user, base, keep_notes=False):
+    if not keep_notes:  # a rewrite gets fresh warnings from Claude; a photo-only redo keeps the ones the team still needs
+        db.q("update pages set notes = (select coalesce(jsonb_agg(n), '[]'::jsonb) from jsonb_array_elements(notes) n where n->>'kind' = 'info') where id = %s", (row['id'],))
+    else:
+        db.q("update pages set notes = (select coalesce(jsonb_agg(n), '[]'::jsonb) from jsonb_array_elements(notes) n where coalesce(n->>'action','') <> 'redo_images') where id = %s", (row['id'],))
     tok = secrets.token_urlsafe(24)
     revs = (row.get('revisions') or []) + [{'at': iso(now()), 'by': user['email'], 'text': text[:2000]}]
     db.q("""update pages set status = 'building', phase = 'starting', error = null, token_hash = %s, revisions = %s,
