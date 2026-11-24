@@ -610,7 +610,15 @@ body.noscroll{overflow:hidden;}
 @keyframes pgpulse{50%{opacity:.55}}@media(prefers-reduced-motion:reduce){.pg-steps li.on .pg-dot{animation:none}}
 .pg-log{font-size:12.5px;color:var(--fg2);display:flex;flex-direction:column;gap:4px;max-height:160px;overflow:auto}
 .pg-frame{width:100%;height:72vh;min-height:420px;border:1px solid var(--border);border-radius:12px;background:#fff;display:block}
-.pg-frame.phone{width:390px;max-width:100%;margin:0 auto}
+.pg-frame.phone{width:390px;height:844px;min-height:0;max-width:100%;margin:0 auto;border:0;border-radius:6px 6px 30px 30px}
+.pg-tabs{display:inline-flex;gap:4px;padding:4px;border:1px solid var(--border);border-radius:12px;background:var(--surface2)}
+.pg-tabs button{display:inline-flex;align-items:center;gap:7px;border:0;background:transparent;padding:9px 18px;border-radius:9px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;color:var(--fg2)}
+.pg-tabs button svg{width:16px;height:16px}
+.pg-tabs button[aria-selected="true"]{background:var(--surface);color:var(--fg);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.pg-phone{display:flex;flex-direction:column;align-items:center;padding:8px 0}
+.pg-phone-body{position:relative;width:414px;max-width:100%;padding:34px 12px 18px;border-radius:46px;background:#111;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.pg-notch{position:absolute;top:13px;left:50%;transform:translateX(-50%);width:84px;height:9px;border-radius:6px;background:#333}
+@media(max-width:460px){.pg-phone-body{padding:0;background:none;box-shadow:none;border-radius:0}.pg-notch{display:none}.pg-frame.phone{border-radius:12px;border:1px solid var(--border);height:75vh}}
 .pg-seg{display:inline-flex;border:1px solid var(--border);border-radius:10px;overflow:hidden}.pg-seg button{border:0;background:var(--surface);padding:8px 14px;font:inherit;font-size:13px;cursor:pointer;color:var(--fg2)}
 .pg-seg button[aria-pressed="true"]{background:var(--fg);color:var(--surface)}
 .pg-link{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.pg-link code{flex:1 1 220px;min-width:0;overflow-wrap:anywhere;padding:9px 11px;border-radius:8px;background:var(--surface2);font-size:12.5px}
@@ -2286,10 +2294,10 @@ function detailHtml(p){const head=`<div class="nt-head"><button type="button" cl
     ${p.has_content?'<p style="margin:0">An earlier version of the page exists. You can open it, or start over.</p>':''}
     ${p.summary?`<details class="pg-sum"><summary>What Claude said</summary><p>${e(p.summary)}</p></details>`:''}
     ${canEdit?`<div class="nt-row">${p.has_content?'<button type="button" class="nt-primary" data-pgact="reopen">Open the page</button><button type="button" class="nt-second" data-pgact="retry">Start over</button>':'<button type="button" class="nt-primary" data-pgact="retry">Try again</button>'}<button type="button" class="nt-link nt-del" data-pgact="delete">Delete</button></div>`:''}</section>`;
-  return head+`<div class="nt-row" style="justify-content:space-between"><div class="pg-seg" role="group" aria-label="Preview size"><button type="button" data-view="desktop" aria-pressed="${view==='desktop'}">Desktop</button><button type="button" data-view="phone" aria-pressed="${view==='phone'}">Phone</button></div>
+  return head+`<div class="nt-row" style="justify-content:space-between"><div class="pg-tabs" role="tablist" aria-label="Preview"><button type="button" role="tab" data-view="desktop" aria-selected="${view==='desktop'}" aria-pressed="${view==='desktop'}"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="1.5" y="2.5" width="13" height="9" rx="1.2"/><path d="M5.5 14h5M8 11.5V14"/></svg>Desktop</button><button type="button" role="tab" data-view="phone" aria-selected="${view==='phone'}" aria-pressed="${view==='phone'}"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="4" y="1.5" width="8" height="13" rx="1.6"/><path d="M7 12.5h2"/></svg>Mobile</button></div>
     <div class="nt-row"><a class="nt-second" style="display:inline-flex;align-items:center;text-decoration:none" href="/p/${e(p.slug)}" target="_blank" rel="noopener">Open page ↗</a>
     ${canEdit?`<button type="button" class="${p.published?'nt-second':'nt-primary'}" data-pgact="${p.published?'unpublish':'publish'}">${p.published?'Unpublish':'Publish'}</button>`:''}</div></div>
-    ${notesHtml(p)}<iframe class="pg-frame ${view==='phone'?'phone':''}" src="/p/${e(p.slug)}?v=${encodeURIComponent(p.updated_at||'')}" title="Page preview"></iframe>
+    ${notesHtml(p)}${view==='phone'?`<div class="pg-phone"><div class="pg-phone-body"><span class="pg-notch" aria-hidden="true"></span><iframe class="pg-frame phone" src="/p/${e(p.slug)}?t=${encodeURIComponent(p.updated_at||'')}" title="Mobile preview (390 × 844, iPhone size)"></iframe></div><p class="nt-hint" style="text-align:center;margin:8px 0 0">iPhone size · 390 × 844 · scroll inside the phone</p></div>`:`<iframe class="pg-frame" src="/p/${e(p.slug)}?t=${encodeURIComponent(p.updated_at||'')}" title="Desktop preview"></iframe>`}
     <section class="card nt-panel"><b>${p.published?'Live link':'Link (works once published)'}</b><div class="pg-link"><code>${e(url)}</code><button type="button" class="nt-second" data-copy="${e(url)}">Copy link</button></div>
     <p class="nt-hint" style="margin:0">Use it as the ad's website URL. Add <b>?utm_content={{ad.id}}</b> so sales show per ad. Clicks on the buy buttons are tracked once the page is published.</p></section>
     ${abHtml(p)}
