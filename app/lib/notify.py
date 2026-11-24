@@ -4,10 +4,19 @@ import os, json, urllib.request
 
 
 def _post(url, body, headers=None):
+    import urllib.error
     req = urllib.request.Request(url, data=json.dumps(body).encode(), method='POST',
-                                 headers={'Content-Type': 'application/json', **(headers or {})})
-    with urllib.request.urlopen(req, timeout=20) as r:
-        return r.status
+                                 headers={'Content-Type': 'application/json', 'User-Agent': 'nutra-dashboard', **(headers or {})})
+    try:
+        with urllib.request.urlopen(req, timeout=20) as r:
+            return r.status
+    except urllib.error.HTTPError as e:
+        detail = e.read().decode(errors='replace')[:300]
+        try:
+            detail = json.loads(detail).get('message') or detail
+        except ValueError:
+            pass
+        raise RuntimeError(f'{e.code}: {detail}')
 
 
 def configured():
