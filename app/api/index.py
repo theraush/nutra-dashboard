@@ -4,7 +4,7 @@ from http.cookies import SimpleCookie
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
-from lib import db, auth, postback, sync, pages, images, advertorial, agent, infoad, history, abtest, heroes  # noqa: E402
+from lib import db, auth, postback, sync, pages, images, advertorial, agent, infoad, history, abtest, heroes, notify  # noqa: E402
 
 STATIC = os.path.join(ROOT, 'static')
 PATH_RE = re.compile(r'^[A-Za-z0-9_\-.~:@+]{1,200}/[A-Za-z0-9_\-.~:@+]{1,200}$')
@@ -653,7 +653,48 @@ def route(env):
         return Resp(200, auth_page('NUTRA', 'Sign in to the dashboard.', fields, 'Sign in', action='/login', foot=FORGOT))
 
     if path == '/forgot':
-        return Resp(200, auth_page('Forgot your password?', FORGOT_TEXT, [], 'Back to sign in', action='/login', foot=''))
+        if not notify.email_configured():
+            return Resp(200, auth_page('Forgot your password?', FORGOT_TEXT, [], 'Back to sign in', action='/login', foot=''))
+        sub = "Type your email. If it's on the team, we'll send you a link to choose a new password."
+        fields = [('Email', 'email', 'email', 'username')]
+        if method == 'POST' and same_origin(env) and p.get('email'):
+            email = str(p.get('email') or '').strip().lower()
+            tok = auth.new_reset_token(email)
+            if tok:
+                link = f"{base_url(env)}/reset-password?t={urllib.parse.quote(tok)}"
+                try:
+                    notify.send_email(email, 'Reset your NUTRA password',
+                                      f"Someone asked to reset the password for {email} on the NUTRA dashboard.\n\n"
+                                      f"Choose a new password here (the link works once, for 1 hour):\n{link}\n\n"
+                                      "If it wasn't you, ignore this email; your password stays the same.",
+                                      f'<p>Someone asked to reset the password for <b>{html.escape(email)}</b> on the NUTRA dashboard.</p>'
+                                      f'<p><a href="{html.escape(link)}" style="display:inline-block;background:#111;color:#fff;padding:12px 18px;'
+                                      f'border-radius:8px;text-decoration:none;font-weight:600">Choose a new password</a></p>'
+                                      '<p style="color:#666">The link works once, for 1 hour. If it wasn\'t you, ignore this email.</p>')
+                except Exception as e:
+                    return Resp(500, auth_page('Forgot your password?', sub, fields, 'Email me a reset link',
+                                               'The email could not be sent (' + html.escape(str(e)[:120]) + '). Try again in a minute.', '/forgot', '<a href="/login">Back to sign in</a>'))
+            return Resp(200, auth_page('Check your email', f'If <b>{html.escape(email)}</b> is on the team, a reset link is on its way. '
+                                       'It works once, for 1 hour. Check spam too.', [], 'Back to sign in', action='/login', foot=''))
+        return Resp(200, auth_page('Forgot your password?', sub, fields, 'Email me a reset link', action='/forgot', foot='<a href="/login">Back to sign in</a>'))
+
+    if path == '/reset-password':
+        tok = str(p.get('t') or '')
+        fields = [('New password (10+ characters)', 'password', 'password', 'new-password'), ('Type it again', 'password2', 'password', 'new-password')]
+        act = '/reset-password?t=' + urllib.parse.quote(tok)
+        sub = 'Choose a new password for the NUTRA dashboard.'
+        if method == 'POST' and same_origin(env):
+            pw = str(p.get('password') or '')
+            if len(pw) < 10:
+                return Resp(400, auth_page('New password', sub, fields, 'Save and sign in', 'Use at least 10 characters.', act))
+            if pw != str(p.get('password2') or ''):
+                return Resp(400, auth_page('New password', sub, fields, 'Save and sign in', "The two passwords don't match.", act))
+            email = auth.use_reset_token(tok, pw)
+            if not email:
+                return Resp(400, auth_page('Link expired', 'This reset link was already used or is older than 1 hour. Ask for a new one.',
+                                           [], 'Get a new link', action='/forgot', foot=''))
+            return redirect('/', [cookie_header(auth.make_cookie(email), auth.DAYS * 86400)])
+        return Resp(200, auth_page('New password', sub, fields, 'Save and sign in', action=act))
 
     # owner password reset: only while OWNER_RESET_CODE is set in Vercel, and the code must be typed in
     if path == '/reset':

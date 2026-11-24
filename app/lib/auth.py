@@ -91,6 +91,36 @@ def login(email, pw):
     return None
 
 
+def new_reset_token(email):
+    m = find(email)
+    if not m:
+        return None
+    tok = secrets.token_urlsafe(32)
+    h = hashlib.sha256(tok.encode()).hexdigest()
+    db.kv_set(f'_system/reset_{h[:32]}', {'email': m['email'].lower(), 'exp': int(time.time()) + 3600})
+    return tok
+
+
+def use_reset_token(tok, new_pw):
+    """Sets the new password if the token is valid. Returns the email or None."""
+    h = hashlib.sha256(str(tok or '').encode()).hexdigest()
+    path = f'_system/reset_{h[:32]}'
+    d = db.kv_data(path)
+    if not d or d.get('exp', 0) < time.time():
+        return None
+    db.kv_delete(path)
+    ms = find_all(d['email'])
+    if not ms:
+        return None
+    keep = next((m for m in ms if m.get('pwHash')), ms[0])
+    for m in ms:
+        if m['id'] != keep['id']:
+            db.kv_delete(f"team/{m['id']}")
+    base = {k: v for k, v in keep.items() if k not in ('id', 'inviteToken', 'inviteAt')}
+    db.kv_set(f"team/{keep['id']}", {**base, 'pwHash': hash_pw(new_pw)})
+    return d['email']
+
+
 def reset_code():
     """Owner password reset is only open while OWNER_RESET_CODE (8+ chars) is set in Vercel."""
     c = (os.environ.get('OWNER_RESET_CODE') or '').strip()

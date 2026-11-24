@@ -34,3 +34,19 @@ def send(text, subject='NUTRA alert'):
         except Exception as e:
             errs.append(f'Email: {e}')
     return errs
+
+
+def email_configured():
+    return bool(os.environ.get('RESEND_API_KEY'))
+
+
+def send_email(to, subject, text, html_body=None):
+    """One email to one person (password resets). Raises on failure."""
+    key = os.environ.get('RESEND_API_KEY')
+    if not key:
+        raise RuntimeError('RESEND_API_KEY is not set')
+    body = {'from': os.environ.get('MAIL_FROM') or os.environ.get('ALERT_FROM') or 'NUTRA <onboarding@resend.dev>',
+            'to': [to], 'subject': subject, 'text': text}
+    if html_body:
+        body['html'] = html_body
+    _post('https://api.resend.com/emails', body, {'Authorization': f'Bearer {key}'})
