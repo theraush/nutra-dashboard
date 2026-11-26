@@ -56,10 +56,17 @@ def view(fresh=False):
 
 
 def connect(name, token, user):
-    token = str(token or '').strip()
+    token = re.sub(r'\s+', '', str(token or ''))
+    token = re.sub(r'^(?i:bearer|access_token=)', '', token).strip('"\'')
     name = str(name or '').strip()[:60] or 'Facebook connection'
-    if len(token) < 30 or not re.match(r'^[A-Za-z0-9_\-|.]+$', token):
-        return {'ok': False, 'error': 'That does not look like a Facebook access token. Copy the whole token from Business Settings → System users.'}
+    if not token:
+        return {'ok': False, 'error': 'Paste the token first.'}
+    if re.fullmatch(r'\d{6,20}', token):
+        return {'ok': False, 'error': 'That is a number (an App ID or account ID), not a token. Tokens are long and start with EAA.'}
+    if re.fullmatch(r'[0-9a-f]{32}', token):
+        return {'ok': False, 'error': 'That looks like the App secret, not a token. In System users press "Generate new token" and copy that (it starts with EAA).'}
+    if len(token) < 60 or not re.match(r'^[A-Za-z0-9_\-|.]+$', token):
+        return {'ok': False, 'error': f'That does not look like a full token ({len(token)} characters; tokens are usually 150-250 and start with EAA). Copy it again with the Copy button in Facebook.'}
     try:
         accts = meta.accounts_for(token)
     except Exception as e:
