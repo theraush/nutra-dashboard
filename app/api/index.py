@@ -821,6 +821,14 @@ def route(env):
         if not user or user['role'] not in ('owner', 'editor'):
             return jresp({'ok': False}, 403)
         return jresp({'higgsfield': images.hf_check(), 'openai': bool(os.environ.get('OPENAI_API_KEY'))})
+    if path == '/api/network-check':
+        if not user or user['role'] not in ('owner', 'editor'):
+            return jresp({'ok': False}, 403)
+        net = str(p.get('network') or 'clickbank')[:30]
+        rows = db.q("""select to_char(received_at at time zone 'UTC','YYYY-MM-DD HH24:MI:SS') as at, event, transaction_type as type,
+                         transaction_id as receipt, commission::float as commission, tid, variant, is_test, product_key
+                         from events where network = %s order by received_at desc limit 10""", (net,))
+        return jresp({'ok': True, 'network': net, 'events': rows})
     if path == '/api/pages-selftest':
         if not user or user['role'] != 'owner' or method != 'POST' or not same_origin(env):
             return jresp({'ok': False}, 403)
