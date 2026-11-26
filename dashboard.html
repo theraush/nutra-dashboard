@@ -2896,7 +2896,7 @@ document.addEventListener('click',ev=>{const b=ev.target.closest('[data-navstep]
 document.addEventListener('click',ev=>{const b=ev.target.closest('[data-navpg]');if(!b)return;if(typeof switchTab==='function')switchTab('pages');setTimeout(()=>window.pgOpen&&window.pgOpen(b.dataset.navpg),0);});
 function user(){const u=window.NUTRA_ME,b=g('sbUser');if(!u||!b||!u.email)return;const n=(u.name||u.email.split('@')[0]);b.hidden=false;
   b.innerHTML=`<span class="av">${e(n.slice(0,2).toUpperCase())}</span><div style="min-width:0"><b style="font-size:13px;display:block;overflow:hidden;text-overflow:ellipsis">${e(n)}</b><small>${e(u.role||'')} · <a href="/logout">Sign out</a></small></div>`;}
-let A=null,busy=false,modal=false;
+let A=null,busy=false,modal=false,draft={};
 async function api(body){const r=await fetch('/api/accounts'+(body?'':'?fresh='+(A?0:0)),body?{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify(body)}:{credentials:'same-origin'});
   const j=await r.json().catch(()=>({ok:false,error:'Server error'}));if(!r.ok||j.ok===false)throw new Error(j.error||('Error '+r.status));return j;}
 function accLabel(a){return `${a.name} · ${a.id}${a.business?' · '+a.business:''}`;}
@@ -2915,14 +2915,16 @@ function render(){const root=g('acRoot');if(!root)return;
   ${modal?`<div class="ac-modal" data-acclose="1"><div class="card"><div class="ps-eye">Connect Facebook</div><h2 class="ps-h">Add a Business Manager</h2>
     <p class="nt-hint" style="margin:0">Uses a <b>system user</b> token: the most stable way, it doesn't expire when someone logs out.</p>
     <ol class="ac-steps"><li>Open <a href="https://business.facebook.com/settings/system-users" target="_blank" rel="noopener">Business Settings → System users ↗</a> (in your Facebook browser).</li><li>Pick a system user (or <b>Add</b> one, role Admin) → <b>Assign assets</b> → tick the ad accounts → <b>Full control</b>.</li><li><b>Generate new token</b> → app: any of yours → tick <b>ads_read</b>, <b>ads_management</b>, <b>business_management</b> → Never expires → copy it.</li><li>Paste it below. It's stored on the server and never shown again.</li></ol>
-    <label class="nt-f">Name<input id="acName" maxlength="60" placeholder="e.g. Scale Calls BM"></label>
+    <label class="nt-f">Name<input id="acName" maxlength="60" placeholder="e.g. Scale Calls BM" value="${e(draft.name||'')}"></label>
     <label class="nt-f">Token<textarea id="acTok" rows="3" placeholder="EAAG…" autocomplete="off" spellcheck="false"></textarea></label>
     <div class="nt-row"><button type="button" class="nt-link" data-acclose="1">Cancel</button><span style="flex:1"></span><button type="button" class="nt-primary" data-ac="connect">${busy?'Checking with Facebook…':'Connect'}</button></div></div></div>`:''}`;}
 async function act(op,el){if(busy)return;try{
   if(op==='add'){modal=true;render();setTimeout(()=>g('acName')&&g('acName').focus(),30);return;}
   if(op==='remove'){if(el.dataset.sure!=='1'){el.dataset.sure='1';el.textContent='Click again to remove';return;}busy=true;A=await api({op:'remove',id:el.dataset.id});toast('Connection removed');}
   if(op==='refresh'){busy=true;render();A=await api({op:'refresh'});toast('Checked all connections');}
-  if(op==='connect'){busy=true;render();const j=await api({op:'connect',name:(g('acName')||{}).value||'',token:(g('acTok')||{}).value||''});A=j;modal=false;toast(`Connected: ${j.result.found} ad account${j.result.found===1?'':'s'} found`);}
+  if(op==='connect'){const nm=(g('acName')||{}).value||'',tk=(g('acTok')||{}).value||'';if(!tk.trim()){toast('Paste the token first.');return;}
+    draft={name:nm};busy=true;el.disabled=true;el.textContent='Checking with Facebook…';
+    const j=await api({op:'connect',name:nm,token:tk});A=j;modal=false;draft={};toast(`Connected: ${j.result.found} ad account${j.result.found===1?'':'s'} found`);}
   }catch(err){toast(err.message);}busy=false;render();}
 document.addEventListener('click',ev=>{const a=ev.target.closest('[data-ac]');if(a){act(a.dataset.ac,a);return;}const c=ev.target.closest('[data-acclose]');if(c&&(ev.target===c||c.tagName==='BUTTON')){modal=false;render();}});
 document.addEventListener('change',async ev=>{const s=ev.target.closest('[data-acmap]');if(!s)return;try{A=await api({op:'map',key:s.dataset.acmap,acct:s.value});toast('Saved. Numbers update at the next sync.');}catch(err){toast(err.message);}render();});
