@@ -603,3 +603,39 @@ def deliver(row, content, base):
 
 def fail(row, reason):
     db.q("update pages set status = 'failed', error = %s, finished_at = now() where id = %s", (str(reason)[:500], row['id']))
+
+
+def _bundle_urls(c):
+    o = (c or {}).get('offer') or {}
+    return [b.get('url') for b in (o.get('bundles') or c.get('bundles') or []) if isinstance(b, dict) and b.get('url')]
+
+
+def _swap_urls(obj, old, new):
+    if isinstance(obj, dict):
+        return {k: _swap_urls(v, old, new) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_swap_urls(v, old, new) for v in obj]
+    return new if isinstance(obj, str) and obj in old else obj
+
+
+def set_buy_link(row, url):
+    """Point every buy button (page A and a waiting/running version B) at one link, e.g. the ClickBank tracking link
+    (hoplink), so the network credits the affiliate. Each button keeps its own pack label."""
+    url = str(url or '').strip()
+    if not re.match(r'^https://[A-Za-z0-9.-]+(/[^\s"<>]*)?$', url) or len(url) > 600:
+        return {'ok': False, 'error': 'Paste the full link, starting with https://'}
+    c = row.get('content')
+    if not c:
+        return {'ok': False, 'error': 'This page has no content yet.'}
+    old = set(_bundle_urls(c))
+    t = row.get('test') or None
+    if t and t.get('b'):
+        old |= set(_bundle_urls(t['b']))
+    if not old:
+        return {'ok': False, 'error': 'This page has no buy buttons to change.'}
+    c2 = _swap_urls(c, old, url)
+    if t and t.get('b'):
+        t = {**t, 'b': _swap_urls(t['b'], old, url)}
+    db.q('update pages set content = %s, test = %s, updated_at = now() where id = %s', (db.J(c2), db.J(t) if t else None, row['id']))
+    log(row['id'], 'Buy buttons now go to ' + url.split('?')[0])
+    return {'ok': True, 'changed': len(old)}
