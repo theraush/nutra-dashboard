@@ -633,6 +633,9 @@ def set_buy_link(row, url):
     if not c:
         return {'ok': False, 'error': 'This page has no content yet.'}
     old = set(_bundle_urls(c))
+    src = str((row.get('input') or {}).get('url') or '')
+    if src.startswith('http') and 'hop.clickbank.net' not in src:
+        old.add(src)  # plain links to the seller's own sales page would skip the affiliate link
     t = row.get('test') or None
     if t and t.get('b'):
         old |= set(_bundle_urls(t['b']))
