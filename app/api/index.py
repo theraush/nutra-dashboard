@@ -4,7 +4,7 @@ from http.cookies import SimpleCookie
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
-from lib import db, auth, postback, sync, pages, images, advertorial, agent, infoad, history, abtest, heroes, notify, domainideas  # noqa: E402
+from lib import db, auth, postback, sync, pages, images, advertorial, agent, infoad, history, abtest, heroes, notify, domainideas, clickbank  # noqa: E402
 
 STATIC = os.path.join(ROOT, 'static')
 PATH_RE = re.compile(r'^[A-Za-z0-9_\-.~:@+]{1,200}/[A-Za-z0-9_\-.~:@+]{1,200}$')
@@ -578,7 +578,7 @@ def route(env):
                 return Resp(200, bytes(r['data']), r['mime'], [('Cache-Control', 'public, max-age=31536000, immutable')])
         if path in ('/favicon.ico', '/robots.txt'):
             return Resp(200 if path == '/robots.txt' else 404, 'User-agent: *\nAllow: /\n' if path == '/robots.txt' else '', 'text/plain')
-        if path not in ('/api/public/postback', '/api/public/jvzoo-postback', '/api/health'):
+        if path not in ('/api/public/postback', '/api/public/jvzoo-postback', '/api/public/clickbank', '/api/health'):
             return Resp(404, 'Not found', 'text/plain')
 
     if path == '/api/health':
@@ -590,6 +590,11 @@ def route(env):
 
     if path in ('/api/public/postback', '/api/public/jvzoo-postback'):
         status, out = postback.handle(p, 'jvzoo' if path.endswith('jvzoo-postback') else None)
+        return jresp(out, status)
+    if path == '/api/public/clickbank':
+        if method != 'POST':
+            return jresp({'ok': True, 'clickbank_ins': clickbank.configured(), 'how': 'ClickBank posts sales here (Instant Notification URL)'})
+        status, out = clickbank.handle(body)
         return jresp(out, status)
 
     if path == '/api/cron':
