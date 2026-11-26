@@ -12,10 +12,9 @@ BANNED = ('cure', 'heal', 'doctor', 'dr', 'clinic', 'pharma', 'rx', 'fda', 'medi
 
 PROMPT = """You name websites for affiliate advertorial pages. Suggest {n} .com domain names for the page below.
 
-The domain is the main site; this page will live on a subdomain of it (e.g. memory.example.com), and future pages for
-other health and wellness products (sleep, energy, joints, blood sugar…) will reuse the same domain on other subdomains.
-So the domain must sound like a calm, neutral health and lifestyle magazine or daily tips site for THIS audience, not like
-this one product.
+Each product gets its OWN domain, and this page will live on the bare domain (example.com). So the name should fit
+THIS page's topic and angle (memory, focus, sleep, energy…) while sounding like a calm, neutral health and lifestyle
+magazine or daily tips site for THIS audience, not like an ad or a brand.
 
 Rules:
 - 2 or 3 plain English words joined, letters only, no hyphens or numbers, 8 to 20 letters before .com, easy to say and spell.
@@ -23,13 +22,12 @@ Rules:
 - Never use: the product or brand name, any company or platform name, "doctor", "clinic", "cure", "heal", "rx", "pharmacy",
   "fda", disease names, "miracle", "guaranteed", or anything that promises a health result.
 - Avoid obvious one-word or very common combos that are surely taken; be a little creative so they are likely still free.
-- "sub": one short lowercase word for THIS page's subdomain that matches its topic (e.g. memory, focus, energy).
 - "why": max 12 words, plain English, why it fits.
 
 PAGE
 {page}
 
-Reply with ONLY a JSON array, no other text: [{{"domain":"…com","sub":"…","why":"…"}}, …]"""
+Reply with ONLY a JSON array, no other text: [{{"domain":"…com","why":"…"}}, …]"""
 
 
 def _page_facts(row):

@@ -2378,8 +2378,8 @@ function domainHtml(p){if(!canEdit&&!p.domain)return'';const d=p.domain,st=domSt
       <div class="dom-copy"><code>*.${e(root)}</code><button type="button" class="nt-second" data-copy="*.${e(root)}">Copy</button></div>
       <span class="nt-hint">The second one makes every future subdomain (like brain.${e(root)}, glp.${e(root)}) work with no extra steps.</span></li>
     <li><b>Here:</b> press <b>Check connection</b>. When it's green, use <code>https://${e(d)}/?utm_content={{ad.id}}</code> as the ad's website URL.</li></ol></details>`:'';
-  return`<section class="card nt-panel"><b>Your own domain</b><p class="nt-hint" style="margin:0">Show this page on your own Namecheap domain instead of nutra.palmtreemedia.co. Tip: use one neutral domain and give each page its own subdomain, e.g. <code>brain.yourdomain.com</code>.</p>
-    ${canEdit?`<div class="nt-row"><input id="domInput" class="dom-in" placeholder="brain.yourdomain.com" value="${e(d||'')}"><button type="button" class="nt-primary" data-dom="save">${d?'Change':'Save'}</button>${d?'<button type="button" class="nt-second" data-dom="check">Check connection</button><button type="button" class="nt-link nt-del" data-dom="clear">Remove</button>':''}</div>`:''}
+  return`<section class="card nt-panel"><b>Your own domain</b><p class="nt-hint" style="margin:0">Show this page on your own Namecheap domain instead of nutra.palmtreemedia.co. One domain per product: type it as is, e.g. <code>yourdomain.com</code>.</p>
+    ${canEdit?`<div class="nt-row"><input id="domInput" class="dom-in" placeholder="yourdomain.com" value="${e(d||'')}"><button type="button" class="nt-primary" data-dom="save">${d?'Change':'Save'}</button>${d?'<button type="button" class="nt-second" data-dom="check">Check connection</button><button type="button" class="nt-link nt-del" data-dom="clear">Remove</button>':''}</div>`:''}
     ${d?`<div>${status}${st.connected?` · <a href="https://${e(d)}" target="_blank" rel="noopener">https://${e(d)} ↗</a>`:''}</div>`:''}${steps}
     ${d&&!p.published?'<p class="nt-hint" style="margin:0">The domain shows the page only after you press <b>Publish</b>.</p>':''}${canEdit&&!d?domIdeasHtml(p):''}</section>`;}
 const domIdeas={};
@@ -2387,12 +2387,12 @@ function domIdeasHtml(p){const s=domIdeas[p.id];if(!s){domIdeas[p.id]={loading:t
   return`<div id="domIdeas">${domIdeasInner(p)}</div>`;}
 function domIdeasPaint(p){const b=g('domIdeas');if(b)b.innerHTML=domIdeasInner(p);}
 function domIdeasInner(p){const s=domIdeas[p.id]||{},list_=s.ideas;
-  const head=`<div class="di-head"><b>💡 Domains Claude suggests for this product</b><span class="nt-hint">Neutral "wellness magazine" names you can reuse for future products. Only names that are still free show up.</span></div>`;
+  const head=`<div class="di-head"><b>💡 Domains Claude suggests for this product</b><span class="nt-hint">Names that fit this product and sound like a calm wellness magazine. Only names that are still free show up.</span></div>`;
   if(s.loading&&!list_)return head+'<p class="nt-hint" style="margin:0">Loading…</p>';
   if(s.making)return head+`<div class="di-wait"><span class="nt-spin"></span>Claude is thinking up names and checking which ones are still free… (about 20 seconds)</div>`;
   if(!list_||!list_.length)return head+`${s.error?`<p class="hi-neg" style="margin:0">${e(s.error)}</p>`:''}<div class="nt-row"><button type="button" class="nt-primary" data-domidea="make">Suggest domains</button><span class="nt-hint">Free · about 20 seconds</span></div>`;
-  return head+`<ul class="di-list">${list_.map((x,i)=>{const full=x.sub+'.'+x.domain;return`<li${i===0?' class="best"':''}><div class="di-name"><b>${e(x.domain)}</b>${i===0?'<em class="di-pick">Top pick</em>':''}<span class="${x.free===true?'di-free':'di-unk'}">${x.free===true?'● Available':'● Check at Namecheap'}</span></div>
-    <span class="nt-hint">${e(x.why)} · this page: <code>${e(full)}</code></span>
+  return head+`<ul class="di-list">${list_.map((x,i)=>{const full=x.domain;return`<li${i===0?' class="best"':''}><div class="di-name"><b>${e(x.domain)}</b>${i===0?'<em class="di-pick">Top pick</em>':''}<span class="${x.free===true?'di-free':'di-unk'}">${x.free===true?'● Available':'● Check at Namecheap'}</span></div>
+    <span class="nt-hint">${e(x.why)}</span>
     <div class="nt-row"><a class="nt-primary di-buy" href="https://www.namecheap.com/domains/registration/results/?domain=${encodeURIComponent(x.domain)}" target="_blank" rel="noopener">Buy on Namecheap ↗</a><button type="button" class="nt-second" data-domuse="${e(full)}">I bought it: use ${e(full)}</button></div></li>`;}).join('')}</ul>
     <div class="nt-row"><button type="button" class="nt-second" data-domidea="make">Suggest other names</button><span class="nt-hint">Checked ${+s.checked||0} names, ${+s.taken||0} were already taken. Prices show on Namecheap (usually about $10 a year; skip any marked "Premium").</span></div>`;}
 async function domIdea(){const p=list.find(x=>x.id===openId);if(!p)return;const keep=(domIdeas[p.id]||{}).ideas;domIdeas[p.id]={making:true,ideas:keep};domIdeasPaint(p);
