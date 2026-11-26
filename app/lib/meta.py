@@ -1,5 +1,5 @@
 """Meta Marketing API (Graph API) calls with a system-user token in META_TOKEN."""
-import os, json, time, urllib.request, urllib.parse, urllib.error, datetime
+import os, json, time, urllib.request, urllib.parse, urllib.error, datetime, contextlib
 
 VER = os.environ.get('META_API_VERSION', 'v21.0')
 BASE = f'https://graph.facebook.com/{VER}/'
@@ -9,11 +9,60 @@ class MetaError(Exception):
     pass
 
 
+_TOK = None          # token picked for the account being worked on (see using())
+_MAP = {'at': 0, 'accts': {}, 'conns': {}}
+
+
 def token():
+    if _TOK:
+        return _TOK
     t = os.environ.get('META_TOKEN')
     if not t:
         raise MetaError('META_TOKEN is not set')
     return t
+
+
+def _acct_token(acct):
+    """Ad accounts can come from several Facebook connections (Ad accounts screen). Default: META_TOKEN."""
+    if not acct:
+        return None
+    if time.time() - _MAP['at'] > 60:
+        try:
+            from . import db
+            _MAP.update(at=time.time(), accts=db.kv_data('private/meta/accounts') or {}, conns=db.kv_data('private/meta/conns') or {})
+        except Exception:
+            pass
+    cid = _MAP['accts'].get(str(acct).replace('act_', ''))
+    c = _MAP['conns'].get(cid) if cid and cid != 'default' else None
+    return (c or {}).get('token') or None
+
+
+def forget_tokens():
+    _MAP['at'] = 0
+
+
+@contextlib.contextmanager
+def using(acct):
+    global _TOK
+    old = _TOK
+    _TOK = _acct_token(acct) or None
+    try:
+        yield
+    finally:
+        _TOK = old
+
+
+def accounts_for(tok):
+    """All ad accounts a token can see (for the Ad accounts screen)."""
+    global _TOK
+    old = _TOK
+    _TOK = tok
+    try:
+        rows = _pages('me/adaccounts', {'fields': 'name,account_id,account_status,currency,business{name}', 'limit': 200})
+    finally:
+        _TOK = old
+    return [{'id': r.get('account_id'), 'name': r.get('name') or r.get('account_id'), 'status': r.get('account_status'),
+             'currency': r.get('currency'), 'business': ((r.get('business') or {}).get('name'))} for r in rows]
 
 
 def _call(method, path, params=None, tries=3):
@@ -71,7 +120,7 @@ def act(acct):
     return a if a.startswith('act_') else 'act_' + a
 
 
-def account_daily(acct, since, until):
+def _account_daily(acct, since, until):
     rows = _pages(f'{act(acct)}/insights', {
         'level': 'account', 'time_increment': 1, 'limit': 500,
         'time_range': json.dumps({'since': since, 'until': until}),
@@ -80,7 +129,7 @@ def account_daily(acct, since, until):
              'clicks': int(r.get('inline_link_clicks') or 0), 'lpv': _lpv(r)} for r in rows]
 
 
-def ads_daily(acct, since, until):
+def _ads_daily(acct, since, until):
     rows = _pages(f'{act(acct)}/insights', {
         'level': 'ad', 'time_increment': 1, 'limit': 500,
         'time_range': json.dumps({'since': since, 'until': until}),
@@ -91,7 +140,7 @@ def ads_daily(acct, since, until):
              'impr': int(r.get('impressions') or 0), 'clicks': int(r.get('inline_link_clicks') or 0), 'lpv': _lpv(r)} for r in rows]
 
 
-def first_pixel(acct):
+def _first_pixel(acct):
     px = _call('GET', f'{act(acct)}/adspixels', {'fields': 'id', 'limit': 5}).get('data') or []
     return px[0]['id'] if px else None
 
@@ -109,7 +158,7 @@ def add_to_cart_daily(pixel_id, since):
     return [{'date': d, 'n': n} for d, n in sorted(days.items())]
 
 
-def active_campaigns(acct):
+def _active_campaigns(acct):
     return [c for c in _pages(f'{act(acct)}/campaigns', {'fields': 'id,name,effective_status', 'limit': 500})
             if c.get('effective_status') == 'ACTIVE']
 
@@ -119,3 +168,23 @@ def pause(entity_id):
     r = _call('POST', str(entity_id), {'status': 'PAUSED'}, tries=2)
     if not r.get('success', True):
         raise MetaError(f'pause of {entity_id} not confirmed')
+
+
+def account_daily(acct, *a):
+    with using(acct):
+        return _account_daily(acct, *a)
+
+
+def ads_daily(acct, *a):
+    with using(acct):
+        return _ads_daily(acct, *a)
+
+
+def first_pixel(acct, *a):
+    with using(acct):
+        return _first_pixel(acct, *a)
+
+
+def active_campaigns(acct, *a):
+    with using(acct):
+        return _active_campaigns(acct, *a)

@@ -37,6 +37,11 @@ https://nutra-dashboard-taupe.vercel.app). Pushing to `main` deploys automatical
   - **Page Studio** (Pages tab detail): one step per screen — Product, Audience, Write, Hero photo, Buy link, Domain, Go live, then
     Grow: Split test (what → B → check & start) and Results; live preview on the right. "Classic view" link keeps the old one-page view.
     New page = 3 steps (Product, Audience, Style & build). Endpoints: `/api/pages/<id>/audience`, `/buy_link`; public() has `headline`, `buy_url`.
+  - **Left sidebar** (Nov 2026, Zentra look): the old top bar is styled as a fixed left sidebar (≥861px) / bottom bar (phone).
+    Home = Overview. Pages lists pages; the open page's steps are nested under it (`window.psSteps`, `psGoExt`).
+  - `lib/accounts.py` — **Ad accounts**: extra Facebook connections (system-user tokens, kv `private/meta/conns`), account→connection
+    map (`private/meta/accounts`); `meta.using(acct)` picks the right token. Offer→account = `offers.ad_account_id`; page→offer =
+    `pages.offer_key` (studio step "Ad account", `/api/pages/<id>/offer`). API: `/api/accounts` (GET, POST op connect|remove|map|refresh).
   - `static/dashboard.html` — the page. `static/shim.js` gives it `window.claude.use('db'|'user')` backed by `/api/db`.
   - `app/README.md` — env vars and routes.
 - `dashboard.html` (repo root) — same page, used by the old Claude artifact. **After editing the page, copy it to

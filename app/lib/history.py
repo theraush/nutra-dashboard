@@ -59,7 +59,8 @@ def archive(key, reason, user):
     elif acct:
         try:
             for c in meta.active_campaigns(acct):
-                meta.pause(c['id'])
+                with meta.using(acct):
+                    meta.pause(c['id'])
                 paused.append(c['name'])
         except meta.MetaError as ex:
             pause_error = f'Meta did not confirm the pause ({ex}). Check Ads Manager.'

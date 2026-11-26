@@ -4,7 +4,7 @@ from http.cookies import SimpleCookie
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
-from lib import db, auth, postback, sync, pages, images, advertorial, agent, infoad, history, abtest, heroes, notify, domainideas, clickbank  # noqa: E402
+from lib import db, auth, postback, sync, pages, images, advertorial, agent, infoad, history, abtest, heroes, notify, domainideas, clickbank, accounts  # noqa: E402
 
 STATIC = os.path.join(ROOT, 'static')
 PATH_RE = re.compile(r'^[A-Za-z0-9_\-.~:@+]{1,200}/[A-Za-z0-9_\-.~:@+]{1,200}$')
@@ -129,7 +129,7 @@ def api_pages(env, path, method, p, user):
                'network': str(p.get('network') or '').strip()[:30], 'buy_links': lst('buy_links'), 'images': lst('images'),
                'notes': str(p.get('notes') or '').strip()[:3000], 'audience': pages.clean_audience(p.get('audience'))}
         return jresp({'ok': True, 'page': pages.public(pages.create(inp, user, base_url(env)))})
-    m = re.fullmatch(r'/api/pages/(pg_[A-Za-z0-9]{8,20})(?:/(status|changes|publish|delete|retry|stop|reopen|redo_images|dismiss|abtest|heroes|domain|domain_check|domain_ideas|buy_link|audience))?', path)
+    m = re.fullmatch(r'/api/pages/(pg_[A-Za-z0-9]{8,20})(?:/(status|changes|publish|delete|retry|stop|reopen|redo_images|dismiss|abtest|heroes|domain|domain_check|domain_ideas|buy_link|audience|offer))?', path)
     if not m:
         return jresp({'ok': False}, 404)
     row = pages.get(m.group(1))
@@ -181,6 +181,12 @@ def api_pages(env, path, method, p, user):
         return jresp({'ok': True, 'page': pages.public(pages.get(row['id']))})
     if act == 'domain_check':
         return jresp(pages.check_domain(row))
+    if act == 'offer':
+        accounts.setup()
+        r = accounts.create_offer(row, p.get('acct'), user, p.get('ids'))
+        if not r.get('ok'):
+            return jresp(r, 400)
+        return jresp({'ok': True, 'key': r['key'], 'page': pages.public(pages.get(row['id']))})
     if act == 'audience':
         r = pages.set_audience(row, p.get('audience'))
         if not r.get('ok'):
@@ -826,6 +832,28 @@ def route(env):
         if not user or user['role'] not in ('owner', 'editor'):
             return jresp({'ok': False}, 403)
         return jresp({'higgsfield': images.hf_check(), 'openai': bool(os.environ.get('OPENAI_API_KEY'))})
+    if path == '/api/accounts':
+        if not user or user['role'] not in ('owner', 'editor'):
+            return jresp({'ok': False, 'error': 'Editors only'}, 403)
+        accounts.setup()
+        if method == 'GET':
+            return jresp(accounts.view(fresh=p.get('fresh') == '1'))
+        if not same_origin(env):
+            return jresp({'ok': False}, 403)
+        op = str(p.get('op') or '')
+        if op == 'connect':
+            r = accounts.connect(p.get('name'), p.get('token'), user)
+        elif op == 'remove':
+            r = accounts.remove(str(p.get('id') or ''))
+        elif op == 'map':
+            r = accounts.map_offer(str(p.get('key') or ''), p.get('acct'))
+        elif op == 'refresh':
+            accounts.refresh(); r = {'ok': True}
+        else:
+            r = {'ok': False, 'error': 'unknown op'}
+        if not r.get('ok'):
+            return jresp(r, 400)
+        return jresp({**accounts.view(), 'result': r})
     if path == '/api/network-check':
         if not user or user['role'] not in ('owner', 'editor'):
             return jresp({'ok': False}, 403)

@@ -109,7 +109,8 @@ def _run(now, errors, done):
             m_ads[k] = None; errors.append(f'{k} Meta ads: {ex}')
         try:
             px = o['pixel_id'] or meta.first_pixel(o['ad_account_id'])
-            ofv[k] = meta.add_to_cart_daily(px, ofv_since) if px else None
+            with meta.using(o['ad_account_id']):
+                ofv[k] = meta.add_to_cart_daily(px, ofv_since) if px else None
         except meta.MetaError:
             ofv[k] = None
 
@@ -140,7 +141,9 @@ def _run(now, errors, done):
             names = []
             try:
                 for c in meta.active_campaigns(a['acct']):
-                    meta.pause(c['id']); names.append(c['name'])
+                    with meta.using(a['acct']):
+                        meta.pause(c['id'])
+                    names.append(c['name'])
                 db.q('update offers set autopaused_at = now() where key = %s', (k,))
                 db.q('insert into budget_events (product, event, detail, amount) values (%s,%s,%s,%s)',
                      (k, 'auto_paused', f"Paused {len(names)} campaign(s): {', '.join(names) or 'none active'} at ${a['spent']:,.2f} of ${a['budget']:,.0f}", a['spent']))
@@ -167,7 +170,8 @@ def _run(now, errors, done):
             logitem({**a, 'adName': 'Whole offer', 'rule': 'Do it for me', 'value': None}, 'refresh')
         elif kind == 'pause_ad':
             try:
-                meta.pause(a['adId'])
+                with meta.using(next((o['ad_account_id'] for o in offers if o['key'] == k), None)):
+                    meta.pause(a['adId'])
                 logitem(a, 'paused'); paused_ads += 1
                 pause_msgs.append(f"{a['adName']} ({a['detail']})")
                 ad = data['ads'].get(k, {}).get(a['adId'])

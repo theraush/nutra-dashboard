@@ -61,6 +61,7 @@ def public(row, full=False):
     bu = _bundle_urls(c) if isinstance(c, dict) else []
     out['buy_url'] = bu[0] if bu else ''
     out['buy_count'] = len(bu)
+    out['offer_key'] = row.get('offer_key')
     out.update(abtest.public(row))
     out.update(heroes.public(row))
     if full:
