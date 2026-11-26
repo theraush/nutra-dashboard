@@ -54,16 +54,28 @@ def handle(params, forced_network=None):
     if not hit and p('offer'):
         hit = next((o for o in offers if o['key'] == p('offer')), None)
     typ = p('type')
+    event = (p('event') or 'purchase').lower()[:30]
+    if network == 'clickbank':
+        # ClickBank S2S postback: {event_type} = order_impression | purchase | upsell | add_payment_info
+        cb = {'order_impression': 'initiated', 'purchase': 'purchase', 'upsell': 'purchase', 'sale': 'purchase', 'add_payment_info': None}
+        if event in cb:
+            if cb[event] is None:
+                return 200, {'ok': True, 'ignored': event}
+            typ = typ or ('UPSELL' if event == 'upsell' else 'SALE' if cb[event] == 'purchase' else None)
+            event = cb[event]
     raw = {k: str(v)[:500] for k, v in params.items() if k != 'key'}
     abtest.setup()
     tid, variant = abtest.parse_tid(p('tid'))
     utm_content, v2 = abtest.parse_tid(p('utm_content'))
     variant = variant or v2
+    ab = p('ab')
+    if ab and abtest.CODE_RE.match(ab):
+        variant = ab
     try:
         db.q("""insert into events (network, event, transaction_type, transaction_id, product_id, product_name, product_key, offer, pack,
                                     amount, commission, currency, tid, fbclid, utm_source, utm_campaign, utm_content, country, is_test, raw, variant)
                 values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
-             (network, (p('event') or 'purchase').lower()[:30], typ.upper() if typ else None, p('txn'), product_id, p('product_name'),
+             (network, event, typ.upper() if typ else None, p('txn'), product_id, p('product_name'),
               hit['key'] if hit else None, (hit['offer'] if hit else None) or 'Unknown', PACKS.get(product_id or ''),
               money(params.get('amount')), money(params.get('commission')), p('currency'), tid, p('fbclid'),
               p('utm_source'), p('utm_campaign'), utm_content, p('country'), p('test') == '1', db.J(raw), variant))
