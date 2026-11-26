@@ -791,6 +791,91 @@ body.noscroll{overflow:hidden;}
 @media(max-width:560px){#tab-settings{display:none;}}
 @media(max-width:430px){.nav-pill svg{display:none;}}
 .settings-btn.on{background:var(--fg);color:var(--surface);}
+
+/* ── Page Studio ── */
+.ps{display:flex;flex-direction:column;gap:16px}
+.ps-top{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.ps-title{display:flex;align-items:center;gap:10px;flex-wrap:wrap;min-width:0}.ps-title h1{margin:0;font-size:22px;letter-spacing:-.02em}
+.ps-open{display:inline-flex;align-items:center;text-decoration:none;min-height:40px}.ps-classic{font-size:13px}
+.ps-grid{display:grid;grid-template-columns:230px minmax(0,1fr) 360px;gap:20px;align-items:start}
+.ps-grid.ps-new{grid-template-columns:230px minmax(0,760px)}
+.ps-rail{position:sticky;top:76px;display:flex;flex-direction:column;gap:2px}
+.ps-rh{margin:14px 10px 6px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--fg3)}.ps-rh:first-child{margin-top:0}
+.ps-prog{margin:0 10px 4px;height:6px;border-radius:9px;background:var(--track);overflow:hidden}.ps-prog i{display:block;height:100%;background:var(--green);transition:width .4s}
+.ps-progt{margin:0 10px 10px;font-size:12px;color:var(--fg3)}
+.ps-st{display:flex;align-items:center;gap:11px;width:100%;text-align:left;border:0;background:none;padding:9px 10px;border-radius:12px;color:var(--fg2);font:inherit;font-weight:500;cursor:pointer}
+.ps-st:hover{background:var(--surface2)}
+.ps-n{width:26px;height:26px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:11px;font-weight:700;border:2px solid var(--border);background:var(--surface);color:var(--fg3)}
+.ps-st.done .ps-n{background:var(--green);border-color:var(--green);color:#fff}.ps-st.done .ps-n::after{content:"✓";font-size:12px}
+.ps-st.on{background:var(--accent-lt);color:var(--fg);font-weight:700}.ps-st.on .ps-n{border-color:var(--accent);color:var(--accent)}.ps-st.on.done .ps-n{color:#fff}
+.ps-l{display:flex;flex-direction:column;min-width:0;line-height:1.25}.ps-l small{font-size:12px;color:var(--fg3);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ps-live,.ps-rdy{margin-left:auto;font-style:normal;font-size:10px;font-weight:800;letter-spacing:.05em;padding:2px 7px;border-radius:999px;background:var(--green);color:#fff}.ps-rdy{background:var(--accent)}
+.ps-later{opacity:.55;cursor:default}.ps-later:hover{background:none}
+.ps-main{min-width:0;display:flex;flex-direction:column;gap:16px}
+.ps-card{padding:26px;display:flex;flex-direction:column;gap:12px}.ps-card.ps-slim{padding:18px 26px}
+.ps-eye{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.ps-h{margin:0;font-size:24px;line-height:1.2;letter-spacing:-.02em;text-wrap:balance}
+.ps-lead{margin:0;color:var(--fg2);max-width:64ch}
+.ps-foot{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px;padding-top:16px;border-top:1px solid var(--border)}
+.ps-card.ps-slim .ps-foot{margin-top:0;padding-top:0;border-top:0}
+.ps-facts{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.ps-fact,.ps-link,.ps-hl{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;min-width:0}
+.ps-fact small,.ps-link small,.ps-hl small{display:block;font-size:12px;font-weight:600;color:var(--fg3)}.ps-fact b{font-size:15px}
+.ps-link a{word-break:break-all}.ps-hl div{font-size:19px;font-weight:700;line-height:1.3;letter-spacing:-.01em}
+.ps-box{border:1px solid var(--border);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px;background:var(--surface2)}.ps-box.ps-warn{border-color:var(--amber);background:var(--amber-lt)}
+.ps-now{font-size:14px;color:var(--fg2);background:var(--surface2);border-radius:10px;padding:10px 12px}
+.ps-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.ps-opt{position:relative;display:flex;flex-direction:column;gap:3px;text-align:left;border:1.5px solid var(--border);background:var(--surface);border-radius:14px;padding:14px 16px;font:inherit;color:var(--fg);cursor:pointer;transition:border-color .15s,transform .15s}
+.ps-opt:hover{border-color:var(--fg3);transform:translateY(-1px)}.ps-opt span{font-size:13px;color:var(--fg2)}.ps-ic{font-size:22px;line-height:1.2}
+.ps-opt.sel,.ps-radio:has(input:checked){border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-lt)}
+.ps-opt.sel::after,.ps-radio:has(input:checked)::after{content:"✓";position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:50%;background:var(--accent);color:#fff;font-size:11px;font-weight:800;display:grid;place-items:center}
+.ps-radio input{position:absolute;opacity:0;pointer-events:none}
+.ps-ok,.ps-warnbar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;border-radius:12px;padding:12px 14px;font-size:14px;background:var(--green-lt)}.ps-ok b{color:var(--green)}.ps-ok code{font-size:13px;word-break:break-all}
+.ps-warnbar{background:var(--amber-lt)}.ps-warnbar b{color:var(--amber)}
+.ps-check{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
+.ps-check li{display:flex;align-items:center;gap:10px;color:var(--fg2)}.ps-check li::before{content:"";flex:none;width:20px;height:20px;border-radius:50%;border:2px solid var(--border)}
+.ps-check li.ok{color:var(--fg)}.ps-check li.ok::before{border:0;background:var(--green) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.5l2.5 2.5L12 5.5' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/14px no-repeat}
+.ps-golive{display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:14px;border:2px solid var(--border);margin-top:6px}.ps-golive.on{border-color:var(--green);background:var(--green-lt)}
+.ps-golive b{display:block;font-size:17px}.ps-golive span{font-size:13px;color:var(--fg2)}
+.ps-sw{width:58px;height:32px;border-radius:999px;background:var(--track);border:0;position:relative;transition:.2s;flex:none;cursor:pointer}.ps-sw::after{content:"";position:absolute;top:4px;left:4px;width:24px;height:24px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.ps-sw.on{background:var(--green)}.ps-sw.on::after{left:30px}.ps-sw:disabled{opacity:.4;cursor:default}
+.ps-chips{display:flex;gap:6px;flex-wrap:wrap}.ps-chips span{font-size:12px;font-weight:700;padding:5px 12px;border-radius:999px;background:var(--surface2);color:var(--fg3)}.ps-chips span.on{background:var(--accent);color:#fff}.ps-chips span.ok{background:var(--green-lt);color:var(--green)}
+.ps-pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.ps-ph{position:relative;border:0;padding:0;border-radius:12px;overflow:hidden;background:var(--surface2);cursor:pointer;outline:3px solid transparent;outline-offset:2px;text-align:left;font:inherit}
+.ps-ph img{display:block;width:100%;aspect-ratio:3/2;object-fit:cover}.ps-ph span{display:block;padding:6px 8px;font-size:12px;color:var(--fg2)}
+.ps-ph.sel{outline-color:var(--accent)}.ps-ph.sel::after{content:"B";position:absolute;top:8px;right:8px;width:24px;height:24px;border-radius:50%;background:var(--accent);color:#fff;font-weight:800;font-size:12px;display:grid;place-items:center}
+.ps-verdict{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:14px;background:var(--accent-lt)}.ps-verdict.win{background:var(--green-lt)}
+.ps-verdict b{display:block}.ps-verdict span{font-size:13px;color:var(--fg2)}.ps-big{font-size:28px!important;font-weight:800;color:var(--accent)!important;font-variant-numeric:tabular-nums}.ps-verdict.win .ps-big{color:var(--green)!important}
+.ps-meter{height:12px;border-radius:9px;background:var(--track);overflow:hidden;display:flex}.ps-meter i{display:block;height:100%;transition:width .5s}
+.ps-mlab{display:flex;justify-content:space-between;font-size:12px;color:var(--fg3);margin-top:-6px}
+.ps-abs{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ps-ab{border:1.5px solid var(--border);border-radius:14px;overflow:hidden}.ps-ab.win{border-color:var(--green)}
+.ps-abh{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--border);font-weight:700}
+.ps-lead-tag{font-style:normal;font-size:11px;font-weight:800;padding:2px 8px;border-radius:999px;background:var(--green-lt);color:var(--green)}
+.ps-abg{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px}.ps-abg small{display:block;font-size:12px;color:var(--fg3)}.ps-abg b{font-size:20px;font-variant-numeric:tabular-nums}.ps-abg small.ps-in{display:inline}
+.ps-past{display:flex;flex-direction:column;gap:4px;font-size:14px;border-top:1px solid var(--border);padding-top:12px}
+.ps-pv{position:sticky;top:76px;display:flex;flex-direction:column;gap:10px}
+.ps-pvh{display:flex;align-items:center;justify-content:space-between}.ps-pvh b{font-size:13px;color:var(--fg2)}
+.ps-seg{display:inline-flex;background:var(--surface2);border-radius:10px;padding:3px;gap:3px}.ps-seg button{border:0;background:none;padding:6px 12px;border-radius:8px;font:inherit;font-size:13px;font-weight:600;color:var(--fg2);cursor:pointer}
+.ps-seg button.on{background:var(--surface);color:var(--fg);box-shadow:var(--sh)}
+.ps-frame{--k:.28;position:relative;width:100%;height:560px;border:1px solid var(--border);border-radius:16px;overflow:hidden;background:#fff;box-shadow:var(--sh)}
+.ps-frame iframe{position:absolute;top:0;left:0;width:1280px;height:calc(560px / var(--k));border:0;transform:scale(var(--k));transform-origin:0 0}
+.ps-frame.phone{width:300px;margin:0 auto;height:600px;border:8px solid #111;border-radius:34px}
+.ps-frame.phone iframe{width:390px;height:calc(584px / var(--k))}
+.ps-frame.empty::after{content:"The preview appears when the page is written";position:absolute;inset:0;display:grid;place-items:center;color:#888;font-size:13px;padding:20px;text-align:center}
+.ps-pvlink{font-size:13px;text-align:center}
+.ps-danger summary{font-size:13px}
+[data-nf]{display:flex;flex-direction:column;gap:14px}[data-nf][hidden]{display:none}
+.ps .pg-audn{width:100%;padding:11px 12px;border:1px solid var(--border);border-radius:10px;font:inherit;font-size:14px;background:var(--surface);color:var(--fg)}
+.ps .pg-aud{margin:0}
+@media (max-width:1240px){.ps-grid{grid-template-columns:210px minmax(0,1fr)}.ps-pv{display:none}}
+@media (max-width:760px){
+  .ps-grid,.ps-grid.ps-new{grid-template-columns:1fr;gap:12px}
+  .ps-rail{position:static;flex-direction:row;overflow-x:auto;gap:6px;padding-bottom:4px;scrollbar-width:none}.ps-rail::-webkit-scrollbar{display:none}
+  .ps-rh,.ps-prog,.ps-progt,.ps-later{display:none}
+  .ps-st{flex:none;width:auto;padding:7px 12px 7px 8px;border:1px solid var(--border);background:var(--surface)}.ps-l small{display:none}
+  .ps-card{padding:18px}.ps-card.ps-slim{padding:14px 18px}.ps-h{font-size:21px}.ps-abs{grid-template-columns:1fr}.ps-classic{display:none}
+}
 </style>
 
 <div id="toast" role="status" aria-live="polite"></div>
@@ -2279,27 +2364,6 @@ const AUD_PRESETS=[{label:'Women 55–70 · US',gender:'women',age:'55-70',count
   {label:'Custom',gender:'',age:'',country:'',notes:''}];
 function setAud(i){const f=g('pgForm'),a=AUD_PRESETS[i];if(!f||!a)return;document.querySelectorAll('[data-aud]').forEach(b=>b.classList.toggle('on',+b.dataset.aud===i));
   if(a.gender){f.elements.aud_gender.value=a.gender;f.elements.aud_age.value=a.age;f.elements.aud_country.value=a.country;f.elements.aud_notes.value=a.notes;}else{f.elements.aud_notes.value='';f.elements.aud_notes.focus();}f.dataset.preset=a.label;}
-function formHtml(){return`<div class="nt-head"><button type="button" class="nt-link" data-pgback>← All pages</button><div style="flex:1 1 260px;min-width:0"><h1>Build a new page</h1><div class="nt-sub">Claude researches the product, writes the story, makes the images and builds the page. About 20 minutes; you can close this tab.</div></div></div>
-  <form class="card nt-panel" id="pgForm" autocomplete="off">
-  <fieldset class="pg-kinds"><legend class="nt-f" style="padding:0">Page type</legend>
-    <label class="pg-kind"><input type="radio" name="kind" value="info" checked><span><b>Information advertorial</b> <em class="pg-default">default</em><small>Editors' explainer with animated drawings (like v4 / Hyros). About 15 min.</small> <a href="/demo/info-advertorial-v4" target="_blank" rel="noopener">See example ↗</a></span></label>
-    <label class="pg-kind"><input type="radio" name="kind" value="advertorial"><span><b>Story advertorial</b><small>A reader's story, magazine style, with AI photos. About 20 min.</small></span></label>
-  </fieldset>
-  <label class="nt-f">Product link * <span class="nt-hint">sales page, VSL or your affiliate checkout link</span><input type="url" name="url" required placeholder="https://…"></label>
-  <div class="nt-g2"><label class="nt-f">Product name <span class="nt-hint">optional</span><input name="name" placeholder="e.g. CardioFlush LT"></label>
-  <label class="nt-f">Network<select name="network"><option value="jvzoo">JVZoo</option><option value="clickbank">ClickBank</option><option value="digistore">Digistore24</option><option value="buygoods">BuyGoods</option><option value="wealthpay">WealthPay</option><option value="other">Other</option></select></label></div>
-  <div class="nt-f">Audience <span class="nt-hint">who your ads target; the photos and copy are made for them</span>
-    <div class="pg-aud" id="pgAud">${AUD_PRESETS.map((a,i)=>`<button type="button" class="pg-audp${i===0?' on':''}" data-aud="${i}">${e(a.label)}</button>`).join('')}</div>
-    <div class="nt-g3"><label class="nt-f">Gender<select name="aud_gender"><option value="women">Women</option><option value="men">Men</option><option value="both">Both</option></select></label>
-    <label class="nt-f">Age<select name="aud_age">${['25-34','35-44','45-54','45-64','55-64','55-70','60-75','65+'].map(x=>`<option${x==='55-70'?' selected':''}>${x}</option>`).join('')}</select></label>
-    <label class="nt-f">Country<select name="aud_country">${['United States','Canada','United Kingdom','Australia','Germany','Other'].map(x=>`<option>${x}</option>`).join('')}</select></label></div>
-    <input name="aud_notes" class="pg-audn" placeholder="More about them (optional), e.g. retired, suburbs, grandkids, likes walking" maxlength="600"></div>
-  <label class="nt-f">Affiliate buy links per bundle <span class="nt-hint">optional, one per line; leave empty if the link above is your affiliate link</span><textarea name="buy" rows="3"></textarea></label>
-  <div class="nt-f">Product images <span class="nt-hint">optional; the product photo first</span>
-    <div class="nt-drop"><label class="nt-second nt-filebtn">Upload images<input type="file" id="pgFiles" accept="image/jpeg,image/png,image/webp" multiple hidden></label><span class="nt-hint">JPG, PNG or WebP, up to 10</span></div>
-    <div class="nt-thumbs" id="pgThumbs"></div></div>
-  <label class="nt-f">Notes for Claude <span class="nt-hint">optional: audience, angle, claims to avoid</span><textarea name="notes" rows="2"></textarea></label>
-  <div class="nt-row"><button type="submit" class="nt-primary">Build page</button><span class="nt-hint">You can close this tab while Claude works</span></div></form>`;}
 function thumbs(){const b=g('pgThumbs');if(!b)return;b.innerHTML=ups.map((u,i)=>u.url?`<span class="nt-thumb"><img src="${e(u.url)}" alt="Upload ${i+1}"><button type="button" data-unpg="${i}" aria-label="Remove image">×</button></span>`:`<span class="nt-thumb nt-busy">${u.err?e(u.err):'Uploading…'}</span>`).join('');}
 async function shrinkImg(file){if(file.size<=3500000)return file;const bmp=await createImageBitmap(file),k=Math.min(1,2000/Math.max(bmp.width,bmp.height)),c=document.createElement('canvas');
   c.width=Math.round(bmp.width*k);c.height=Math.round(bmp.height*k);c.getContext('2d').drawImage(bmp,0,0,c.width,c.height);return new Promise(r=>c.toBlob(r,'image/jpeg',.88));}
@@ -2429,7 +2493,7 @@ function abHtml(p){if(!canEdit&&!p.test&&!(p.tests_done||[]).length)return'';con
     ${canEdit?`<div class="nt-row"><button type="button" class="nt-second" data-ab="pick" data-w="A">Keep A</button><button type="button" class="nt-second" data-ab="pick" data-w="B">Pick B</button>
       <label class="ab-auto" style="margin:0"><input type="checkbox" id="abAutoRun"${t.auto?' checked':''}> Auto-pick winner</label></div>`:''}`;}
   return`<section class="card nt-panel"><b>A/B test the copy</b>${body}${past}</section>`;}
-function detailHtml(p){const head=`<div class="nt-head"><button type="button" class="nt-link" data-pgback>← All pages</button><div style="flex:1 1 260px;min-width:0"><h1>${e(p.name||p.input.name||'New page')}</h1>
+function detailHtml(p){const head=`<div class="nt-head"><button type="button" class="nt-link" data-pgback>← All pages</button><button type="button" class="nt-link" data-psstudio>✨ Studio view</button><div style="flex:1 1 260px;min-width:0"><h1>${e(p.name||p.input.name||'New page')}</h1>
   <div class="nt-sub"><a href="${e(p.input.url)}" target="_blank" rel="noopener">${e(p.input.url)}</a>${p.input.audience?` · Audience: ${e([({women:'Women',men:'Men',both:'Men & women'})[p.input.audience.gender]||'',p.input.audience.age,p.input.audience.country].filter(Boolean).join(' '))}`:''}</div></div>${chip(p)}</div>`;
   const url=p.domain&&(domState[p.id]||{}).connected?'https://'+p.domain+'/':location.origin+'/p/'+p.slug;
   if(p.status==='building'){const ph=p.phases||[],i=Math.max(0,ph.findIndex(x=>x.id===p.phase)),m=left(p),at=new Date(Date.now()+m*60000);
@@ -2457,10 +2521,179 @@ function detailHtml(p){const head=`<div class="nt-head"><button type="button" cl
     ${abHtml(p)}
     ${canEdit?`<section class="card nt-panel"><b>Request changes</b><textarea id="pgChanges" rows="3" placeholder="e.g. Make the headline about memory, shorter opening, use the second uploaded photo as hero"></textarea>
     <div class="nt-row"><button type="button" class="nt-primary" data-pgact="changes">Send changes</button><span class="nt-hint">Claude updates the page in about 7 minutes.</span><span style="flex:1"></span><button type="button" class="nt-link nt-del" data-pgact="delete">Delete page</button></div></section>`:''}`;}
+// ── Page Studio: one step per screen (build steps + grow), live preview on the right ──
+let classic=false,nfStep=1;const stepOf={},testDraft={};
+const PS_BUILD=[['product','Product','What we\'re selling'],['audience','Audience','Who it\'s for'],['write','Write','Headline and copy'],['photo','Hero photo','The top photo'],['link','Buy link','Your affiliate link'],['domain','Domain','Your own address'],['publish','Go live','Final check']];
+const PS_WHAT=[['angle','✍️','Headline','The first line people read. Biggest lever.'],['photo','🖼️','Top photo','Same words, different photo.'],['intro','📖','Opening','The first paragraphs under the photo.'],['offer','💲','Offer','How the price and bundles are pitched.'],['hormozi','🔥','Hormozi offer','Value math, guarantee, "the obvious pick".'],['length','✂️','Shorter page','Same story, tighter.']];
+const NET_NAME={jvzoo:'JVZoo',clickbank:'ClickBank',digistore:'Digistore24',buygoods:'BuyGoods',wealthpay:'WealthPay',other:'Other'};
+function psDone(p,k){switch(k){case'product':return!!p.has_content;case'audience':return!!(p.input&&p.input.audience);case'write':return!!p.has_content&&p.status!=='building'&&p.status!=='failed';
+  case'photo':return!!p.hero_image;case'link':return!!p.buy_url;case'domain':return!!p.domain;case'publish':return!!p.published;}return false;}
+function psDefault(p){if(p.status==='building'||p.status==='failed')return'write';if(p.test&&p.test.state==='running')return'results';const n=PS_BUILD.find(b=>!psDone(p,b[0]));return n?n[0]:'publish';}
+function psStep(p){return stepOf[p.id]||(stepOf[p.id]=psDefault(p));}
+function audLabel(a){if(!a)return'';return[({women:'Women',men:'Men',both:'Men & women'})[a.gender]||'',a.age,a.country].filter(Boolean).join(' · ');}
+function psShell(p){return`<div class="ps" id="psShell" data-id="${e(p.id)}"><div class="ps-top" id="psTop"></div><div class="ps-grid"><nav class="ps-rail" id="psRail" aria-label="Steps"></nav><div class="ps-main" id="psMain"></div>
+  <aside class="ps-pv" id="psPv"><div class="ps-pvh"><b>Preview</b><div class="ps-seg"><button type="button" data-pspv="desktop">Desktop</button><button type="button" data-pspv="phone">Phone</button></div></div>
+  <div class="ps-frame" id="psFrame"><iframe title="Page preview" loading="lazy"></iframe></div><a class="ps-pvlink" id="psPvLink" target="_blank" rel="noopener">Open the full page ↗</a></aside></div></div>`;}
+function psTop(p){return`<button type="button" class="nt-link" data-pgback>← All pages</button><div class="ps-title"><h1>${e(p.name||p.input.name||'New page')}</h1>${chip(p)}</div><span style="flex:1"></span>
+  <a class="nt-second ps-open" href="/p/${e(p.slug)}" target="_blank" rel="noopener">Open page ↗</a><button type="button" class="nt-link ps-classic" data-psclassic>Classic view</button>`;}
+function psRail(p){const s=psStep(p),n=PS_BUILD.filter(b=>psDone(p,b[0])).length,t=p.test||{};
+  const it=(k,l,sub,i,done,badge)=>`<button type="button" class="ps-st${s===k?' on':''}${done?' done':''}" data-ps="${k}"${s===k?' aria-current="step"':''}><span class="ps-n">${done?'':i}</span><span class="ps-l">${l}<small>${sub}</small></span>${badge||''}</button>`;
+  const tsub=({running:'Running now',ready:'B is ready',building:'Writing B…',failed:'Needs a look'})[t.state]||'A vs B';
+  const rsub=t.state==='running'&&t.results&&t.results.leader?t.results.leader+' is ahead':'Who\'s winning';
+  return`<div class="ps-rh">Build the page</div><div class="ps-prog"><i style="width:${n/PS_BUILD.length*100}%"></i></div><div class="ps-progt">${n} of ${PS_BUILD.length} done</div>`
+    +PS_BUILD.map((b,i)=>it(b[0],b[1],b[2],i+1,psDone(p,b[0]))).join('')
+    +`<div class="ps-rh">Grow</div>`+it('test','Split test',tsub,'A/B',false,t.state==='running'?'<em class="ps-live">LIVE</em>':t.state==='ready'?'<em class="ps-rdy">READY</em>':'')
+    +it('results','Results',rsub,'%',false);}
+function psHead(k,title,lead){const i=PS_BUILD.findIndex(b=>b[0]===k);return`<div class="ps-eye">${i>=0?`Step ${i+1} of ${PS_BUILD.length}`:'Grow'}</div><h2 class="ps-h">${title}</h2>${lead?`<p class="ps-lead">${lead}</p>`:''}`;}
+function psFoot(k){const all=PS_BUILD.map(b=>b[0]),i=all.indexOf(k),prev=all[i-1],next=all[i+1];
+  return`<div class="ps-foot">${prev?`<button type="button" class="nt-link" data-ps="${prev}">← Back</button>`:''}<span style="flex:1"></span>${next?`<button type="button" class="nt-primary" data-ps="${next}">Next: ${PS_BUILD[i+1][1]} →</button>`:k==='publish'?'<button type="button" class="nt-primary" data-ps="test">Next: grow it with a split test →</button>':''}</div>`;}
+function buildingHtml(p){const ph=p.phases||[],i=Math.max(0,ph.findIndex(x=>x.id===p.phase)),m=left(p),at=new Date(Date.now()+m*60000);
+  if(p.has_content&&p.phase==='checking')return`<div class="ps-box"><div class="ps-eye" style="color:var(--accent)">Almost done</div><div class="pg-count">~1 min <small>Claude is doing a final check</small></div><p class="nt-hint" style="margin:0">The page is built. <a href="/p/${e(p.slug)}" target="_blank" rel="noopener">Peek at it ↗</a></p></div>`;
+  return`<div class="ps-box"><div class="ps-eye" style="color:var(--accent)">${p.revisions?'Making your changes':'Claude is building your page'}</div><div class="pg-count">~${m} min <small>left · ready around ${at.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</small></div>
+    <ol class="pg-steps">${ph.map((x,k)=>`<li class="${k<i?'done':k===i?'on':''}"><span class="pg-dot">${k<i?'✓':k+1}</span>${e(x.label)}</li>`).join('')}</ol>
+    <p class="nt-hint" style="margin:0">You can close this tab. Everything appears here when it's ready.</p>${canEdit?'<div class="nt-row"><button type="button" class="nt-link nt-del" data-pgact="stop">Stop this build</button></div>':''}</div>
+    <details class="pg-sum"><summary>What Claude is doing</summary><div class="pg-log">${(p.log||[]).slice().reverse().map(l=>`<div>${new Date(l.at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})} · ${e(l.text)}</div>`).join('')||'<div>Starting…</div>'}</div></details>`;}
+function failedHtml(p){return`<div class="ps-box ps-warn"><div class="ps-eye" style="color:var(--amber)">The build stopped</div><p style="margin:0;font-weight:600">${e(p.error||'The build stopped. Press Try again.')}</p>
+  ${p.has_content?'<p class="nt-hint" style="margin:0">An earlier version of the page exists. You can open it, or start over.</p>':''}${p.summary?`<details class="pg-sum"><summary>What Claude said</summary><p>${e(p.summary)}</p></details>`:''}
+  ${canEdit?`<div class="nt-row">${p.has_content?'<button type="button" class="nt-primary" data-pgact="reopen">Open the page</button><button type="button" class="nt-second" data-pgact="retry">Start over</button>':'<button type="button" class="nt-primary" data-pgact="retry">Try again</button>'}<button type="button" class="nt-link nt-del" data-pgact="delete">Delete</button></div>`:''}</div>`;}
+function psCheck(items){return`<ul class="ps-check">${items.map(([ok,t,k])=>`<li class="${ok?'ok':''}">${k&&!ok?`<button type="button" class="nt-link" data-ps="${k}">${t} →</button>`:t}</li>`).join('')}</ul>`;}
+const PS={
+product:p=>{const i=p.input||{};return`<section class="card ps-card">${psHead('product','What we\'re selling','Claude read the sales page, the checkout and the fine print, so the page gets the facts right.')}
+  <div class="ps-facts"><div class="ps-fact"><small>Product</small><b>${e(p.name||i.name||'—')}</b></div><div class="ps-fact"><small>Network</small><b>${e(NET_NAME[i.network]||i.network||'—')}</b></div><div class="ps-fact"><small>Page type</small><b>${p.kind==='info'?'Information advertorial':'Story advertorial'}</b></div></div>
+  <div class="ps-link"><small>Sales page</small><a href="${e(i.url)}" target="_blank" rel="noopener">${e(i.url)}</a></div>
+  ${p.status==='building'?buildingHtml(p):p.status==='failed'?failedHtml(p):''}${psFoot('product')}</section>${p.status==='building'||p.status==='failed'?'':notesHtml(p)}`;},
+audience:p=>{const a=(p.input||{}).audience||{},pi=AUD_PRESETS.findIndex(x=>x.label===a.preset);
+  return`<section class="card ps-card">${psHead('audience','Who is this page for?','The photos, words and examples speak to these people. Changing it here applies to new photos and new versions of the page.')}
+  ${a.gender||a.notes?`<div class="ps-now">Now: <b>${e(audLabel(a)||'Custom')}</b>${a.notes?` · ${e(a.notes)}`:''}</div>`:''}
+  <div class="ps-cards">${AUD_PRESETS.map((x,i)=>`<button type="button" class="ps-opt${i===pi?' sel':''}" data-psaudp="${i}"><b>${e(x.label)}</b><span>${e(x.notes||'Describe your own')}</span></button>`).join('')}</div>
+  ${canEdit?`<div class="nt-g3" style="margin-top:14px"><label class="nt-f">Gender<select id="psAudG">${[['women','Women'],['men','Men'],['both','Both']].map(([v,l])=>`<option value="${v}"${a.gender===v?' selected':''}>${l}</option>`).join('')}</select></label>
+  <label class="nt-f">Age<select id="psAudA">${['25-34','35-44','45-54','45-64','55-64','55-70','60-75','65+'].map(x=>`<option${(a.age||'55-70')===x?' selected':''}>${x}</option>`).join('')}</select></label>
+  <label class="nt-f">Country<select id="psAudC">${['United States','Canada','United Kingdom','Australia','Germany','Other'].map(x=>`<option${(a.country||'United States')===x?' selected':''}>${x}</option>`).join('')}</select></label></div>
+  <label class="nt-f" style="margin-top:10px">More about them <span class="nt-hint">optional</span><input id="psAudN" maxlength="600" value="${e(a.notes||'')}" placeholder="e.g. retired, suburbs, grandkids, worried about forgetting names"></label>
+  <div class="nt-row" style="margin-top:12px"><button type="button" class="nt-second" data-psaud="${pi}">Save audience</button></div>`:''}${psFoot('audience')}</section>`;},
+write:p=>{if(p.status==='building')return`<section class="card ps-card">${psHead('write','Claude is writing your page','')}${buildingHtml(p)}${psFoot('write')}</section>`;
+  if(p.status==='failed')return`<section class="card ps-card">${psHead('write','Write the page','')}${failedHtml(p)}${psFoot('write')}</section>`;
+  return`<section class="card ps-card">${psHead('write','The headline and copy','This is what people read first. Want something different? Tell Claude below.')}
+  <div class="ps-hl"><small>Headline</small><div>${e(p.headline||'—')}</div></div>
+  <div class="nt-row"><a class="nt-second ps-open" href="/p/${e(p.slug)}" target="_blank" rel="noopener">Read the full page ↗</a></div>
+  ${canEdit?`<label class="nt-f" style="margin-top:16px">Request changes <span class="nt-hint">Claude updates the page in about 7 minutes</span><textarea id="pgChanges" rows="3" placeholder="e.g. Shorter opening, mention forgetting names, use the second uploaded photo"></textarea></label>
+  <div class="nt-row"><button type="button" class="nt-primary" data-pgact="changes">Send changes</button></div>
+  <details class="pg-sum ps-danger"><summary>More options</summary><div class="nt-row"><button type="button" class="nt-second" data-pgact="retry">Rebuild from scratch</button><button type="button" class="nt-link nt-del" data-pgact="delete">Delete page</button></div></details>`:''}${psFoot('write')}</section>${notesHtml(p)}`;},
+photo:p=>`<section class="card ps-card ps-slim">${psHead('photo','Pick the top photo','The first thing people see. Click <b>Use this</b> to put a photo on the page, or describe what you want and make more.')}</section>${p.has_content?heroHtml(p):'<section class="card ps-card"><p class="nt-hint" style="margin:0">Photos can be made once the page is written.</p></section>'}<section class="card ps-card ps-slim">${psFoot('photo')}</section>`,
+link:p=>{let host='';try{host=p.buy_url?new URL(p.buy_url).hostname:'';}catch(err){}const cb=/clickbank\.net$/.test(host),net=(p.input||{}).network;
+  return`<section class="card ps-card">${psHead('link','Where the buy buttons go','Every sale has to be credited to you. Paste your affiliate link and all buy buttons use it, on version A and B. Ad and A/B tracking are added automatically.')}
+  ${p.buy_url?`<div class="ps-ok"><b>✓ ${p.buy_count||''} buy button${p.buy_count===1?'':'s'} go to</b> <code>${e(host)}</code>${cb&&/hop\.clickbank/.test(host)?' · your ClickBank tracking link':''}</div>`:'<div class="ps-warnbar"><b>No buy link yet.</b> Paste your affiliate link below.</div>'}
+  ${canEdit&&p.has_content?`<label class="nt-f" style="margin-top:14px">${net==='clickbank'?'ClickBank HopLink <span class="nt-hint">ClickBank → Affiliate Link Tools</span>':'Affiliate link'}<div class="nt-row"><input id="buyLink" class="dom-in" placeholder="${net==='clickbank'?'https://xxxx.hop.clickbank.net':'https://…'}"><button type="button" class="nt-primary" data-buylink="1">Use this link</button></div></label>`:''}
+  <p class="nt-hint" style="margin:12px 0 0">Sales come back to the dashboard through the network's postback (Settings → Networks).</p>${psFoot('link')}</section>`;},
+domain:p=>`<section class="card ps-card ps-slim">${psHead('domain','Your own address','One domain per product. Buy it, point it here, done.')}</section>${domainHtml(p)}<section class="card ps-card ps-slim">${psFoot('domain')}</section>`,
+publish:p=>{const st=domState[p.id]||{},url=p.domain?'https://'+p.domain+'/':location.origin+'/p/'+p.slug,ad=url+'?utm_content={{ad.id}}';
+  return`<section class="card ps-card">${psHead('publish',p.published?'Your page is live':'Ready to go live?',p.published?'Anyone with the link sees the page. Use the ad link below.':'Check the list, then switch it on.')}
+  ${psCheck([[psDone(p,'write'),'Page written','write'],[!!p.hero_image,'Top photo picked','photo'],[!!p.buy_url,'Buy buttons use your affiliate link','link'],[!!p.domain,p.domain?'Domain: '+p.domain+(st.connected?' (connected)':''):'Own domain (optional)','domain']])}
+  ${canEdit?`<div class="ps-golive${p.published?' on':''}"><button type="button" class="ps-sw${p.published?' on':''}" data-pgact="${p.published?'unpublish':'publish'}" aria-label="${p.published?'Unpublish':'Publish'}"${p.has_content?'':' disabled'}></button><div><b>${p.published?'Live':'Not live'}</b><span>${p.published?'Click to take it offline':'Click to publish'}</span></div></div>`:''}
+  <label class="nt-f" style="margin-top:16px">Your ad link <span class="nt-hint">use it as the ad's website URL</span><div class="pg-link"><code>${e(ad)}</code><button type="button" class="nt-second" data-copy="${e(ad)}">Copy</button></div></label>${psFoot('publish')}</section>`;},
+test:p=>{const t=p.test;
+  if(t)return`<section class="card ps-card ps-slim">${psHead('test',t.state==='running'?'A test is running':'Split test',t.state==='running'?'Half your visitors see A, half see B. Watch it in <b>Results</b>.':'')}${t.state==='running'?'<div class="nt-row"><button type="button" class="nt-primary" data-ps="results">See results →</button></div>':''}</section>${abHtml(p)}`;
+  if(!canEdit)return`<section class="card ps-card">${psHead('test','Split test','No test running.')}</section>`;
+  const d=testDraft[p.id]||(testDraft[p.id]={what:'angle',stage:0,photo:'',note:''}),w=PS_WHAT.find(x=>x[0]===d.what);
+  const chips=`<div class="ps-chips">${['1 · What to test','2 · Version B','3 · Check & start'].map((x,i)=>`<span class="${i===d.stage?'on':i<d.stage?'ok':''}">${x}</span>`).join('')}</div>`;
+  if(d.stage===0)return`<section class="card ps-card">${psHead('test','What do you want to test?','Test one thing at a time, so you know what made the difference.')}${chips}
+    <div class="ps-cards">${PS_WHAT.map(x=>`<button type="button" class="ps-opt${d.what===x[0]?' sel':''}" data-pstw="${x[0]}"><span class="ps-ic">${x[1]}</span><b>${x[2]}</b><span>${x[3]}</span></button>`).join('')}</div>
+    <div class="ps-foot"><span style="flex:1"></span><button type="button" class="nt-primary" data-psstage="1"${p.has_content&&p.status!=='building'?'':' disabled'}>Next →</button></div></section>`;
+  const opts=(p.hero_options||[]).filter(x=>x.url!==p.hero_image).slice().reverse();
+  return`<section class="card ps-card">${psHead('test',d.what==='photo'?'Pick the photo for version B':d.what==='angle'?'The headline for version B':'What should B try?','Version A stays exactly as it is. Half your visitors will see B.')}${chips}
+    ${d.what==='photo'?(opts.length?`<div class="ps-pick">${opts.map(x=>`<button type="button" class="ps-ph${d.photo===x.id?' sel':''}" data-pstp="${e(x.id)}"><img src="${e(x.url)}" alt="" loading="lazy"><span>${e([x.place,x.moment].filter(Boolean).join(' · '))}</span></button>`).join('')}</div>`
+      :'<p class="nt-hint">No other photos yet. Make some in <button type="button" class="nt-link" data-ps="photo">Hero photo →</button></p>')
+    :`<label class="nt-f">${d.what==='angle'?'Your headline for B <span class="nt-hint">optional; leave empty and Claude writes a new one</span>':'Your idea for B <span class="nt-hint">optional</span>'}<textarea id="psNote" rows="3" maxlength="500" placeholder="${d.what==='angle'?'e.g. Forgetting names lately? It\'s usually not your memory. It\'s your mornings.':'e.g. lead with the 60-day return policy'}">${e(d.note||'')}</textarea></label>`}
+    <div class="ps-foot"><button type="button" class="nt-link" data-psstage="0">← Back</button><span style="flex:1"></span><button type="button" class="nt-primary" data-psmake${d.what==='photo'&&!d.photo?' disabled':''}>${d.what==='photo'?'Make version B':'Have Claude write B'} →</button></div>
+    ${d.what!=='photo'?'<p class="nt-hint" style="margin:8px 0 0;text-align:right">About 5–8 minutes. Then you check A and B and press Start.</p>':''}</section>`;},
+results:p=>{const t=p.test||{};
+  if(t.state!=='running'){const past=(p.tests_done||[]).slice().reverse();
+    return`<section class="card ps-card">${psHead('results','No test running',t.state==='ready'?'Version B is ready. Start it in Split test.':'Start a split test to see A vs B here.')}<div class="nt-row"><button type="button" class="nt-primary" data-ps="test">${t.state==='ready'?'Go to Split test →':'Start a split test →'}</button></div>
+    ${past.length?`<div class="ps-past"><b>Past tests</b>${past.map(d=>`<div><b>${e(d.focus_label||d.focus)}</b>: ${e(d.winner)} won${d.how==='auto'?' (auto)':''} · ${new Date(d.ended_at).toLocaleDateString([], {month:'short',day:'numeric'})}</div>`).join('')}</div>`:''}</section>`;}
+  const r=t.results||{},A=r.A||{},B=r.B||{},pb=r.prob_b==null?null:r.prob_b,lead=r.leader;
+  const card=(n,x,win)=>`<div class="ps-ab${win?' win':''}"><div class="ps-abh">${n}${win?'<em class="ps-lead-tag">Leading</em>':''}</div><div class="ps-abg">
+    <div><small>Visitors</small><b>${Number(x.views||0).toLocaleString()}</b></div><div><small>Buy clicks</small><b>${x.clicks||0}</b> <small class="ps-in">${pct(x.click_rate)}</small></div>
+    <div><small>Checkouts</small><b>${x.checkouts||0}</b></div><div><small>Sales</small><b>${x.sales||0}</b></div><div><small>Revenue / visitor</small><b>$${(x.rpv||0).toFixed(2)}</b></div></div></div>`;
+  return`<section class="card ps-card">${psHead('results',pb==null?'Collecting visitors…':lead+' is ahead',`Testing: <b>${e(t.focus_label||'')}</b> · ${r.days!=null?r.days+' days':'just started'} · auto-pick ${t.auto?'on':'off'}`)}
+    <div class="ps-verdict${r.decided?' win':''}">${pb==null?'<span class="ps-big">—</span>':`<span class="ps-big">${Math.round((r.sure||.5)*100)}%</span>`}<div><b>${pb==null?'Needs 50 visitors per version for a first read':'sure '+lead+' is better'}</b><span>${e(r.verdict||'')}</span></div></div>
+    ${pb==null?'':`<div class="ps-meter" aria-label="Chance B is better: ${Math.round(pb*100)}%"><i style="width:${(1-pb)*100}%;background:var(--fg3)"></i><i style="width:${pb*100}%;background:var(--green)"></i></div><div class="ps-mlab"><span>A</span><span>B</span></div>`}
+    <div class="ps-abs">${card('A · original',A,lead==='A'&&pb!=null)}${card('B · new',B,lead==='B'&&pb!=null)}</div>
+    ${diffHtml(t,true)}
+    <div class="nt-row"><a class="nt-second ab-a" href="/p/${e(p.slug)}?v=A" target="_blank" rel="noopener">See A ↗</a><a class="nt-second ab-a" href="/p/${e(p.slug)}?v=B" target="_blank" rel="noopener">See B ↗</a></div>
+    ${canEdit?`<div class="ps-foot"><button type="button" class="nt-second" data-ab="pick" data-w="A">Keep A, end test</button><label class="ab-auto" style="margin:0"><input type="checkbox" id="abAutoRun"${t.auto?' checked':''}> Auto-pick</label><span style="flex:1"></span><button type="button" class="nt-primary" data-ab="pick" data-w="B">Pick B for everyone</button></div>`:''}</section>`;}};
+let pvMode='desktop',pvKey='';
+function psPreview(p){const f=g('psFrame');if(!f)return;const fr=f.querySelector('iframe');
+  document.querySelectorAll('[data-pspv]').forEach(b=>b.classList.toggle('on',b.dataset.pspv===pvMode));f.classList.toggle('phone',pvMode==='phone');
+  const src=p.has_content?'/p/'+p.slug+'?t='+encodeURIComponent(p.updated_at||''):'';const key=src+pvMode;
+  g('psPvLink').href='/p/'+p.slug;g('psPvLink').hidden=!p.has_content;
+  if(key!==pvKey){pvKey=key;if(src)fr.src=src;else fr.removeAttribute('src');f.classList.toggle('empty',!src);}
+  const w=pvMode==='phone'?390:1280,box=f.clientWidth||340;f.style.setProperty('--k',String((pvMode==='phone'?Math.min(box,300):box)/w));}
+function psRender(p){let sh=g('psShell');if(!sh||sh.dataset.id!==p.id){g('pgDetail').innerHTML=psShell(p);pvKey='';g('pgDetail').dataset.sig='';}
+  g('psTop').innerHTML=psTop(p);g('psRail').innerHTML=psRail(p);
+  const step=psStep(p),m=g('psMain'),box=g('heroBox');
+  const hsig=JSON.stringify(p.hero_job||'')+(p.hero_options||[]).map(x=>x.id).join(',')+heroSel.join(',')+heroLike;
+  const msig=step+JSON.stringify(domState[p.id]||'')+JSON.stringify(testDraft[p.id]||'')+JSON.stringify({...p,hero_options:step==='test'?(p.hero_options||[]).length:0,hero_job:0,hero_brief:0,updated_at:0,log:p.status==='building'?p.log:0});
+  if(g('pgDetail').dataset.sig&&m.dataset.sig===msig){if(box&&box.dataset.sig!==hsig){const f=document.activeElement&&document.activeElement.id==='heroBrief';box.innerHTML=heroInner(p);box.dataset.sig=hsig;if(f&&g('heroBrief'))g('heroBrief').focus();}}
+  else{const keep={};['pgChanges','psNote','buyLink','domInput','heroBrief','psAudN'].forEach(id=>{const x=g(id);if(x&&x.value)keep[id]=x.value;});
+    const was=m.dataset.step;m.innerHTML=PS[step]?PS[step](p):'';m.dataset.sig=msig;m.dataset.step=step;if(g('heroBox'))g('heroBox').dataset.sig=hsig;
+    Object.entries(keep).forEach(([id,v])=>{const x=g(id);if(x&&was===step)x.value=v;});}
+  g('pgDetail').dataset.sig='x';psPreview(p);}
+function psGo(k){const p=list.find(x=>x.id===openId);if(!p)return;stepOf[p.id]=k;g('pgDetail').dataset.sig='';render();const t=g('psShell');if(t&&window.scrollY>t.offsetTop)window.scrollTo({top:t.offsetTop-10,behavior:'smooth'});}
+async function psClick(ev){const T=s=>ev.target.closest(s);let x;
+  if(x=T('[data-ps]')){psGo(x.dataset.ps);return true;}
+  if(x=T('[data-pspv]')){pvMode=x.dataset.pspv;pvKey='';const p=list.find(y=>y.id===openId);if(p)psPreview(p);return true;}
+  if(T('[data-psclassic]')){classic=true;g('pgDetail').dataset.sig='';render();return true;}
+  if(T('[data-psstudio]')){classic=false;g('pgDetail').innerHTML='';render();return true;}
+  const p=list.find(y=>y.id===openId);if(!p)return false;
+  if(x=T('[data-psaudp]')){const a=AUD_PRESETS[+x.dataset.psaudp];document.querySelectorAll('[data-psaudp]').forEach(b=>b.classList.toggle('sel',b===x));
+    if(a&&a.gender){g('psAudG').value=a.gender;g('psAudA').value=a.age;g('psAudC').value=a.country;g('psAudN').value=a.notes;}else if(g('psAudN')){g('psAudN').value='';g('psAudN').focus();}
+    const sv=document.querySelector('[data-psaud]');if(sv){sv.dataset.psaud=x.dataset.psaudp;sv.className='nt-primary';}return true;}
+  if(x=T('[data-psaud]')){const a=AUD_PRESETS[+x.dataset.psaud]||{};x.disabled=true;
+    try{const j=await api('/api/pages/'+p.id+'/audience',{audience:{preset:a.label||'Custom',gender:g('psAudG').value,age:g('psAudA').value,country:g('psAudC').value,notes:g('psAudN').value}});Object.assign(p,j.page);toast('Audience saved');}
+    catch(err){toast(err.message);x.disabled=false;}g('pgDetail').dataset.sig='';render();return true;}
+  const d=testDraft[p.id];
+  if((x=T('[data-pstw]'))&&d){d.what=x.dataset.pstw;d.photo='';g('pgDetail').dataset.sig='';render();return true;}
+  if((x=T('[data-pstp]'))&&d){d.photo=x.dataset.pstp;g('pgDetail').dataset.sig='';render();return true;}
+  if((x=T('[data-psstage]'))&&d){if(g('psNote'))d.note=g('psNote').value;d.stage=+x.dataset.psstage;g('pgDetail').dataset.sig='';render();return true;}
+  if((x=T('[data-psmake]'))&&d){if(g('psNote'))d.note=g('psNote').value;x.disabled=true;x.innerHTML='<span class="nt-spin"></span>Starting…';
+    try{const j=d.what==='photo'?await api('/api/pages/'+p.id+'/heroes',{op:'test',ids:[d.photo]}):await api('/api/pages/'+p.id+'/abtest',{op:'make',focus:d.what,note:d.note||'',photo:false,photo_note:''});
+      Object.assign(p,j.page);delete testDraft[p.id];toast(d.what==='photo'?'Version B is ready: check it and press Start':'Claude is writing version B');}
+    catch(err){toast(err.message);x.disabled=false;x.textContent='Try again';}g('pgDetail').dataset.sig='';render();return true;}
+  return false;}
+// New page: three short steps in one form
+const NF=[['Product','The link and the network'],['Audience','Who your ads target'],['Style & build','Page type, then build']];
+function formHtml(){return`<div class="ps"><div class="ps-top"><button type="button" class="nt-link" data-pgback>← All pages</button><div class="ps-title"><h1>Build a new page</h1></div></div>
+  <div class="ps-grid ps-new"><nav class="ps-rail" id="nfRail"></nav><form class="card ps-card ps-main" id="pgForm" autocomplete="off">
+  <div data-nf="1"><div class="ps-eye">Step 1 of 3</div><h2 class="ps-h">What are we selling?</h2><p class="ps-lead">Paste the product's sales page. Claude reads it, the checkout and the fine print.</p>
+    <label class="nt-f">Product link * <span class="nt-hint">sales page, VSL or your affiliate link</span><input type="url" name="url" required placeholder="https://…"></label>
+    <div class="nt-g2"><label class="nt-f">Product name <span class="nt-hint">optional</span><input name="name" placeholder="e.g. CardioFlush LT"></label>
+    <label class="nt-f">Network<select name="network"><option value="jvzoo">JVZoo</option><option value="clickbank">ClickBank</option><option value="digistore">Digistore24</option><option value="buygoods">BuyGoods</option><option value="wealthpay">WealthPay</option><option value="other">Other</option></select></label></div>
+    <div class="nt-f">Product images <span class="nt-hint">optional; the product photo first</span><div class="nt-drop"><label class="nt-second nt-filebtn">Upload images<input type="file" id="pgFiles" accept="image/jpeg,image/png,image/webp" multiple hidden></label><span class="nt-hint">JPG, PNG or WebP, up to 10</span></div><div class="nt-thumbs" id="pgThumbs"></div></div>
+    <details class="pg-sum"><summary>Affiliate buy links per bundle (optional)</summary><textarea name="buy" rows="3" placeholder="One per line. You can also paste your HopLink later in the Buy link step."></textarea></details>
+    <div class="ps-foot"><span style="flex:1"></span><button type="button" class="nt-primary" data-nfgo="2">Next: Audience →</button></div></div>
+  <div data-nf="2" hidden><div class="ps-eye">Step 2 of 3</div><h2 class="ps-h">Who is this page for?</h2><p class="ps-lead">Pick the closest match. The photos and the words are made for these people.</p>
+    <div class="pg-aud" id="pgAud">${AUD_PRESETS.map((a,i)=>`<button type="button" class="pg-audp${i===0?' on':''}" data-aud="${i}">${e(a.label)}</button>`).join('')}</div>
+    <div class="nt-g3"><label class="nt-f">Gender<select name="aud_gender"><option value="women">Women</option><option value="men">Men</option><option value="both">Both</option></select></label>
+    <label class="nt-f">Age<select name="aud_age">${['25-34','35-44','45-54','45-64','55-64','55-70','60-75','65+'].map(x=>`<option${x==='55-70'?' selected':''}>${x}</option>`).join('')}</select></label>
+    <label class="nt-f">Country<select name="aud_country">${['United States','Canada','United Kingdom','Australia','Germany','Other'].map(x=>`<option>${x}</option>`).join('')}</select></label></div>
+    <input name="aud_notes" class="pg-audn" placeholder="More about them (optional), e.g. retired, suburbs, grandkids" maxlength="600">
+    <div class="ps-foot"><button type="button" class="nt-link" data-nfgo="1">← Back</button><span style="flex:1"></span><button type="button" class="nt-primary" data-nfgo="3">Next: Style →</button></div></div>
+  <div data-nf="3" hidden><div class="ps-eye">Step 3 of 3</div><h2 class="ps-h">Pick the style, then build</h2><p class="ps-lead">Claude researches, writes, makes the top photo and builds the page. About 15–20 minutes; you can close this tab.</p>
+    <div class="ps-cards"><label class="ps-opt ps-radio"><input type="radio" name="kind" value="info" checked><b>Information advertorial <em class="pg-default">default</em></b><span>Editor's explainer with animated drawings. <a href="/demo/info-advertorial-v4" target="_blank" rel="noopener">Example ↗</a></span></label>
+    <label class="ps-opt ps-radio"><input type="radio" name="kind" value="advertorial"><b>Story advertorial</b><span>A reader's story, magazine style.</span></label></div>
+    <label class="nt-f" style="margin-top:14px">Notes for Claude <span class="nt-hint">optional: angle, claims to avoid</span><textarea name="notes" rows="2"></textarea></label>
+    <div class="ps-foot"><button type="button" class="nt-link" data-nfgo="2">← Back</button><span style="flex:1"></span><button type="submit" class="nt-primary">Build my page →</button></div></div>
+  </form></div></div>`;}
+function nfShow(n){const f=g('pgForm');if(!f)return;if(n>1&&!f.elements.url.reportValidity())return;nfStep=n;
+  f.querySelectorAll('[data-nf]').forEach(s=>s.hidden=+s.dataset.nf!==n);
+  g('nfRail').innerHTML=`<div class="ps-rh">New page</div>`+NF.map((x,i)=>`<button type="button" class="ps-st${i+1===n?' on':''}${i+1<n?' done':''}" data-nfgo="${i+1}"><span class="ps-n">${i+1<n?'':i+1}</span><span class="ps-l">${x[0]}<small>${x[1]}</small></span></button>`).join('')
+    +`<div class="ps-rh">Then, in the studio</div>`+PS_BUILD.slice(3).map((b,i)=>`<div class="ps-st ps-later"><span class="ps-n">${i+4}</span><span class="ps-l">${b[1]}<small>${b[2]}</small></span></div>`).join('');}
+
 function render(){if(mode==='list'){g('pgList').hidden=false;g('pgDetail').hidden=true;renderList();return;}
   g('pgList').hidden=true;g('pgDetail').hidden=false;
-  if(mode==='new'){g('pgDetail').innerHTML=formHtml();thumbs();setAud(0);return;}
+  if(mode==='new'){g('pgDetail').innerHTML=formHtml();thumbs();setAud(0);nfShow(nfStep=1);return;}
   const p=list.find(x=>x.id===openId);if(!p){mode='list';render();return;}
+  if(!classic){psRender(p);return;}
   const keep=g('pgChanges')&&g('pgChanges').value;const hadFrame=document.querySelector('#pgDetail iframe');
   const hsig=JSON.stringify(p.hero_job||'')+(p.hero_options||[]).map(x=>x.id).join(',')+heroSel.join(',')+heroLike;
   const sig=JSON.stringify(domState[p.id]||'')+view+JSON.stringify({...p,hero_options:0,hero_job:0,hero_brief:0,updated_at:0,log:p.status==='building'?p.log:0});
@@ -2505,9 +2738,10 @@ async function submit(ev){ev.preventDefault();const f=ev.target,v=n=>(f.elements
   try{const kind=(f.querySelector('input[name=kind]:checked')||{}).value||'advertorial';const audience={preset:f.dataset.preset||'',gender:v('aud_gender'),age:v('aud_age'),country:v('aud_country'),notes:v('aud_notes')};const j=await api('/api/pages',{kind,audience,url:v('url'),name:v('name'),network:v('network'),buy_links:v('buy').split(/\s*\n\s*/).filter(Boolean),images:ups.filter(u=>u.url).map(u=>u.url),notes:v('notes')});
     list.unshift(j.page);ups=[];openId=j.page.id;mode=j.page.status==='failed'?'detail':'detail';render();}
   catch(err){toast(err.message);btn.disabled=false;btn.textContent='Build page';}}
+window.addEventListener('resize',()=>{const p=mode==='detail'&&!classic&&list.find(x=>x.id===openId);if(p)psPreview(p);});
 window.pgShow=async()=>{await load();render();startTimer();};
 window.pgInit=()=>{canEdit=['owner','editor'].includes(me().role)||!window.NUTRA_HOSTED;
-  g('pagesView').addEventListener('click',ev=>{const db_=ev.target.closest('[data-dom]');if(db_){dom(db_);return;}const bl=ev.target.closest('[data-buylink]');if(bl){(async()=>{const p=list.find(x=>x.id===openId);bl.disabled=true;try{const j=await api('/api/pages/'+p.id+'/buy_link',{url:(g('buyLink')||{}).value||''});Object.assign(p,j.page);toast('Done: '+j.changed+' buy link(s) now go to your tracking link');g('pgDetail').dataset.sig='';render();}catch(err){toast(err.message);bl.disabled=false;}})();return;}const di=ev.target.closest('[data-domidea]');if(di){domIdea();return;}const du=ev.target.closest('[data-domuse]');if(du){const i=g('domInput');if(i){i.value=du.dataset.domuse;i.focus();i.scrollIntoView({block:'center'});}toast('Press Save after you have bought the domain');return;}const hl=ev.target.closest('[data-herolike]');if(hl){heroBriefDraft=(g('heroBrief')||{}).value??null;heroLike=hl.dataset.herolike;g('pgDetail').dataset.sig='';render();if(heroLike){const b=g('heroBrief');b&&b.scrollIntoView({block:'center'});toast('Style picked: add your idea (optional), then Make 5 or 10');}return;}const hb=ev.target.closest('[data-hero]');if(hb){hero(hb);return;}const abb=ev.target.closest('[data-ab]');if(abb){ab(abb);return;}const au=ev.target.closest('[data-aud]');if(au){setAud(+au.dataset.aud);return;}
+  g('pagesView').addEventListener('click',ev=>{const nfg=ev.target.closest('[data-nfgo]');if(nfg){nfShow(+nfg.dataset.nfgo);return;}if(ev.target.closest('[data-ps],[data-pspv],[data-psclassic],[data-psstudio],[data-psaudp],[data-psaud],[data-pstw],[data-pstp],[data-psstage],[data-psmake]')){psClick(ev);return;}const db_=ev.target.closest('[data-dom]');if(db_){dom(db_);return;}const bl=ev.target.closest('[data-buylink]');if(bl){(async()=>{const p=list.find(x=>x.id===openId);bl.disabled=true;try{const j=await api('/api/pages/'+p.id+'/buy_link',{url:(g('buyLink')||{}).value||''});Object.assign(p,j.page);toast('Done: '+j.changed+' buy link(s) now go to your tracking link');g('pgDetail').dataset.sig='';render();}catch(err){toast(err.message);bl.disabled=false;}})();return;}const di=ev.target.closest('[data-domidea]');if(di){domIdea();return;}const du=ev.target.closest('[data-domuse]');if(du){const i=g('domInput');if(i){i.value=du.dataset.domuse;i.focus();i.scrollIntoView({block:'center'});}toast('Press Save after you have bought the domain');return;}const hl=ev.target.closest('[data-herolike]');if(hl){heroBriefDraft=(g('heroBrief')||{}).value??null;heroLike=hl.dataset.herolike;g('pgDetail').dataset.sig='';render();if(heroLike){const b=g('heroBrief');b&&b.scrollIntoView({block:'center'});toast('Style picked: add your idea (optional), then Make 5 or 10');}return;}const hb=ev.target.closest('[data-hero]');if(hb){hero(hb);return;}const abb=ev.target.closest('[data-ab]');if(abb){ab(abb);return;}const au=ev.target.closest('[data-aud]');if(au){setAud(+au.dataset.aud);return;}
     const c=ev.target.closest('[data-pg]'),b=ev.target.closest('[data-pgback]'),a=ev.target.closest('[data-pgact]'),vw=ev.target.closest('[data-view]'),un=ev.target.closest('[data-unpg]'),cp=ev.target.closest('[data-copy]');
     if(c){openId=c.dataset.pg;mode='detail';g('pgDetail').dataset.sig='';render();refreshOpen().then(render);window.scrollTo(0,0);}
     else if(b){mode='list';load().then(render);}else if(a)act(a.dataset.pgact);else if(vw){view=vw.dataset.view;g('pgDetail').dataset.sig='';render();}

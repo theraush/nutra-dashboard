@@ -34,6 +34,9 @@ https://nutra-dashboard-taupe.vercel.app). Pushing to `main` deploys automatical
   - **Custom domains**: `pages.domain` (e.g. brain.example.com). On a non-dashboard Host the router serves only that page at `/`,
     its `/u/` images, tracking beacons and `/api/public/domain-check`; everything else 404s. Vlad points Namecheap nameservers
     to Vercel and adds `example.com` + `*.example.com` in Vercel Domains (steps shown in the page's "Your own domain" box).
+  - **Page Studio** (Pages tab detail): one step per screen — Product, Audience, Write, Hero photo, Buy link, Domain, Go live, then
+    Grow: Split test (what → B → check & start) and Results; live preview on the right. "Classic view" link keeps the old one-page view.
+    New page = 3 steps (Product, Audience, Style & build). Endpoints: `/api/pages/<id>/audience`, `/buy_link`; public() has `headline`, `buy_url`.
   - `static/dashboard.html` — the page. `static/shim.js` gives it `window.claude.use('db'|'user')` backed by `/api/db`.
   - `app/README.md` — env vars and routes.
 - `dashboard.html` (repo root) — same page, used by the old Claude artifact. **After editing the page, copy it to

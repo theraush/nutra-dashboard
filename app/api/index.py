@@ -129,7 +129,7 @@ def api_pages(env, path, method, p, user):
                'network': str(p.get('network') or '').strip()[:30], 'buy_links': lst('buy_links'), 'images': lst('images'),
                'notes': str(p.get('notes') or '').strip()[:3000], 'audience': pages.clean_audience(p.get('audience'))}
         return jresp({'ok': True, 'page': pages.public(pages.create(inp, user, base_url(env)))})
-    m = re.fullmatch(r'/api/pages/(pg_[A-Za-z0-9]{8,20})(?:/(status|changes|publish|delete|retry|stop|reopen|redo_images|dismiss|abtest|heroes|domain|domain_check|domain_ideas|buy_link))?', path)
+    m = re.fullmatch(r'/api/pages/(pg_[A-Za-z0-9]{8,20})(?:/(status|changes|publish|delete|retry|stop|reopen|redo_images|dismiss|abtest|heroes|domain|domain_check|domain_ideas|buy_link|audience))?', path)
     if not m:
         return jresp({'ok': False}, 404)
     row = pages.get(m.group(1))
@@ -181,6 +181,11 @@ def api_pages(env, path, method, p, user):
         return jresp({'ok': True, 'page': pages.public(pages.get(row['id']))})
     if act == 'domain_check':
         return jresp(pages.check_domain(row))
+    if act == 'audience':
+        r = pages.set_audience(row, p.get('audience'))
+        if not r.get('ok'):
+            return jresp(r, 400)
+        return jresp({'ok': True, 'page': pages.public(pages.get(row['id']))})
     if act == 'buy_link':
         r = pages.set_buy_link(row, p.get('url'))
         if not r.get('ok'):

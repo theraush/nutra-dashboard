@@ -56,6 +56,11 @@ def public(row, full=False):
                 'phases': [{'id': p, 'label': l, 'minutes': m} for p, l, m in phases], 'revisions': len(row.get('revisions') or []),
                 'log': (row.get('log') or [])[-12:], 'has_content': bool(row.get('content')),
                 'notes': row.get('notes') or [], 'summary': row.get('summary')})
+    c = row.get('content') or {}
+    out['headline'] = ((c.get('header') or {}).get('h1') or c.get('headline') or '') if isinstance(c, dict) else ''
+    bu = _bundle_urls(c) if isinstance(c, dict) else []
+    out['buy_url'] = bu[0] if bu else ''
+    out['buy_count'] = len(bu)
     out.update(abtest.public(row))
     out.update(heroes.public(row))
     if full:
@@ -639,3 +644,11 @@ def set_buy_link(row, url):
     db.q('update pages set content = %s, test = %s, updated_at = now() where id = %s', (db.J(c2), db.J(t) if t else None, row['id']))
     log(row['id'], 'Buy buttons now go to ' + url.split('?')[0])
     return {'ok': True, 'changed': len(old)}
+
+
+def set_audience(row, a):
+    a = clean_audience(a)
+    if not a:
+        return {'ok': False, 'error': 'Pick an audience or describe it.'}
+    db.q("update pages set input = jsonb_set(coalesce(input, '{}'::jsonb), '{audience}', %s::jsonb), updated_at = now() where id = %s", (db.J(a), row['id']))
+    return {'ok': True}
