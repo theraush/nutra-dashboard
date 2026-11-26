@@ -58,7 +58,13 @@ def accounts_for(tok):
     old = _TOK
     _TOK = tok
     try:
-        rows = _pages('me/adaccounts', {'fields': 'name,account_id,account_status,currency,business{name}', 'limit': 200})
+        try:
+            rows = _pages('me/adaccounts', {'fields': 'name,account_id,account_status,currency,business{name}', 'limit': 200})
+        except MetaError as e:
+            if '(code 200)' not in str(e) and '(code 10)' not in str(e):
+                raise
+            # without business_management Facebook refuses the Business Manager name; the accounts themselves are enough
+            rows = _pages('me/adaccounts', {'fields': 'name,account_id,account_status,currency', 'limit': 200})
     finally:
         _TOK = old
     return [{'id': r.get('account_id'), 'name': r.get('name') or r.get('account_id'), 'status': r.get('account_status'),

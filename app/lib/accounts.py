@@ -70,7 +70,12 @@ def connect(name, token, user):
     try:
         accts = meta.accounts_for(token)
     except Exception as e:
-        return {'ok': False, 'error': 'Facebook rejected this token: ' + str(e)[:160]}
+        msg = str(e)
+        if '(code 200)' in msg or '(code 10)' in msg or 'ermission' in msg:
+            return {'ok': False, 'error': 'Facebook says this token is missing permissions. When you generate it (System users → Generate new token), tick ads_read and ads_management, and make sure the ad accounts are assigned to that system user (Assign assets → Full control).'}
+        if '(code 190)' in msg:
+            return {'ok': False, 'error': 'Facebook says this token is expired or its app was deleted. Generate a new one.'}
+        return {'ok': False, 'error': 'Facebook rejected this token: ' + msg[:160]}
     if not accts:
         return {'ok': False, 'error': 'The token works, but it has no ad accounts. In Business Settings, assign the ad accounts to this system user (Full control or Advertise), then try again.'}
     cs = conns()
