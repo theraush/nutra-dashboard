@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sidebar layout · mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap">
+<style>
+:root{--bg:#f5f6f8;--card:#fff;--ink:#101828;--ink2:#475467;--ink3:#98a2b3;--line:#e6e8ec;--soft:#f2f4f7;
+  --acc:#4f46e5;--acc-lt:#eef0ff;--acc-dk:#3730a3;--ok:#12a150;--ok-lt:#e7f6ee;--warn:#d97706;--warn-lt:#fff6e5;--hf:#7c3aed;
+  --r:16px;--sh:0 1px 2px rgba(16,24,40,.05),0 8px 24px rgba(16,24,40,.06);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1117;--card:#161b22;--ink:#e6edf3;--ink2:#a7b1bd;--ink3:#6e7681;--line:#2a313b;--soft:#1f252e;
+  --acc:#8b85ff;--acc-lt:#23214a;--acc-dk:#b7b3ff;--ok:#3fb970;--ok-lt:#133222;--warn:#f0a43a;--warn-lt:#3a2a10;--sh:0 1px 2px rgba(0,0,0,.4);color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;font:15px/1.5 Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink)}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer}
+.mock{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:50;background:#101828;color:#fff;font-size:12px;font-weight:600;padding:6px 12px;border-radius:999px;box-shadow:var(--sh);white-space:nowrap}
+/* top bar */
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:14px;padding:12px max(18px,env(safe-area-inset-left));background:var(--card);border-bottom:1px solid var(--line)}
+.logo{display:flex;align-items:center;gap:8px;font-weight:800;letter-spacing:-.01em}
+.logo i{width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,var(--acc),#22c3a6);display:inline-block}
+.crumb{color:var(--ink3);font-weight:500}.crumb b{color:var(--ink);font-weight:600}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;background:var(--ok-lt);color:var(--ok)}
+.pill::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.pill.draft{background:var(--soft);color:var(--ink2)}
+.sp{flex:1}
+.btn{text-decoration:none;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:9px 16px;font-weight:600;font-size:14px;display:inline-flex;align-items:center;gap:8px;transition:.15s}
+.btn:hover{border-color:var(--ink3)}
+.btn.p{background:var(--acc);border-color:var(--acc);color:#fff}.btn.p:hover{background:var(--acc-dk);border-color:var(--acc-dk)}
+.btn.big{padding:13px 22px;font-size:15px;border-radius:12px}
+.btn.ghost{border-color:transparent;background:transparent;color:var(--ink2)}
+.btn:disabled{opacity:.45;cursor:default}
+/* layout */
+.wrap{display:grid;grid-template-columns:260px minmax(0,1fr) 380px;gap:24px;max-width:1440px;margin:0 auto;padding:24px max(18px,env(safe-area-inset-left)) 90px}
+.rail{position:sticky;top:84px;align-self:start}
+.rail h4{margin:18px 10px 8px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3)}
+.rail h4:first-child{margin-top:0}
+.st{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:0;background:none;padding:10px 12px;border-radius:12px;color:var(--ink2);font-weight:500}
+.st:hover{background:var(--soft)}
+.st .n{width:26px;height:26px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:12px;font-weight:700;border:2px solid var(--line);background:var(--card);color:var(--ink3)}
+.st.done .n{background:var(--ok);border-color:var(--ok);color:#fff}
+.st.done .n span{display:none}.st.done .n::after{content:"✓"}
+.st.on{background:var(--acc-lt);color:var(--ink);font-weight:700}.st.on .n{border-color:var(--acc);color:var(--acc)}
+.st small{display:block;font-size:12px;color:var(--ink3);font-weight:500}
+.prog{margin:0 10px 6px;height:6px;border-radius:9px;background:var(--line);overflow:hidden}.prog i{display:block;height:100%;background:var(--ok);transition:width .4s}
+.progt{margin:0 10px 14px;font-size:12px;color:var(--ink3)}
+.main{min-width:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);padding:28px}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--acc)}
+h1{font-size:28px;line-height:1.2;letter-spacing:-.02em;margin:6px 0 6px;text-wrap:balance}
+.lead{color:var(--ink2);margin:0 0 22px;max-width:62ch}
+.foot{display:flex;align-items:center;gap:10px;margin-top:26px;padding-top:20px;border-top:1px solid var(--line)}
+label.f{display:flex;flex-direction:column;gap:6px;font-weight:600;font-size:14px}
+label.f small{font-weight:500;color:var(--ink3)}
+.in{width:100%;border:1px solid var(--line);background:var(--card);border-radius:12px;padding:12px 14px;outline:none;transition:.15s}
+.in:focus{border-color:var(--acc);box-shadow:0 0 0 4px var(--acc-lt)}
+textarea.in{resize:vertical;min-height:70px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.grid2{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.opt{position:relative;text-align:left;border:1.5px solid var(--line);background:var(--card);border-radius:14px;padding:16px;transition:.15s}
+.opt:hover{border-color:var(--ink3);transform:translateY(-1px)}
+.opt.sel{border-color:var(--acc);box-shadow:0 0 0 4px var(--acc-lt)}
+.opt.sel::after{content:"✓";position:absolute;top:12px;right:12px;width:22px;height:22px;border-radius:50%;background:var(--acc);color:#fff;font-size:12px;font-weight:800;display:grid;place-items:center}
+.opt .ic{font-size:22px;line-height:1}.opt b{display:block;margin:8px 0 2px}.opt span{font-size:13px;color:var(--ink2)}
+.tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.04em;padding:2px 8px;border-radius:999px;background:var(--soft);color:var(--ink2)}
+.tag.acc{background:var(--acc-lt);color:var(--acc)}.tag.ok{background:var(--ok-lt);color:var(--ok)}.tag.hf{background:#efe7ff;color:var(--hf)}
+.box{border:1px solid var(--line);border-radius:14px;padding:16px;background:var(--soft)}
+.check{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.check li{display:flex;gap:10px;align-items:flex-start;color:var(--ink3)}
+.check li::before{content:"";flex:none;width:20px;height:20px;border-radius:50%;border:2px solid var(--line);margin-top:1px}
+.check li.now{color:var(--ink);font-weight:600}.check li.now::before{border-color:var(--acc);border-top-color:transparent;animation:spin .8s linear infinite}
+.check li.ok{color:var(--ink)}.check li.ok::before{border:0;background:var(--ok) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.5l2.5 2.5L12 5.5' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/14px no-repeat}
+@keyframes spin{to{transform:rotate(360deg)}}
+.facts{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+.fact{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}.fact small{display:block;color:var(--ink3);font-size:12px;font-weight:600}.fact b{font-size:16px}
+.note{display:flex;gap:10px;padding:12px 14px;border-radius:12px;background:var(--warn-lt);font-size:14px}.note b{color:var(--warn)}
+.okbar{display:flex;gap:10px;align-items:center;padding:12px 14px;border-radius:12px;background:var(--ok-lt);font-size:14px}.okbar b{color:var(--ok)}
+/* photos */
+.ph-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+.ph{position:relative;border:0;padding:0;border-radius:14px;overflow:hidden;background:var(--soft);aspect-ratio:3/2;outline:3px solid transparent;outline-offset:2px;transition:.15s}
+.ph img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s}
+.ph:hover img{transform:scale(1.04)}
+.ph .cap{position:absolute;left:0;right:0;bottom:0;padding:22px 10px 8px;background:linear-gradient(transparent,rgba(0,0,0,.65));color:#fff;font-size:12px;font-weight:600;text-align:left}
+.ph .eng{position:absolute;top:8px;left:8px}
+.ph.sel{outline-color:var(--acc)}
+.ph.sel::after{content:"✓ On the page";position:absolute;top:8px;right:8px;background:var(--acc);color:#fff;font-size:11px;font-weight:800;padding:3px 9px;border-radius:999px}
+.ph.make{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;border:2px dashed var(--line);background:var(--card);color:var(--ink2);font-weight:600;font-size:13px}
+.ph.make b{font-size:26px;color:var(--acc)}
+.ph.shim{background:linear-gradient(100deg,var(--soft) 30%,var(--card) 50%,var(--soft) 70%);background-size:220% 100%;animation:shine 1.3s linear infinite}
+@keyframes shine{from{background-position:120% 0}to{background-position:-120% 0}}
+.seg{display:inline-flex;background:var(--soft);border-radius:12px;padding:4px;gap:4px;flex-wrap:wrap}
+.seg button{border:0;background:none;padding:7px 14px;border-radius:9px;font-weight:600;font-size:13px;color:var(--ink2)}
+.seg button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(16,24,40,.12)}
+/* preview */
+.pv{position:sticky;top:84px;align-self:start}
+.pvh{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.pvh b{font-size:13px;color:var(--ink2)}
+.frame{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--sh);overflow:hidden;transition:.3s}
+.frame.phone{width:250px;margin:0 auto;border-radius:30px;border:8px solid #101828}
+.fbar{display:flex;gap:5px;padding:8px 10px;border-bottom:1px solid var(--line);align-items:center}.fbar i{width:8px;height:8px;border-radius:50%;background:var(--line)}
+.fbar span{margin-left:8px;font-size:11px;color:var(--ink3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.frame.phone .fbar{display:none}
+.art{padding:18px;background:#fff;color:#1a1a1a}
+.art .pub{font:600 11px Fraunces,serif;display:flex;justify-content:space-between;color:#333}.art .pub em{font:600 9px Inter;color:#4f46e5;background:#eef0ff;padding:1px 6px;border-radius:9px;font-style:normal}
+.art .kick{font:700 9px Inter;letter-spacing:.08em;color:#4f46e5;margin:12px 0 4px;text-transform:uppercase}
+.art h2{font:700 20px/1.12 Fraunces,serif;margin:0 0 6px;letter-spacing:-.01em}
+.art p{font-size:11px;color:#555;margin:0 0 10px}
+.art img{width:100%;aspect-ratio:3/2;object-fit:cover;border-radius:8px;display:block;transition:opacity .3s}
+.art .buy{margin-top:12px;display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.art .buy div{border:1px solid #e5e7eb;border-radius:8px;padding:6px;text-align:center;font-size:10px}.art .buy div b{display:block;font-size:12px}
+.art .buy div.best{border-color:#4f46e5;background:#eef0ff}
+.pvnote{font-size:12px;color:var(--ink3);text-align:center;margin-top:10px}
+/* tests */
+.ab{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.abc{border:1.5px solid var(--line);border-radius:14px;overflow:hidden;background:var(--card)}
+.abc.win{border-color:var(--ok)}
+.abc .hd{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line);font-weight:700}
+.abc img{width:100%;aspect-ratio:3/2;object-fit:cover;display:block}
+.abc .bd{padding:14px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.abc .bd small{display:block;color:var(--ink3);font-size:12px}.abc .bd b{font-size:20px;font-variant-numeric:tabular-nums}
+.meter{height:12px;border-radius:9px;background:var(--line);overflow:hidden;display:flex}.meter i{display:block;height:100%}
+.verdict{display:flex;gap:12px;align-items:center;padding:14px 16px;border-radius:14px;background:var(--acc-lt);margin:14px 0}
+.verdict .big{font-size:26px;font-weight:800;color:var(--acc)}
+.steps3{display:flex;gap:8px;margin:0 0 20px;flex-wrap:wrap}.steps3 span{font-size:12px;font-weight:700;padding:5px 12px;border-radius:999px;background:var(--soft);color:var(--ink3)}.steps3 span.on{background:var(--acc);color:#fff}.steps3 span.ok{background:var(--ok-lt);color:var(--ok)}
+.fade{animation:fade .35s ease}@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.golive{display:flex;align-items:center;gap:16px;padding:20px;border-radius:16px;border:2px solid var(--ok);background:var(--ok-lt)}
+.sw{width:56px;height:32px;border-radius:999px;background:var(--line);border:0;position:relative;transition:.2s;flex:none}.sw::after{content:"";position:absolute;top:4px;left:4px;width:24px;height:24px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.sw.on{background:var(--ok)}.sw.on::after{left:28px}
+.copy{display:flex;gap:8px;align-items:center}.copy code{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13px}
+@media (max-width:1180px){.wrap{grid-template-columns:230px minmax(0,1fr)}.pv{display:none}.pvbtn{display:inline-flex!important}}
+@media (max-width:760px){
+  .wrap{grid-template-columns:1fr;gap:14px;padding:12px 16px 90px}
+  .rail{position:static;display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+  .rail h4,.prog,.progt{display:none}
+  .st{flex:none;width:auto;padding:8px 12px;background:var(--card);border:1px solid var(--line)}
+  .st small{display:none}
+  .card{padding:20px}
+  h1{font-size:23px}
+  .crumb{display:none}.top{gap:8px}
+  .pill{min-width:0;max-width:52vw;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;display:block}
+  .mock{white-space:normal;width:max-content;max-width:calc(100vw - 32px);text-align:center}
+  .ab{grid-template-columns:1fr}
+}
+.pvbtn{display:none}
+.overlay{position:fixed;inset:0;background:rgba(16,24,40,.55);z-index:60;display:flex;align-items:center;justify-content:center;padding:20px}
+
+.app{display:grid;grid-template-columns:248px minmax(0,1fr);min-height:100vh}
+.side{position:sticky;top:0;height:100vh;overflow-y:auto;background:var(--soft);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:16px 12px;gap:2px}
+.side .logo{padding:4px 10px 16px}
+.nv{display:flex;align-items:center;gap:10px;width:100%;border:0;background:none;text-align:left;padding:8px 10px;border-radius:10px;color:var(--ink2);font-weight:600;font-size:14px}
+.nv:hover{background:var(--line)}.nv.on{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(16,24,40,.08)}
+.nv .ico{width:20px;text-align:center;font-size:15px}
+.nv .cnt{margin-left:auto;font-size:11px;font-weight:700;background:var(--line);color:var(--ink2);padding:1px 7px;border-radius:999px}
+.sub{display:flex;flex-direction:column;gap:1px;margin:2px 0 6px 20px;padding-left:10px;border-left:2px solid var(--line)}
+.sub .lab{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);padding:8px 8px 4px}
+.sb{display:flex;align-items:center;gap:8px;border:0;background:none;text-align:left;padding:6px 8px;border-radius:8px;font-size:13px;color:var(--ink2);font-weight:500}
+.sb:hover{background:var(--line)}.sb.on{background:var(--acc-lt);color:var(--acc);font-weight:700}
+.sb .d{width:16px;height:16px;border-radius:50%;border:2px solid var(--line);flex:none;display:grid;place-items:center;font-size:9px;color:#fff}
+.sb.done .d{background:var(--ok);border-color:var(--ok)}.sb.done .d::after{content:"✓"}
+.sb .lv{margin-left:auto;font-size:9px;font-weight:800;background:var(--ok);color:#fff;padding:1px 6px;border-radius:999px}
+.sfoot{margin-top:auto;display:flex;flex-direction:column;gap:6px;padding-top:12px;border-top:1px solid var(--line)}
+.sync{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink2);padding:6px 10px;background:var(--card);border:1px solid var(--line);border-radius:10px}
+.sync b{color:var(--ink)}.sync button{margin-left:auto;border:0;background:none;font-size:14px}
+.me{display:flex;align-items:center;gap:10px;padding:6px 10px}.me i{width:30px;height:30px;border-radius:50%;background:var(--acc);color:#fff;font-style:normal;font-weight:700;font-size:12px;display:grid;place-items:center}.me small{display:block;color:var(--ink3);font-size:12px}
+.content{min-width:0;padding:22px 28px 90px}
+.phead{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}.phead h1{margin:0;font-size:24px}
+.pgrid{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:22px;align-items:start}
+.kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:18px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}.kpi small{display:block;color:var(--ink3);font-size:12px;font-weight:600}.kpi b{font-size:24px;letter-spacing:-.02em}.kpi .up{color:var(--ok);font-size:12px;font-weight:700}
+table.t{width:100%;border-collapse:collapse;font-size:14px}table.t th{text-align:left;font-size:12px;color:var(--ink3);font-weight:600;padding:10px 12px;border-bottom:1px solid var(--line)}table.t td{padding:12px;border-bottom:1px solid var(--line)}
+table.t td.n,table.t th.n{text-align:right;font-variant-numeric:tabular-nums}
+.acct{display:flex;align-items:center;gap:14px;padding:16px;border:1px solid var(--line);border-radius:14px;background:var(--card)}
+.acct .lg{width:40px;height:40px;border-radius:10px;background:#1877f2;color:#fff;display:grid;place-items:center;font-weight:800;flex:none}
+.acct .info{flex:1;min-width:0}.acct .info small{display:block;color:var(--ink3);font-size:12px}
+.map{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+.map select{width:100%}.map .ar{color:var(--ink3);font-weight:700}
+.modal{position:fixed;inset:0;background:rgba(16,24,40,.55);z-index:70;display:flex;align-items:center;justify-content:center;padding:16px}
+.modal .card{width:100%;max-width:560px;max-height:90vh;overflow:auto}
+.bbar{display:none}
+@media (max-width:1180px){.pgrid{grid-template-columns:1fr}.pv{display:none}}
+@media (max-width:860px){
+  .app{grid-template-columns:1fr}.side{display:none}.content{padding:14px 16px 96px}
+  .bbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--card);border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
+  .bbar button{flex:1;border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;font-weight:600;color:var(--ink3);padding:6px 0}
+  .bbar button span{font-size:18px}.bbar button.on{color:var(--acc)}
+  .mrail{display:flex;gap:6px;overflow-x:auto;margin-bottom:12px;scrollbar-width:none}.mrail .sb{flex:none;border:1px solid var(--line);background:var(--card)}
+  .mock{bottom:78px}
+  .map{grid-template-columns:1fr}.map .ar{display:none}
+}
+@media (min-width:861px){.mrail{display:none}}
+</style>
+</head>
+<body>
+<div class="app"><nav class="side" id="side"></nav><div class="content" id="content"></div></div>
+<nav class="bbar" id="bbar"></nav>
+<div class="mock">Mockup · sidebar + ad accounts · nothing here changes your real data</div>
+
+<script>
+const U='https://nutra.palmtreemedia.co/u/';
+const PHOTOS=[
+ {f:'iY8nfQU2doWTug39xbifadFf.png',p:'Lake dock',m:'Couple 60s, late afternoon',e:'openai'},
+ {f:'DXgSJvsdLzKXxth27hy2NWyL.png',p:'Kitchen table',m:'Tea and one tablet',e:'openai'},
+ {f:'szWE8S1267pAV-0dBxMg5KJ6.png',p:'Dining room',m:'Lunch, bowl of soup',e:'higgsfield'},
+ {f:'pd2xVPMbAx0hgMCaasqWtzjU.png',p:'Front steps',m:'Coffee and the mail',e:'openai'},
+ {f:'dEXB0pdHFQNgUKmfOhwjyfu3.png',p:'Patio table',m:'Couple, morning coffee',e:'openai'},
+ {f:'Jg6rOuKw2oBLqU9WMCyYU7GH.png',p:'Living room',m:'Evening reading',e:'openai'},
+ {f:'4VwOeM7zxYW6hkOxNVQ51JCg.png',p:'Park bench',m:'On a morning walk',e:'openai'},
+ {f:'zly35DLBpCsdYgLjZ9HG5-E4.png',p:'Back porch',m:'Glass of water',e:'openai'}];
+const S={step:'product',done:new Set(['product','audience','write','photo','link','domain','publish']),aud:1,photo:0,kind:0,
+  headline:'Most people chase brain fog with a pill. That\'s the mistake.',live:true,test:null,testStep:0,testWhat:'photo',testB:1,learned:true,pv:'d'};
+const BUILD=[['product','Product','Paste the link'],['audience','Audience','Who it\'s for'],['write','Write','Claude writes the page'],['photo','Hero photo','Pick the top photo'],
+  ['link','Buy link','Your affiliate link'],['ads','Ad account','Which account runs it'],['domain','Domain','Your own address'],['publish','Go live','Final check']];
+const GROW=[['test','Split test','A vs B'],['results','Results','Who\'s winning']];
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function art(){const a=['Women 55+','Women & men 60+','Men 55+','Everyone 50+'][S.aud]||'';
+  const img=S.test&&S.pvB?PHOTOS[S.testB]:PHOTOS[S.photo];
+  $('#art').innerHTML=`<div class="pub">The Everyday Wellness Desk<em>Advertisement</em></div><div class="kick">Health habits after 50</div>
+   <h2>${esc(S.headline)}</h2><p>They skip the basics that shape the whole day first…</p><img src="${U+img.f}" alt="">
+   <div class="buy"><div>2 bottles<b>$79</b></div><div>3 bottles<b>$69</b></div><div class="best">6 bottles<b>$49</b></div></div>`;}
+
+const nextOf=k=>{const all=BUILD.map(b=>b[0]);const i=all.indexOf(k);return all[i+1];};
+function foot(k,label){const n=nextOf(k);const all=BUILD.map(b=>b[0]);const p=all[all.indexOf(k)-1];
+  return `<div class="foot">${p?`<button class="btn ghost" onclick="go('${p}')">← Back</button>`:''}<div class="sp"></div>${n?`<button class="btn p big" onclick="finish('${k}','${n}')">${label||'Save & continue'} →</button>`:''}</div>`;}
+window.finish=(k,n)=>{S.done.add(k);go(n);};
+window.go=k=>{S.step=k;location.hash=k;render();scrollTo({top:0,behavior:'smooth'});};
+
+const V={
+product:()=>`<div class="eyebrow">Step 1 of 8</div><h1>What are we selling?</h1><p class="lead">Paste the product's sales page. Claude reads it, the checkout and the fine print, so the page gets the facts right.</p>
+ <label class="f">Product link<div class="row"><input class="in" style="flex:1;min-width:220px" value="https://getphytomemone.com/welcome/"><button class="btn p" onclick="learn()">${S.learned?'Learn again':'Learn the product'}</button></div></label>
+ <div class="row" style="margin-top:10px"><span class="tag acc">ClickBank</span><span class="tag">seller: phytomem</span><span class="tag">Phytomem One</span></div>
+ <div id="learn" style="margin-top:22px">${S.learned?learned():''}</div>${foot('product')}`,
+audience:()=>`<div class="eyebrow">Step 2 of 8</div><h1>Who is this page for?</h1><p class="lead">Pick the closest match. Photos, words and examples on the page will speak to these people.</p>
+ <div class="grid2">${[['👩‍🦳','Women 55+','US · cooking, family, routines'],['👫','Couples 60+','US · retired, doing things together'],['👨‍🦳','Men 55+','US · work, golf, staying sharp'],['🧑‍🤝‍🧑','Everyone 50+','US · broad, no gender'],['✏️','Custom','Describe your own']].map((a,i)=>`<button class="opt ${S.aud===i?'sel':''}" onclick="S.aud=${i};render()"><span class="ic">${a[0]}</span><b>${a[1]}</b><span>${a[2]}</span></button>`).join('')}</div>
+ <div class="grid2" style="margin-top:18px"><label class="f">Age<input class="in" value="${['55-75','60-80','55-75','50-80',''][S.aud]}"></label><label class="f">Country<input class="in" value="United States"></label></div>
+ <label class="f" style="margin-top:12px">Anything else? <small>optional</small><textarea class="in" placeholder="e.g. grandparents who still work part-time, worried about forgetting names"></textarea></label>${foot('audience')}`,
+write:()=>`<div class="eyebrow">Step 3 of 8</div><h1>Write the page</h1><p class="lead">Choose the style, then Claude writes it. You approve the headline before anything goes live.</p>
+ <div class="grid2">${[['📊','Information advertorial','Animated drawings, cost per day, bundles. Our default.'],['📰','Classic advertorial','Story-style article, fewer drawings.']].map((a,i)=>`<button class="opt ${S.kind===i?'sel':''}" onclick="S.kind=${i};render()"><span class="ic">${a[0]}</span><b>${a[1]} ${i===0?'<span class="tag acc">default</span>':''}</b><span>${a[2]}</span></button>`).join('')}</div>
+ <div class="box" style="margin-top:20px"><div class="row" style="justify-content:space-between"><b>Headline</b><span class="tag ok">Written ✓</span></div>
+ <input class="in" style="margin-top:8px;font-weight:600" value="${esc(S.headline)}" oninput="S.headline=this.value;art()">
+ <p style="margin:10px 0 0;font-size:13px;color:var(--ink2)">The page has 9 sections: opening · 3 changes · drawings · ingredients · cost per day · bundles · FAQ.</p></div>
+ <label class="f" style="margin-top:16px">Want changes? <small>Claude updates the page in about 7 minutes</small><textarea class="in" placeholder="e.g. Make the opening shorter, mention forgetting names"></textarea></label>
+ <div class="row" style="margin-top:10px"><button class="btn">Send changes</button><a class="btn" href="https://everydayhabitsreport.com" target="_blank" rel="noopener">Read the full page ↗</a></div>${foot('write')}`,
+photo:()=>`<div class="eyebrow">Step 4 of 8</div><h1>Pick the top photo</h1><p class="lead">This is the first thing people see. Click a photo to put it on the page. Want different ones? Describe them and make more.</p>
+ <div class="box"><label class="f">Describe the photos you want <small>optional</small><textarea class="in" rows="2" placeholder="e.g. A realistic couple, 60+, holding the bottle together on their porch"></textarea></label>
+ <div class="row" style="margin-top:10px"><div class="seg"><button class="on">Mix</button><button>Higgsfield</button><button>OpenAI</button></div><div class="sp"></div><button class="btn p" onclick="makeMore()">Make 5 more</button></div></div>
+ <div class="ph-grid" style="margin-top:18px" id="phg">${PHOTOS.map((x,i)=>`<button class="ph ${S.photo===i?'sel':''}" onclick="S.photo=${i};render()"><img src="${U+x.f}" alt="" loading="lazy"><span class="eng tag ${x.e==='higgsfield'?'hf':''}">${x.e==='higgsfield'?'Higgsfield':'OpenAI'}</span><span class="cap">${x.p} · ${x.m}</span></button>`).join('')}</div>${foot('photo')}`,
+link:()=>`<div class="eyebrow">Step 5 of 8</div><h1>Where the buy buttons go</h1><p class="lead">Paste your affiliate link so every sale is credited to you. Ad and A/B tracking are added automatically.</p>
+ <label class="f">ClickBank HopLink<div class="row"><input class="in" style="flex:1;min-width:220px" value="https://1bcf5fsvvh0u8v5cjv8nyzxxae.hop.clickbank.net"><button class="btn" onclick="this.outerHTML='<span class=\\'tag ok\\'>✓ Works · credited to scalio</span>'">Test the link</button></div></label>
+ <div style="margin-top:20px;display:flex;flex-direction:column;gap:10px"><div class="okbar"><b>✓ Sales feed connected</b> ClickBank sends checkout views and sales here within seconds.</div>
+ <div class="okbar"><b>✓ All 3 buy buttons</b> (2, 3 and 6 bottles) use this link, on A and B.</div></div>${foot('link')}`,
+domain:()=>`<div class="eyebrow">Step 7 of 8</div><h1>Your own address</h1><p class="lead">One domain per product. Buy it, point it here, done.</p>
+ <div class="okbar"><b>✓ Connected</b> everydayhabitsreport.com · secure 🔒</div>
+ <details class="box" style="margin-top:14px"><summary style="cursor:pointer;font-weight:600">Need a new one? See suggestions</summary><div style="margin-top:12px;display:flex;flex-direction:column;gap:8px">
+ ${['everydayhabitsreport.com','brightermorningnotes.com','steadyroutinejournal.com'].map((d,i)=>`<div class="row" style="background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px"><b style="flex:1">${d}</b>${i?'<span class="tag ok">Available</span><button class="btn">Buy ↗</button>':'<span class="tag acc">Yours</span>'}</div>`).join('')}</div></details>
+ <details class="box" style="margin-top:12px"><summary style="cursor:pointer;font-weight:600">How to connect a domain (5 minutes)</summary><ol style="margin:12px 0 0;padding-left:20px;color:var(--ink2)"><li>Namecheap → Nameservers → Custom DNS → ns1/ns2.vercel-dns.com</li><li>Vercel → Domains → Add</li><li>Here → Check connection</li></ol></details>${foot('domain')}`,
+publish:()=>`<div class="eyebrow">Step 8 of 8</div><h1>Ready to go live?</h1><p class="lead">Everything is checked. Flip the switch and use the link in your ads.</p>
+ <ul class="check" style="margin-bottom:22px">${['Page written and checked','Top photo picked','Buy buttons credited to you','Sales feed connected','Domain connected and secure'].map(t=>`<li class="ok">${t}</li>`).join('')}</ul>
+ <div class="golive"><button class="sw ${S.live?'on':''}" aria-label="Live" onclick="S.live=!S.live;render()"></button><div><b style="font-size:17px">${S.live?'Live':'Not live'}</b><div style="color:var(--ink2);font-size:14px">${S.live?'Anyone with the link sees the page.':'Only your team can see it.'}</div></div></div>
+ <label class="f" style="margin-top:20px">Your ad link<div class="copy"><code>https://everydayhabitsreport.com/?utm_content={{ad.id}}</code><button class="btn" onclick="this.textContent='Copied ✓'">Copy</button></div></label>
+ <div class="foot"><button class="btn ghost" onclick="go('domain')">← Back</button><div class="sp"></div><button class="btn p big" onclick="S.done.add('publish');go('test')">Next: grow it with a split test →</button></div>`,
+test:()=>testView(),
+results:()=>resultsView()};
+
+function learned(){return `<div class="fade"><div class="row" style="margin-bottom:12px"><b>What Claude learned</b><span class="tag ok">Done ✓</span></div>
+ <div class="facts"><div class="fact"><small>Product</small><b>Phytomem One</b></div><div class="fact"><small>Bundles</small><b>2 · 3 · 6 bottles</b></div><div class="fact"><small>Best price</small><b>$1.63 a day</b></div><div class="fact"><small>Returns</small><b>60 days</b></div><div class="fact"><small>Billing</small><b>One-time, no subscription</b></div></div>
+ <div class="note" style="margin-top:12px"><b>Heads-up</b> The seller says "capsules", the label says "30 tablets". The page says tablets.</div></div>`;}
+window.learn=()=>{S.learned=false;const box=$('#learn');const steps=['Reading the sales page','Opening each checkout','Ingredients and label','Return policy and fine print'];
+  let i=0;const draw=()=>{box.innerHTML=`<ul class="check">${steps.map((s,j)=>`<li class="${j<i?'ok':j===i?'now':''}">${s}</li>`).join('')}</ul>`;};draw();
+  const t=setInterval(()=>{i++;if(i>steps.length){clearInterval(t);S.learned=true;box.innerHTML=learned();return;}draw();},700);};
+window.makeMore=()=>{const g=$('#phg');for(let i=0;i<5;i++){const d=document.createElement('div');d.className='ph shim';g.prepend(d);}
+  setTimeout(()=>{g.querySelectorAll('.shim').forEach(x=>x.remove());},2600);};
+
+const WHAT=[['headline','✍️','Headline','The first line people read. Biggest lever.'],['photo','🖼️','Top photo','Same words, different photo.'],['opening','📖','Opening','The first paragraphs.'],['offer','💲','Offer','How the price and bundles are pitched.'],['hormozi','🔥','Hormozi offer','Value math, guarantee, "obvious pick".'],['shorter','✂️','Shorter page','Same story, tighter.']];
+function testView(){
+  if(S.test)return `<div class="eyebrow">Grow</div><h1>Test running: ${WHAT.find(w=>w[0]===S.testWhat)[2]}</h1><p class="lead">Half the visitors see A, half see B. The winner is picked automatically after 7+ days and 500+ visitors each.</p>
+   <div class="row"><button class="btn p" onclick="go('results')">See results →</button><button class="btn" onclick="S.test=null;S.testStep=0;render()">Stop test</button></div>`;
+  const st=S.testStep,w=WHAT.find(x=>x[0]===S.testWhat);
+  const chips=`<div class="steps3">${['1 · What to test','2 · Make version B','3 · Check & start'].map((t,i)=>`<span class="${i===st?'on':i<st?'ok':''}">${t}</span>`).join('')}</div>`;
+  if(st===0)return `<div class="eyebrow">Grow</div><h1>What do you want to test?</h1><p class="lead">Test one thing at a time, so you know what made the difference.</p>${chips}
+   <div class="grid2">${WHAT.map(x=>`<button class="opt ${S.testWhat===x[0]?'sel':''}" onclick="S.testWhat='${x[0]}';render()"><span class="ic">${x[1]}</span><b>${x[2]}</b><span>${x[3]}</span></button>`).join('')}</div>
+   <div class="foot"><div class="sp"></div><button class="btn p big" onclick="S.testStep=1;render()">Next →</button></div>`;
+  if(st===1)return `<div class="eyebrow">Grow · ${w[2]}</div><h1>${S.testWhat==='photo'?'Pick the photo for version B':S.testWhat==='headline'?'Write the headline for B':'Tell Claude what to try in B'}</h1><p class="lead">Version A stays exactly as it is.</p>${chips}
+   ${S.testWhat==='photo'?`<div class="ph-grid">${PHOTOS.map((x,i)=>i===S.photo?'':`<button class="ph ${S.testB===i?'sel':''}" onclick="S.testB=${i};render()"><img src="${U+x.f}" alt=""><span class="cap">${x.p} · ${x.m}</span></button>`).join('')}</div>`
+   :S.testWhat==='headline'?`<label class="f">Headline for B<input class="in" style="font-weight:600" value="Forgetting names lately? It's usually not your memory. It's your mornings."></label>
+     <div class="row" style="margin-top:10px"><span style="color:var(--ink2);font-size:14px">Or let Claude write one:</span><button class="btn">✨ Suggest 3 headlines</button></div>`
+   :`<label class="f">Idea for B <small>optional</small><textarea class="in" placeholder="e.g. lead with the 60-day return policy"></textarea></label>`}
+   <div class="foot"><button class="btn ghost" onclick="S.testStep=0;render()">← Back</button><div class="sp"></div><button class="btn p big" onclick="S.testStep=2;render()">${S.testWhat==='photo'?'Next':'Make version B'} →</button></div>`;
+  return `<div class="eyebrow">Grow · ${w[2]}</div><h1>Check A and B, then start</h1><p class="lead">Here's exactly what changes. Everything else is the same.</p>${chips}
+   <div class="ab"><div class="abc"><div class="hd">A · original<span class="tag">50%</span></div><img src="${U+PHOTOS[S.photo].f}" alt=""><div style="padding:12px 14px;font-weight:600">${esc(S.headline)}</div></div>
+   <div class="abc" style="border-color:var(--acc)"><div class="hd">B · new<span class="tag acc">50%</span></div><img src="${U+PHOTOS[S.testWhat==='photo'?S.testB:S.photo].f}" alt=""><div style="padding:12px 14px;font-weight:600">${S.testWhat==='headline'?'Forgetting names lately? It\'s usually not your memory. It\'s your mornings.':esc(S.headline)}</div></div></div>
+   <label class="row" style="margin-top:16px;font-size:14px"><input type="checkbox" checked> Pick the winner automatically (7+ days, 500+ visitors each, 95% sure)</label>
+   <div class="foot"><button class="btn ghost" onclick="S.testStep=1;render()">← Back</button><div class="sp"></div><button class="btn p big" onclick="S.test=true;go('results')">Start 50/50 test</button></div>`;}
+
+function resultsView(){
+  if(!S.test)return `<div class="eyebrow">Grow</div><h1>No test running</h1><p class="lead">Start a split test to see A vs B here.</p><button class="btn p" onclick="go('test')">Start a split test →</button>`;
+  const A={v:1240,c:198,co:41,s:12,img:PHOTOS[S.photo].f},B={v:1213,c:241,co:52,s:17,img:PHOTOS[S.testWhat==='photo'?S.testB:S.photo].f};
+  const card=(n,x,win)=>`<div class="abc ${win?'win':''}"><div class="hd">${n}${win?'<span class="tag ok">Leading</span>':''}</div><img src="${U+x.img}" alt=""><div class="bd">
+   <div><small>Visitors</small><b>${x.v.toLocaleString()}</b></div><div><small>Buy clicks</small><b>${x.c}</b> <small style="display:inline">${(x.c/x.v*100).toFixed(1)}%</small></div>
+   <div><small>Checkouts</small><b>${x.co}</b></div><div><small>Sales</small><b>${x.s}</b></div></div></div>`;
+  return `<div class="eyebrow">Grow · results</div><h1>B is ahead</h1><p class="lead">Test: ${WHAT.find(w=>w[0]===S.testWhat)[2]} · running 4 days · sample numbers for the mockup</p>
+   <div class="verdict"><span class="big">91%</span><div><b>sure B is better</b><div style="font-size:13px;color:var(--ink2)">Needs 3 more days to be certain. Auto-pick is on.</div></div></div>
+   <div style="font-size:13px;font-weight:600;color:var(--ink2);margin-bottom:6px">Who's winning</div><div class="meter"><i style="width:9%;background:var(--ink3)"></i><i style="width:91%;background:var(--ok)"></i></div>
+   <div class="row" style="justify-content:space-between;font-size:12px;color:var(--ink3);margin:4px 0 18px"><span>A</span><span>B</span></div>
+   <div class="ab">${card('A · original',A,false)}${card('B · new',B,true)}</div>
+   <div class="foot"><button class="btn" onclick="S.test=null;S.testStep=0;go('test')">Keep A, end test</button><div class="sp"></div><button class="btn p big" onclick="S.photo=S.testB;S.test=null;S.testStep=0;go('photo')">Pick B for everyone</button></div>`;}
+
+
+const ACCTS=[{id:'act_1093',name:'NUTRA 1 · Brain',conn:'Scale Calls BM',px:'Brain pixel'},{id:'act_2271',name:'NUTRA 2 · Sleep',conn:'Scale Calls BM',px:'Sleep pixel'},{id:'act_3380',name:'NUTRA 3 · GLP',conn:'Scale Calls BM',px:'GLP pixel'},{id:'act_4412',name:'PTM · Joints',conn:'Palm Tree BM',px:'PTM pixel'},{id:'act_5590',name:'PTM · Energy',conn:'Palm Tree BM',px:'PTM pixel 2'}];
+const OFFERS=[{k:'brain',n:'Brain Support',p:'Phytomem One',net:'ClickBank',acct:'act_1093',spend:412,sales:9,rev:1035,live:true},{k:'wn',n:'Wellness Notes',p:'Synaptril',net:'JVZoo',acct:'act_2271',spend:288,sales:5,rev:610,live:true},{k:'ns',n:'NeuroSharp',p:'NeuroSharp',net:'JVZoo',acct:'act_3380',spend:156,sales:1,rev:98,live:true},{k:'glp',n:'Glpatches',p:'GLP patches',net:'JVZoo',acct:'',spend:0,sales:0,rev:0,live:false}];
+S.nav='pages';S.open=true;S.acct='act_1093';S.pixel='Brain pixel';S.modal=0;
+const NAV=[['home','🏠','Home'],['pages','📄','Pages'],['budgets','💰','Budgets'],['accounts','🔗','Ad accounts'],['history','🗂','History']];
+window.nav=k=>{S.nav=k;if(k!=='pages')S.open=false;render();scrollTo(0,0);};
+window.openPage=()=>{S.nav='pages';S.open=true;render();};
+function side(){const n=BUILD.filter(b=>S.done.has(b[0])).length;
+  const sb=(k,l,i)=>`<button class="sb ${S.step===k?'on':''} ${S.done.has(k)?'done':''}" onclick="go('${k}')"><span class="d"></span>${l}${k==='test'&&S.test?'<span class="lv">LIVE</span>':''}</button>`;
+  const steps=`<div class="sub"><div class="lab">Brain Support · ${n}/${BUILD.length}</div>${BUILD.map(b=>sb(b[0],b[1])).join('')}<div class="lab">Grow</div>${GROW.map(b=>sb(b[0],b[1])).join('')}</div>`;
+  $('#side').innerHTML=`<div class="logo"><i></i>NUTRA</div>`+NAV.map(([k,ic,l])=>`<button class="nv ${S.nav===k?'on':''}" onclick="nav('${k}')"><span class="ico">${ic}</span>${l}${k==='pages'?'<span class="cnt">3</span>':k==='accounts'?'<span class="cnt">5</span>':''}</button>${k==='pages'&&S.nav==='pages'&&S.open?steps:''}`).join('')
+   +`<div class="sfoot"><button class="nv ${S.nav==='settings'?'on':''}" onclick="nav('settings')"><span class="ico">⚙️</span>Settings</button>
+   <div class="sync">Meta data · <b>26 Nov, 16:07</b><button title="Sync now">🔄</button></div><div class="me"><i>VR</i><div><b style="font-size:13px">Vlad Raush</b><small>Owner · Sign out</small></div></div></div>`;
+  $('#bbar').innerHTML=[['home','🏠','Home'],['pages','📄','Pages'],['budgets','💰','Budgets'],['accounts','🔗','Accounts'],['more','☰','More']].map(([k,ic,l])=>`<button class="${S.nav===k?'on':''}" onclick="nav('${k==='more'?'history':k}')"><span>${ic}</span>${l}</button>`).join('');}
+const money=v=>'$'+Number(v).toLocaleString();
+const SCREENS={
+home:()=>{const t=OFFERS.reduce((a,o)=>({s:a.s+o.spend,r:a.r+o.rev,n:a.n+o.sales}),{s:0,r:0,n:0});
+  return `<div class="phead"><h1>Home</h1><span class="tag">Today</span></div>
+  <div class="kpis"><div class="kpi"><small>Spend</small><b>${money(t.s)}</b></div><div class="kpi"><small>Revenue</small><b>${money(t.r)}</b></div><div class="kpi"><small>Profit</small><b>${money(t.r-t.s)}</b> <span class="up">ROAS ${(t.r/t.s).toFixed(2)}</span></div><div class="kpi"><small>Sales</small><b>${t.n}</b></div></div>
+  <div class="card" style="padding:8px 8px 0;overflow-x:auto"><table class="t"><thead><tr><th>Offer</th><th>Ad account</th><th class="n">Spend</th><th class="n">Sales</th><th class="n">Revenue</th><th class="n">ROAS</th></tr></thead><tbody>
+  ${OFFERS.map(o=>{const a=ACCTS.find(x=>x.id===o.acct);return `<tr><td><b>${o.n}</b><div style="font-size:12px;color:var(--ink3)">${o.p} · ${o.net}</div></td><td>${a?a.name:'<button class="btn" style="padding:4px 10px;font-size:12px" onclick="nav(\'accounts\')">Link an account</button>'}</td><td class="n">${money(o.spend)}</td><td class="n">${o.sales}</td><td class="n">${money(o.rev)}</td><td class="n">${o.spend?(o.rev/o.spend).toFixed(2):'—'}</td></tr>`;}).join('')}</tbody></table></div>`;},
+pagesList:()=>`<div class="phead"><h1>Pages</h1><div class="sp"></div><button class="btn p">+ Build a new page</button></div>
+  <div class="grid2">${[['Brain Support','LIVE · A/B TEST','everydayhabitsreport.com',true],['Sleep Aid','BUILDING · ~6 MIN','',false],['Joint Relief','READY · NOT PUBLISHED','',false]].map(x=>`<button class="opt" onclick="openPage()"><span class="tag ${x[3]?'ok':'acc'}">${x[1]}</span><b>${x[0]}</b><span>${x[2]||'Not published yet'}</span></button>`).join('')}</div>`,
+accounts:()=>{const conns=[...new Set(ACCTS.map(a=>a.conn))];
+  return `<div class="phead"><h1>Ad accounts</h1><div class="sp"></div><button class="btn p" onclick="S.modal=1;render()">+ Connect Facebook</button></div>
+  <p class="lead">Connect each Facebook login or Business Manager once. Then tell the dashboard which ad account runs which offer. Spend, clicks and CTR are pulled every hour.</p>
+  <div style="display:flex;flex-direction:column;gap:12px">${conns.map(c=>`<div class="acct"><span class="lg">f</span><div class="info"><b>${c}</b><small>${ACCTS.filter(a=>a.conn===c).length} ad accounts · connected · last pull 16:07</small></div><span class="tag ok">✓ Connected</span><button class="btn" style="padding:6px 12px;font-size:13px">Manage</button></div>`).join('')}</div>
+  <h2 style="margin:28px 0 6px;font-size:18px">Which account runs which offer?</h2><p class="lead" style="margin-bottom:12px">One offer = one ad account. Change it any time; history stays.</p>
+  <div style="display:flex;flex-direction:column;gap:8px">${OFFERS.map(o=>`<div class="map"><div><b>${o.n}</b><div style="font-size:12px;color:var(--ink3)">${o.p} · ${o.net}</div></div><span class="ar">→</span>
+   <select class="in" onchange="OFFERS.find(x=>x.k==='${o.k}').acct=this.value;render()"><option value="">Choose an ad account…</option>${ACCTS.map(a=>`<option value="${a.id}"${a.id===o.acct?' selected':''}>${a.name} · ${a.conn}</option>`).join('')}</select></div>`).join('')}</div>`;},
+budgets:()=>`<div class="phead"><h1>Budgets</h1></div><div class="card"><p class="lead" style="margin:0">Same as today's <b>Test Budgets</b> tab, now in the sidebar.</p></div>`,
+history:()=>`<div class="phead"><h1>History</h1></div><div class="card"><p class="lead" style="margin:0">Same as today's <b>History</b> tab: archived products, what you spent, why you stopped.</p></div>`,
+settings:()=>`<div class="phead"><h1>Settings</h1></div><div class="grid2">${[['⏸️','Pause rules','When ads get paused'],['🌐','Networks','JVZoo, ClickBank postbacks'],['👥','Team','Who can see and edit'],['🔔','Alerts','Email and Slack']].map(x=>`<button class="opt"><span class="ic">${x[0]}</span><b>${x[1]}</b><span>${x[2]}</span></button>`).join('')}</div>`};
+V.ads=()=>{const a=ACCTS.find(x=>x.id===S.acct);return `<div class="eyebrow">Step 6 of 8</div><h1>Which ad account runs this page?</h1><p class="lead">The dashboard pulls spend, clicks and CTR from this account and matches sales to it. One offer, one account.</p>
+ <label class="f">Ad account<select class="in" onchange="S.acct=this.value;render()">${ACCTS.map(x=>`<option value="${x.id}"${x.id===S.acct?' selected':''}>${x.name} · ${x.conn}</option>`).join('')}</select></label>
+ <label class="f" style="margin-top:12px">Pixel<select class="in"><option>${a?a.px:''}</option><option>Other pixel…</option></select></label>
+ <div class="okbar" style="margin-top:16px"><b>✓ Connected</b> ${a?a.name:''} · data pulled every hour · last 16:07</div>
+ <p style="margin:12px 0 0;font-size:14px;color:var(--ink2)">Account not in the list? <button class="btn ghost" style="padding:0;color:var(--acc)" onclick="nav('accounts')">Connect another Facebook login →</button></p>${foot('ads')}`;};
+function modal(){if(!S.modal)return'';const st=S.modal;
+  const body=st===1?`<div class="eyebrow">Connect Facebook · 1 of 2</div><h1 style="font-size:22px">How do you want to connect?</h1>
+   <div style="display:flex;flex-direction:column;gap:10px;margin-top:14px"><button class="opt" onclick="S.modal=2;render()"><span class="ic">🔵</span><b>Continue with Facebook <span class="tag acc">easiest</span></b><span>Log in, tick the ad accounts, done. Works with any account you can see.</span></button>
+   <button class="opt" onclick="S.modal=2;render()"><span class="ic">🔑</span><b>Business Manager system user</b><span>Most stable for agencies. You paste a token from Business Settings → System users (we show the clicks).</span></button></div>`
+   :`<div class="eyebrow">Connect Facebook · 2 of 2</div><h1 style="font-size:22px">Pick the ad accounts</h1><p class="lead">We found 4 accounts in "Wellness BM".</p>
+   <div style="display:flex;flex-direction:column;gap:8px">${['Wellness 1','Wellness 2','Wellness 3 (disabled)','Wellness 4'].map((x,i)=>`<label class="row" style="border:1px solid var(--line);border-radius:12px;padding:10px 12px"><input type="checkbox" ${i!==2?'checked':''}> <b>${x}</b><span style="margin-left:auto;font-size:12px;color:var(--ink3)">act_88${i}1</span></label>`).join('')}</div>`;
+  return `<div class="modal" onclick="if(event.target===this){S.modal=0;render()}"><div class="card">${body}<div class="foot"><button class="btn ghost" onclick="S.modal=0;render()">Cancel</button><div class="sp"></div>${st===2?'<button class="btn p" onclick="S.modal=0;render()">Add 3 accounts</button>':''}</div></div></div>`;}
+window.pvMode=m=>{S.pv=m;render();};
+window.showPv=()=>{};
+function render(){side();let h='';
+  if(S.nav==='pages'&&S.open){h=`<div class="phead"><button class="btn ghost" style="padding:0;color:var(--acc)" onclick="S.open=false;render()">← All pages</button><h1>Brain Support</h1><span class="pill">Live · A/B test</span><div class="sp"></div><a class="btn" href="https://everydayhabitsreport.com" target="_blank" rel="noopener">Open page ↗</a></div>
+   <div class="mrail">${[...BUILD,...GROW].map(b=>`<button class="sb ${S.step===b[0]?'on':''} ${S.done.has(b[0])?'done':''}" onclick="go('${b[0]}')"><span class="d"></span>${b[1]}</button>`).join('')}</div>
+   <div class="pgrid"><div class="card fade">${V[S.step]()}</div><aside class="pv"><div class="pvh"><b>Live preview</b><div class="seg"><button class="${S.pv!=='p'?'on':''}" onclick="pvMode('d')">Desktop</button><button class="${S.pv==='p'?'on':''}" onclick="pvMode('p')">Phone</button></div></div>
+   <div class="frame ${S.pv==='p'?'phone':''}"><div class="fbar"><i></i><i></i><i></i><span>everydayhabitsreport.com</span></div><div class="art" id="art"></div></div></aside></div>`;}
+  else if(S.nav==='pages')h=SCREENS.pagesList();else h=SCREENS[S.nav]();
+  $('#content').innerHTML=h+modal();if($('#art'))art();}
+window.go=k=>{S.nav='pages';S.open=true;S.step=k;render();scrollTo({top:0,behavior:'smooth'});};
+S.step='ads';
+render();
+</script>
+</body>
+</html>
