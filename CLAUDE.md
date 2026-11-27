@@ -45,6 +45,9 @@ https://nutra-dashboard-taupe.vercel.app). Pushing to `main` deploys automatical
   - **Гайд** (Russian how-to for Alex): content `app/guide/ru.json` (chapters → steps with `go: {tab, page, step, sel}`),
     served only by `/api/guide` to emails in kv `config/guide.emails` (default propaganda.tae@gmail.com) + owner preview;
     progress in kv `private/guide/<hash>`. UI = sidebar item "Гайд", checklist, "Показать" spotlight + tour.
+  - **Updates** tab (sidebar, red dot until seen): `app/guide/updates.json` (newest first; en + `ru_t`/`ru_d` for Alex; tag new|better|fix)
+    + posts by owner/editors in kv `updates/custom`; seen ids per user in kv `private/updates_seen/<hash>`. API `/api/updates`, `/seen`, `/post`.
+    **With every change people will notice, add an entry to `app/guide/updates.json` in the same commit.**
   - `static/dashboard.html` — the page. `static/shim.js` gives it `window.claude.use('db'|'user')` backed by `/api/db`.
   - `app/README.md` — env vars and routes.
 - `dashboard.html` (repo root) — same page, used by the old Claude artifact. **After editing the page, copy it to

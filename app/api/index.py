@@ -854,6 +854,45 @@ def route(env):
         if not r.get('ok'):
             return jresp(r, 400)
         return jresp({**accounts.view(), 'result': r})
+    if path in ('/api/updates', '/api/updates/seen', '/api/updates/post'):
+        # "What's new": entries from guide/updates.json (pushed with the code) + ones the team posts (kv updates/custom).
+        if not user:
+            return jresp({'ok': False}, 403)
+        email = str(user.get('email') or '').lower()
+        seen_key = 'private/updates_seen/' + hashlib.sha256(email.encode()).hexdigest()[:24]
+        if method == 'POST' and not same_origin(env):
+            return jresp({'ok': False}, 405)
+        custom = db.kv_data('updates/custom') or []
+        if path == '/api/updates/seen':
+            ids = [str(x)[:60] for x in (p.get('ids') or [])][:400]
+            db.kv_set(seen_key, {'ids': ids, 'at': datetime.datetime.now(datetime.timezone.utc).isoformat()})
+            return jresp({'ok': True})
+        if path == '/api/updates/post':
+            if user['role'] not in ('owner', 'editor') or method != 'POST':
+                return jresp({'ok': False}, 403)
+            if p.get('op') == 'delete':
+                custom = [u for u in custom if u.get('id') != p.get('id')]
+            else:
+                t = str(p.get('t') or '').strip()[:120]
+                if not t:
+                    return jresp({'ok': False, 'error': 'Write a title first.'}, 400)
+                custom.insert(0, {'id': 'c-' + secrets.token_hex(4), 'date': datetime.date.today().isoformat(), 'tag': p.get('tag') if p.get('tag') in ('new', 'better', 'fix', 'note') else 'note',
+                                  't': t, 'd': str(p.get('d') or '').strip()[:1200], 'ru_t': str(p.get('ru_t') or '').strip()[:120], 'ru_d': str(p.get('ru_d') or '').strip()[:1200],
+                                  'by': user.get('name') or email, 'custom': True})
+            db.kv_set('updates/custom', custom[:200])
+        try:
+            base = json.loads(open(os.path.join(os.path.dirname(__file__), '..', 'guide', 'updates.json'), encoding='utf-8').read()).get('updates') or []
+        except Exception:
+            base = []
+        allu = sorted(custom + base, key=lambda u: str(u.get('date') or ''), reverse=True)
+        rec = db.kv_data(seen_key)
+        if rec is None:  # first visit: only the last 3 days count as new
+            cut = (datetime.date.today() - datetime.timedelta(days=3)).isoformat()
+            seen = [u['id'] for u in allu if str(u.get('date') or '') < cut]
+        else:
+            seen = rec.get('ids') or []
+        guide = [str(x).lower() for x in ((db.kv_data('config/guide') or {}).get('emails') or ['propaganda.tae@gmail.com'])]
+        return jresp({'ok': True, 'updates': allu, 'seen': seen, 'lang': 'ru' if email in guide else 'en', 'can_post': user['role'] in ('owner', 'editor')})
     if path in ('/api/guide', '/api/guide/progress'):
         # The Russian how-to guide: only for the people listed in kv config/guide (default: Alex), plus the owner (preview).
         if not user:

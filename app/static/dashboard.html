@@ -982,6 +982,24 @@ body.noscroll{overflow:hidden;}
 /* guide (Russian, only for listed people) */
 .gd-head{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap}
 .gd-prog{height:10px;border-radius:999px;background:var(--track);overflow:hidden;margin:6px 0 2px}.gd-prog i{display:block;height:100%;background:var(--green);border-radius:999px;transition:width .4s}
+/* Updates */
+.nav-pill{position:relative}.up-dot{position:absolute;top:9px;left:24px;width:9px;height:9px;border-radius:50%;background:#EF4444;box-shadow:0 0 0 2px var(--surface,#fff)}
+.up-n{display:inline-flex;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:#EF4444;color:#fff;font-size:11.5px;font-weight:700;align-items:center;justify-content:center;margin-left:8px;vertical-align:middle}
+.up-day{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--fg3);margin:26px 4px 10px}
+.up-item{display:flex;gap:14px;align-items:flex-start;padding:18px 22px;margin-bottom:10px}
+.up-item.unseen{box-shadow:inset 3px 0 0 #EF4444}
+.up-tag{flex:none;font-size:11px;font-weight:700;padding:4px 9px;border-radius:999px;text-transform:uppercase;letter-spacing:.04em;margin-top:2px}
+.up-tag.new{background:var(--green-lt,#DCFCE7);color:var(--green,#16A34A)}.up-tag.better{background:#DBEAFE;color:#1D4ED8}.up-tag.fix{background:#FEF3C7;color:#B45309}.up-tag.note{background:var(--surface2,#eee);color:var(--fg2)}
+.up-item .tx{flex:1;min-width:0}.up-item b{font-size:16px;font-weight:600;letter-spacing:-.01em}.up-item p{margin:4px 0 0;color:var(--fg2);font-size:14.5px;line-height:1.5}
+.up-item small{display:block;color:var(--fg3);font-size:12px;margin-top:6px}
+.up-new{font-size:10.5px;font-weight:800;color:#EF4444;margin-left:6px;letter-spacing:.05em}
+.up-acts{display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+.up-lang{display:inline-flex;border:1px solid var(--border);border-radius:999px;overflow:hidden}.up-lang button{border:0;background:none;padding:7px 12px;font:inherit;font-size:13px;cursor:pointer;color:var(--fg2)}.up-lang button.on{background:var(--fg,#111);color:var(--bg,#fff)}
+.up-form{padding:18px 22px;display:grid;gap:10px}.up-form textarea,.up-form input,.up-form select{width:100%;box-sizing:border-box}
+.up-banner{position:fixed;right:20px;bottom:20px;z-index:60;max-width:340px;background:var(--surface,#fff);border:1px solid var(--border);border-radius:18px;padding:14px 16px;box-shadow:0 12px 40px rgba(0,0,0,.14);display:flex;gap:12px;align-items:center;font-size:14px}
+.up-banner b{display:block}.up-banner button{white-space:nowrap}
+@media(max-width:860px){.up-banner{bottom:84px;left:16px;right:16px;max-width:none}.up-dot{top:6px;left:auto;right:calc(50% - 16px)}}
+@media(max-width:560px){.up-item{flex-wrap:wrap;padding:16px}.up-acts{flex-direction:row;width:100%;justify-content:flex-end}}
 .gd-ch{padding:0;overflow:hidden}
 .gd-ch>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:14px;padding:18px 22px}.gd-ch>summary::-webkit-details-marker{display:none}
 .gd-ic{width:44px;height:44px;border-radius:14px;background:var(--surface2);display:grid;place-items:center;font-size:22px;flex:none}
@@ -1044,6 +1062,10 @@ body.noscroll{overflow:hidden;}
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 8a6 6 0 1 0 1.8-4.3"/><path d="M2 2.5v3h3"/><path d="M8 5v3.2l2.2 1.4"/></svg>
       <span>History</span>
     </button>
+    <button class="nav-pill" id="tab-updates" onclick="switchTab('updates')">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 1.8l1.6 3.6 3.9.4-2.9 2.6.8 3.9L8 10.3l-3.4 2 .8-3.9L2.5 5.8l3.9-.4z"/></svg>
+      <span>Updates</span><i class="up-dot" id="upDot" hidden></i>
+    </button>
     <button class="nav-pill nav-settings" id="tab-settings" onclick="switchTab('settings')">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="2.2"/><path d="M8 1.5v1.8M8 12.7v1.8M14.5 8h-1.8M3.3 8H1.5M12.6 3.4l-1.3 1.3M4.7 11.3l-1.3 1.3M12.6 12.6l-1.3-1.3M4.7 4.7L3.4 3.4"/></svg>
       <span>Settings</span>
@@ -1079,6 +1101,7 @@ body.noscroll{overflow:hidden;}
   </div>
 </nav>
 
+<div id="updatesView" hidden><div class="page nt-wrap" id="upRoot"></div></div>
 <div id="guideView" hidden><div class="page nt-wrap" id="gdRoot"></div></div>
 <div id="accountsView" hidden><div class="page nt-wrap" id="acRoot"></div></div>
 <!-- ══ OVERVIEW ══ -->
@@ -2079,8 +2102,8 @@ function switchTab(tab){
   $('budgetView').hidden=tab!=='budgets';
   $('settingsView').hidden=tab!=='settings';
   $('testsView').hidden=true;$('pagesView').hidden=tab!=='pages';$('historyView').hidden=tab!=='history';$('accountsView').hidden=tab!=='accounts';
-  ['overview','budgets','pages','accounts','history','settings','guide'].forEach(t=>{const b=$('tab-'+t);if(b)b.classList.toggle('active',t===tab);});
-  if($('guideView'))$('guideView').hidden=tab!=='guide';if(tab==='guide'&&window.gdShow)window.gdShow();
+  ['overview','budgets','pages','accounts','history','updates','settings','guide'].forEach(t=>{const b=$('tab-'+t);if(b)b.classList.toggle('active',t===tab);});
+  if($('guideView'))$('guideView').hidden=tab!=='guide';$('updatesView').hidden=tab!=='updates';if(tab==='updates'&&window.upShow)window.upShow();if(tab==='guide'&&window.gdShow)window.gdShow();
   if(tab==='accounts'&&window.acShow)window.acShow();if(window.navPagesSync)window.navPagesSync();
   try{$('tab-'+tab).scrollIntoView({block:'nearest',inline:'nearest'});}catch(e){}
   if(tab==='pages'&&window.pgShow)window.pgShow();if(tab==='history'&&window.hiShow)window.hiShow();
@@ -2963,6 +2986,56 @@ try{if(localStorage.getItem(K)==='1')document.body.classList.add('sb-off');}catc
 document.getElementById('sbHide').addEventListener('click',()=>set(true));document.getElementById('sbShow').addEventListener('click',()=>set(false));
 document.addEventListener('keydown',ev=>{if((ev.metaKey||ev.ctrlKey)&&ev.key==='\\'){ev.preventDefault();set(!document.body.classList.contains('sb-off'));}});})();
 
+// ── Updates: what's new (guide/updates.json + posts by the team), red dot until seen ──
+(function(){
+const g=id=>document.getElementById(id),e=s=>esc(s==null?'':s);
+let U=null,seen=new Set(),lang='en',form=false,busy=false;
+const TAG={new:['New','Новое'],better:['Better','Улучшено'],fix:['Fixed','Исправлено'],note:['Note','Заметка']};
+const L=(en,ru)=>lang==='ru'?ru:en;
+const T=u=>lang==='ru'&&u.ru_t?u.ru_t:u.t, D=u=>lang==='ru'&&u.ru_d?u.ru_d:u.d;
+const unseen=()=>U?U.updates.filter(u=>!seen.has(u.id)):[];
+function day(d){try{const x=new Date(d+'T12:00:00');const t=new Date();const diff=Math.round((new Date(t.toDateString())-new Date(x.toDateString()))/864e5);
+  if(diff===0)return L('Today','Сегодня');if(diff===1)return L('Yesterday','Вчера');return x.toLocaleDateString(lang==='ru'?'ru-RU':'en-US',{weekday:'short',month:'short',day:'numeric'});}catch(err){return d;}}
+function dot(){const n=unseen().length,d=g('upDot');if(d)d.hidden=!n;}
+async function api(path,body){const r=await fetch(path,{method:body?'POST':'GET',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});const j=await r.json().catch(()=>({}));if(!r.ok||!j.ok)throw new Error(j.error||'Could not load updates');return j;}
+function render(){const r=g('upRoot');if(!r)return;if(!U){r.innerHTML='<div class="nt-hint">Loading…</div>';return;}
+  const nu=new Set(unseen().map(u=>u.id));let last='';
+  r.innerHTML=`<div class="gd-head"><div style="flex:1;min-width:240px"><div class="ph-title">${L('Updates','Обновления')}${nu.size?`<span class="up-n">${nu.size}</span>`:''}</div>
+    <div class="ph-sub">${L('Everything that changed in the dashboard, newest first.','Все изменения в дашборде, сначала новые.')}</div></div>
+    <div class="ph-actions"><span class="up-lang"><button type="button" data-uplang="en" class="${lang==='en'?'on':''}">EN</button><button type="button" data-uplang="ru" class="${lang==='ru'?'on':''}">RU</button></span>
+    ${U.can_post?`<button type="button" class="nt-primary" data-up="form">${form?L('Close','Закрыть'):L('+ Post an update','+ Добавить')}</button>`:''}</div></div>
+  ${form?`<div class="card up-form"><div class="ps-eye">${L('Post an update for the team','Новость для команды')}</div>
+    <label class="nt-f">${L('Type','Тип')}<select id="upTag"><option value="note">Note</option><option value="new">New</option><option value="better">Better</option><option value="fix">Fixed</option></select></label>
+    <label class="nt-f">${L('Title','Заголовок')}<input id="upT" maxlength="120" placeholder="e.g. New ad account for Brain Support"></label>
+    <label class="nt-f">${L('What changed (optional)','Что изменилось (необязательно)')}<textarea id="upD" rows="3" maxlength="1200"></textarea></label>
+    <details><summary class="nt-hint" style="cursor:pointer">${L('Russian version for Alex (optional)','Русская версия (необязательно)')}</summary>
+      <label class="nt-f">Заголовок<input id="upRT" maxlength="120"></label><label class="nt-f">Текст<textarea id="upRD" rows="3" maxlength="1200"></textarea></label></details>
+    <div class="nt-row"><span style="flex:1"></span><button type="button" class="nt-primary" data-up="post">${busy?'…':L('Post','Опубликовать')}</button></div></div>`:''}
+  ${U.updates.length?U.updates.map(u=>{const h=u.date!==last?`<div class="up-day">${e(day(u.date))}</div>`:'';last=u.date;
+    return h+`<div class="card up-item${nu.has(u.id)?' unseen':''}"><span class="up-tag ${e(u.tag||'note')}">${e(L(...(TAG[u.tag]||TAG.note)))}</span>
+      <div class="tx"><b>${e(T(u))}</b>${nu.has(u.id)?`<span class="up-new">${L('NEW','НОВОЕ')}</span>`:''}${D(u)?`<p>${e(D(u))}</p>`:''}${u.by?`<small>${L('Posted by','Добавил')} ${e(u.by)}</small>`:''}</div>
+      <div class="up-acts">${u.go?`<button type="button" class="gd-show" data-upgo="${e(u.id)}">${L('Open →','Открыть →')}</button>`:''}${u.custom&&U.can_post?`<button type="button" class="nt-link" data-updel="${e(u.id)}">${L('Delete','Удалить')}</button>`:''}</div></div>`;}).join('')
+    :`<div class="card" style="padding:22px">${L('No updates yet.','Пока нет обновлений.')}</div>`}`;}
+async function markSeen(){if(!U)return;const ids=U.updates.map(u=>u.id);if(ids.every(i=>seen.has(i)))return;seen=new Set(ids);dot();try{await api('/api/updates/seen',{ids});}catch(err){}}
+window.upShow=async()=>{render();try{if(!U){const j=await api('/api/updates');U=j;seen=new Set(j.seen||[]);if(!pickedLang)lang=j.lang||'en';}}catch(err){g('upRoot').innerHTML=`<div class="st-note bad">${e(err.message)}</div>`;return;}
+  render();const b=document.querySelector('.up-banner');if(b)b.remove();setTimeout(markSeen,1500);};
+let pickedLang=false;try{const v=localStorage.getItem('nutra_updates_lang');if(v){lang=v;pickedLang=true;}}catch(err){}
+document.addEventListener('click',async ev=>{const t=ev.target;
+  const lb=t.closest('[data-uplang]');if(lb){lang=lb.dataset.uplang;pickedLang=true;try{localStorage.setItem('nutra_updates_lang',lang);}catch(err){}render();return;}
+  const go=t.closest('[data-upgo]');if(go){const u=U.updates.find(x=>x.id===go.dataset.upgo);if(u&&u.go){if(u.go.tab==='guide'&&!g('tab-guide')){toast('Only for Alex');return;}switchTab(u.go.tab);}return;}
+  const del=t.closest('[data-updel]');if(del){if(del.dataset.sure!=='1'){del.dataset.sure='1';del.textContent=L('Click again','Ещё раз');return;}try{U={...U,...await api('/api/updates/post',{op:'delete',id:del.dataset.updel})};toast('Deleted');}catch(err){toast(err.message);}render();return;}
+  const bn=t.closest('[data-upbanner]');if(bn){if(bn.dataset.upbanner==='open')switchTab('updates');else{bn.closest('.up-banner').remove();markSeen();}return;}
+  const a=t.closest('[data-up]');if(!a)return;
+  if(a.dataset.up==='form'){form=!form;render();if(form)setTimeout(()=>g('upT')&&g('upT').focus(),30);return;}
+  if(a.dataset.up==='post'&&!busy){const v=id=>(g(id)||{}).value||'';if(!v('upT').trim()){toast(L('Write a title first.','Сначала заголовок.'));return;}
+    busy=true;render();try{const j=await api('/api/updates/post',{t:v('upT'),d:v('upD'),ru_t:v('upRT'),ru_d:v('upRD'),tag:v('upTag')});U={...U,...j};seen.add(j.updates[0].id);form=false;toast(L('Posted. Everyone sees it now.','Опубликовано.'));}catch(err){toast(err.message);}busy=false;render();}});
+async function init(){if(!window.NUTRA_HOSTED){const b=g('tab-updates');if(b)b.hidden=true;return;}
+  try{const j=await api('/api/updates');U=j;seen=new Set(j.seen||[]);if(!pickedLang)lang=j.lang||'en';dot();
+    const nu=unseen();if(nu.length&&(typeof activeTab==='undefined'||activeTab!=='updates')){const b=document.createElement('div');b.className='up-banner';
+      b.innerHTML=`<span style="font-size:22px">✨</span><div style="flex:1;min-width:0"><b>${nu.length===1?e(T(nu[0])):L(nu.length+' new updates',nu.length+' новых обновлений')}</b><span style="color:var(--fg3);font-size:13px">${L('See what changed','Посмотреть, что нового')}</span></div><button type="button" class="nt-primary" style="min-height:36px" data-upbanner="open">${L('View','Открыть')}</button><button type="button" class="nt-link" data-upbanner="x" aria-label="Close">×</button>`;
+      setTimeout(()=>{if(activeTab!=='updates')document.body.append(b);},1800);}}catch(err){}}
+setTimeout(init,500);
+})();
 // ── Guide (Russian): only shown when /api/guide says so (Alex; owner sees it as preview) ──
 (function(){
 const g=id=>document.getElementById(id),e=s=>esc(s==null?'':s);
