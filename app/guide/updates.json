@@ -1,44 +1,143 @@
 {
-  "_how": "Newest first. Add an entry with every change people will notice. tag: new | better | fix. ru = Russian text for Alex. go = {tab, page, step} opens that screen.",
-  "updates": [
-    {"id": "u-2026-11-27-updates", "date": "2026-11-27", "tag": "new",
-     "t": "Updates tab", "d": "This page. Every change to the dashboard shows up here, and the red dot in the menu tells you something is new.",
-     "ru_t": "Вкладка «Обновления»", "ru_d": "Эта страница. Все изменения в дашборде появляются здесь, а красная точка в меню показывает, что есть что-то новое."},
-    {"id": "u-2026-11-27-guide", "date": "2026-11-27", "tag": "new",
-     "t": "Russian guide for Alex", "d": "Step-by-step checklist with a guided tour. \"Показать\" opens the right screen and highlights where to click.",
-     "ru_t": "Гайд на русском", "ru_d": "Пошаговый чек-лист и тур по платформе. Кнопка «Показать» открывает нужный экран и подсвечивает, куда нажимать.", "go": {"tab": "guide"}},
-    {"id": "u-2026-11-26-accounts", "date": "2026-11-26", "tag": "new",
-     "t": "Ad accounts", "d": "Connect several Facebook Business Managers and choose which ad account runs which product. Each page has an \"Ad account\" step.",
-     "ru_t": "Рекламные кабинеты", "ru_d": "Можно подключить несколько Business Manager и выбрать, какой кабинет крутит какой продукт. У каждой страницы есть шаг «Ad account».", "go": {"tab": "accounts"}},
-    {"id": "u-2026-11-26-sidebar", "date": "2026-11-26", "tag": "new",
-     "t": "New left menu and look", "d": "Everything is in the menu on the left. Hide it with the icon next to NUTRA (or Cmd + \\) for more room.",
-     "ru_t": "Новое меню слева и дизайн", "ru_d": "Всё меню теперь слева. Его можно спрятать иконкой рядом с NUTRA (или Cmd + \\), чтобы было больше места."},
-    {"id": "u-2026-11-26-studio", "date": "2026-11-26", "tag": "new",
-     "t": "Page Studio", "d": "Building a page is now one step per screen: Product, Audience, Write, Hero photo, Buy link, Domain, Go live. Live preview on the right. A new page takes 3 steps.",
-     "ru_t": "Студия страницы", "ru_d": "Страница собирается по шагам, один шаг на экран: Продукт, Аудитория, Текст, Фото, Ссылка, Домен, Публикация. Справа живое превью. Новая страница — 3 шага.", "go": {"tab": "pages"}},
-    {"id": "u-2026-11-26-clickbank", "date": "2026-11-26", "tag": "new",
-     "t": "ClickBank tracking", "d": "ClickBank sales come into the dashboard automatically, and A/B tests know which version (A or B) made each sale.",
-     "ru_t": "Трекинг ClickBank", "ru_d": "Продажи ClickBank приходят в дашборд автоматически, и A/B тест знает, какая версия (A или B) принесла каждую продажу."},
-    {"id": "u-2026-11-26-buylink", "date": "2026-11-26", "tag": "fix",
-     "t": "Every buy button uses our affiliate link", "d": "\"Buy link\" step replaces every button and link on the page (A and B) with our link, so no sale goes untracked.",
-     "ru_t": "Все кнопки ведут через нашу ссылку", "ru_d": "Шаг «Buy link» меняет все кнопки и ссылки на странице (A и B) на нашу партнёрскую ссылку, чтобы ни одна продажа не потерялась."},
-    {"id": "u-2026-11-24-domain", "date": "2026-11-24", "tag": "new",
-     "t": "Your own domain per page", "d": "Claude suggests free .com names that fit the product, with a Buy on Namecheap link, setup steps and a connection check.",
-     "ru_t": "Свой домен для страницы", "ru_d": "Claude предлагает свободные .com домены под продукт, со ссылкой на покупку в Namecheap, инструкцией и проверкой подключения."},
-    {"id": "u-2026-11-24-heroes", "date": "2026-11-24", "tag": "new",
-     "t": "Hero photo options", "d": "Make 5 or 10 audience-matched photos, describe what you want, watch them being made live, then pick one or A/B test two.",
-     "ru_t": "Варианты фото первого экрана", "ru_d": "Сделай 5 или 10 фото под аудиторию, опиши, что нужно, смотри прогресс вживую, потом выбери одно или протестируй два."},
-    {"id": "u-2026-11-24-reset", "date": "2026-11-24", "tag": "new",
-     "t": "Forgot your password?", "d": "The login page can email a one-time reset link.",
-     "ru_t": "Забыл пароль?", "ru_d": "На странице входа можно получить ссылку для сброса пароля на почту."},
-    {"id": "u-2026-11-23-ab", "date": "2026-11-23", "tag": "new",
-     "t": "A/B tests on pages", "d": "Claude writes version B, visitors split 50/50 on the same link, and you see views, clicks, checkouts and sales per version. Auto-pick a winner when it's clear.",
-     "ru_t": "A/B тесты страниц", "ru_d": "Claude пишет версию B, посетители делятся 50/50 по одной ссылке, видно просмотры, клики, чекауты и продажи по каждой версии. Победитель выбирается автоматически."},
-    {"id": "u-2026-11-23-history", "date": "2026-11-23", "tag": "new",
-     "t": "History", "d": "Archive a tested product: its campaigns pause, it leaves Home, and a summary is kept. Restore any time.",
-     "ru_t": "История", "ru_d": "Архивируй протестированный продукт: кампании ставятся на паузу, он уходит с Главной, итоги сохраняются. Можно вернуть в любой момент.", "go": {"tab": "history"}},
-    {"id": "u-2026-11-22-info", "date": "2026-11-22", "tag": "new",
-     "t": "Information advertorial page", "d": "The new default page type: animated figures, AI photo above the fold, product photos in the bundle cards, ingredients section.",
-     "ru_t": "Страница Information advertorial", "ru_d": "Новый тип страницы по умолчанию: анимированные графики, AI-фото на первом экране, фото продукта в карточках пакетов, блок ингредиентов."}
-  ]
+ "_how": "Newest first. Add an entry with every change people will notice. tag: new | better | fix. ru = Russian text for Alex. go = {tab, page, step} opens that screen.",
+ "updates": [
+  {
+   "id": "u-2026-11-27-everflow",
+   "date": "2026-11-27",
+   "tag": "new",
+   "t": "Everflow offers",
+   "d": "Everflow is now a built-in network. Pick it when you build a page, paste the Everflow tracking link in \"Buy link\", and copy the ready postback from Settings → Networks → Everflow. Ad ID, campaign and A/B version are passed automatically.",
+   "ru_t": "Офферы Everflow",
+   "ru_d": "Everflow теперь встроенная сеть. Выбери её при создании страницы, вставь трекинг-ссылку Everflow в шаге «Buy link», а готовый постбэк скопируй в Настройки → Networks → Everflow. ID объявления, кампания и версия A/B передаются автоматически."
+  },
+  {
+   "id": "u-2026-11-27-updates",
+   "date": "2026-11-27",
+   "tag": "new",
+   "t": "Updates tab",
+   "d": "This page. Every change to the dashboard shows up here, and the red dot in the menu tells you something is new.",
+   "ru_t": "Вкладка «Обновления»",
+   "ru_d": "Эта страница. Все изменения в дашборде появляются здесь, а красная точка в меню показывает, что есть что-то новое."
+  },
+  {
+   "id": "u-2026-11-27-guide",
+   "date": "2026-11-27",
+   "tag": "new",
+   "t": "Russian guide for Alex",
+   "d": "Step-by-step checklist with a guided tour. \"Показать\" opens the right screen and highlights where to click.",
+   "ru_t": "Гайд на русском",
+   "ru_d": "Пошаговый чек-лист и тур по платформе. Кнопка «Показать» открывает нужный экран и подсвечивает, куда нажимать.",
+   "go": {
+    "tab": "guide"
+   }
+  },
+  {
+   "id": "u-2026-11-26-accounts",
+   "date": "2026-11-26",
+   "tag": "new",
+   "t": "Ad accounts",
+   "d": "Connect several Facebook Business Managers and choose which ad account runs which product. Each page has an \"Ad account\" step.",
+   "ru_t": "Рекламные кабинеты",
+   "ru_d": "Можно подключить несколько Business Manager и выбрать, какой кабинет крутит какой продукт. У каждой страницы есть шаг «Ad account».",
+   "go": {
+    "tab": "accounts"
+   }
+  },
+  {
+   "id": "u-2026-11-26-sidebar",
+   "date": "2026-11-26",
+   "tag": "new",
+   "t": "New left menu and look",
+   "d": "Everything is in the menu on the left. Hide it with the icon next to NUTRA (or Cmd + \\) for more room.",
+   "ru_t": "Новое меню слева и дизайн",
+   "ru_d": "Всё меню теперь слева. Его можно спрятать иконкой рядом с NUTRA (или Cmd + \\), чтобы было больше места."
+  },
+  {
+   "id": "u-2026-11-26-studio",
+   "date": "2026-11-26",
+   "tag": "new",
+   "t": "Page Studio",
+   "d": "Building a page is now one step per screen: Product, Audience, Write, Hero photo, Buy link, Domain, Go live. Live preview on the right. A new page takes 3 steps.",
+   "ru_t": "Студия страницы",
+   "ru_d": "Страница собирается по шагам, один шаг на экран: Продукт, Аудитория, Текст, Фото, Ссылка, Домен, Публикация. Справа живое превью. Новая страница — 3 шага.",
+   "go": {
+    "tab": "pages"
+   }
+  },
+  {
+   "id": "u-2026-11-26-clickbank",
+   "date": "2026-11-26",
+   "tag": "new",
+   "t": "ClickBank tracking",
+   "d": "ClickBank sales come into the dashboard automatically, and A/B tests know which version (A or B) made each sale.",
+   "ru_t": "Трекинг ClickBank",
+   "ru_d": "Продажи ClickBank приходят в дашборд автоматически, и A/B тест знает, какая версия (A или B) принесла каждую продажу."
+  },
+  {
+   "id": "u-2026-11-26-buylink",
+   "date": "2026-11-26",
+   "tag": "fix",
+   "t": "Every buy button uses our affiliate link",
+   "d": "\"Buy link\" step replaces every button and link on the page (A and B) with our link, so no sale goes untracked.",
+   "ru_t": "Все кнопки ведут через нашу ссылку",
+   "ru_d": "Шаг «Buy link» меняет все кнопки и ссылки на странице (A и B) на нашу партнёрскую ссылку, чтобы ни одна продажа не потерялась."
+  },
+  {
+   "id": "u-2026-11-24-domain",
+   "date": "2026-11-24",
+   "tag": "new",
+   "t": "Your own domain per page",
+   "d": "Claude suggests free .com names that fit the product, with a Buy on Namecheap link, setup steps and a connection check.",
+   "ru_t": "Свой домен для страницы",
+   "ru_d": "Claude предлагает свободные .com домены под продукт, со ссылкой на покупку в Namecheap, инструкцией и проверкой подключения."
+  },
+  {
+   "id": "u-2026-11-24-heroes",
+   "date": "2026-11-24",
+   "tag": "new",
+   "t": "Hero photo options",
+   "d": "Make 5 or 10 audience-matched photos, describe what you want, watch them being made live, then pick one or A/B test two.",
+   "ru_t": "Варианты фото первого экрана",
+   "ru_d": "Сделай 5 или 10 фото под аудиторию, опиши, что нужно, смотри прогресс вживую, потом выбери одно или протестируй два."
+  },
+  {
+   "id": "u-2026-11-24-reset",
+   "date": "2026-11-24",
+   "tag": "new",
+   "t": "Forgot your password?",
+   "d": "The login page can email a one-time reset link.",
+   "ru_t": "Забыл пароль?",
+   "ru_d": "На странице входа можно получить ссылку для сброса пароля на почту."
+  },
+  {
+   "id": "u-2026-11-23-ab",
+   "date": "2026-11-23",
+   "tag": "new",
+   "t": "A/B tests on pages",
+   "d": "Claude writes version B, visitors split 50/50 on the same link, and you see views, clicks, checkouts and sales per version. Auto-pick a winner when it's clear.",
+   "ru_t": "A/B тесты страниц",
+   "ru_d": "Claude пишет версию B, посетители делятся 50/50 по одной ссылке, видно просмотры, клики, чекауты и продажи по каждой версии. Победитель выбирается автоматически."
+  },
+  {
+   "id": "u-2026-11-23-history",
+   "date": "2026-11-23",
+   "tag": "new",
+   "t": "History",
+   "d": "Archive a tested product: its campaigns pause, it leaves Home, and a summary is kept. Restore any time.",
+   "ru_t": "История",
+   "ru_d": "Архивируй протестированный продукт: кампании ставятся на паузу, он уходит с Главной, итоги сохраняются. Можно вернуть в любой момент.",
+   "go": {
+    "tab": "history"
+   }
+  },
+  {
+   "id": "u-2026-11-22-info",
+   "date": "2026-11-22",
+   "tag": "new",
+   "t": "Information advertorial page",
+   "d": "The new default page type: animated figures, AI photo above the fold, product photos in the bundle cards, ingredients section.",
+   "ru_t": "Страница Information advertorial",
+   "ru_d": "Новый тип страницы по умолчанию: анимированные графики, AI-фото на первом экране, фото продукта в карточках пакетов, блок ингредиентов."
+  }
+ ]
 }

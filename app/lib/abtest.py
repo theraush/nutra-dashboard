@@ -336,5 +336,5 @@ def count_view(page_id, code):
 
 AB_JS = r"""<script>(function(){var c=__CODE__;window.__AB=c;
 document.querySelectorAll('a[data-bundle]').forEach(function(l){try{var x=new URL(l.href),t=(x.searchParams.get('tid')||'').replace(/~[0-9a-f]{4}[AB]$/,'');
-if(/clickbank\.net$/i.test(x.hostname)){if(t)x.searchParams.set('tid',t);x.searchParams.set('aff_sub5',c);}else x.searchParams.set('tid',t+'~'+c);l.href=x.toString();}catch(e){}});
+if(/clickbank\.net$/i.test(x.hostname)){if(t)x.searchParams.set('tid',t);x.searchParams.set('aff_sub5',c);}else{x.searchParams.set('tid',t+'~'+c);if(/everflow/i.test(x.hostname)||(x.searchParams.has('oid')&&x.searchParams.has('affid'))||x.searchParams.has('sub1')||/^\/[A-Za-z0-9]{5,10}\/[A-Za-z0-9]{5,10}\/?$/.test(x.pathname))x.searchParams.set('sub5',c);}l.href=x.toString();}catch(e){}});
 try{navigator.sendBeacon('/api/public/page-view',JSON.stringify({page:__PAGE__,v:c}));}catch(e){}})();</script>"""

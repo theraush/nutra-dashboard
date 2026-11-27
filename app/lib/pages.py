@@ -28,8 +28,17 @@ KINDS = {'advertorial': 'Story advertorial', 'info': 'Information advertorial'}
 STALE_MIN = 75  # a build with no news for this long is marked failed
 
 
+EVERFLOW_SALE = ('{BASE}/api/public/postback?network={NETWORK}&key={KEY}&event=purchase&txn={transaction_id}&product_id={offer_id}'
+                 '&amount={sale_amount}&commission={payout_amount}&currency={currency}&tid={sub1}&utm_content={sub1}'
+                 '&utm_campaign={sub2}&fbclid={sub3}&ab={sub5}')
+
+
 def setup():
     db.conn().execute(SCHEMA)
+    if db.kv_get('networks/everflow') is None:  # built-in: the dashboard's pages put ad ID in sub1, campaign sub2, fbclid sub3, A/B in sub5
+        db.kv_set('networks/everflow', {'name': 'Everflow', 'help': 'Everflow partner portal → Postbacks → Add postback → pick the offer → Server postback URL → paste the Sale postback',
+                                        'notes': 'Our pages add sub1 = ad ID, sub2 = campaign, sub3 = fbclid, sub5 = A/B version to the tracking link automatically.',
+                                        'saleTemplate': EVERFLOW_SALE, 'clickTemplate': '', 'updatedAt': '2026-11-27T00:00:00Z'})
     abtest.setup()
     heroes.setup()
 
