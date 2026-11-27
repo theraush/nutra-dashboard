@@ -42,6 +42,9 @@ https://nutra-dashboard-taupe.vercel.app). Pushing to `main` deploys automatical
   - `lib/accounts.py` — **Ad accounts**: extra Facebook connections (system-user tokens, kv `private/meta/conns`), account→connection
     map (`private/meta/accounts`); `meta.using(acct)` picks the right token. Offer→account = `offers.ad_account_id`; page→offer =
     `pages.offer_key` (studio step "Ad account", `/api/pages/<id>/offer`). API: `/api/accounts` (GET, POST op connect|remove|map|refresh).
+  - **Гайд** (Russian how-to for Alex): content `app/guide/ru.json` (chapters → steps with `go: {tab, page, step, sel}`),
+    served only by `/api/guide` to emails in kv `config/guide.emails` (default propaganda.tae@gmail.com) + owner preview;
+    progress in kv `private/guide/<hash>`. UI = sidebar item "Гайд", checklist, "Показать" spotlight + tour.
   - `static/dashboard.html` — the page. `static/shim.js` gives it `window.claude.use('db'|'user')` backed by `/api/db`.
   - `app/README.md` — env vars and routes.
 - `dashboard.html` (repo root) — same page, used by the old Claude artifact. **After editing the page, copy it to

@@ -1,5 +1,5 @@
 """NUTRA dashboard on Vercel: one Python (WSGI) function serves every route (see vercel.json)."""
-import os, sys, json, re, html, hmac, urllib.parse, secrets, datetime
+import os, sys, json, re, html, hmac, hashlib, urllib.parse, secrets, datetime
 from http.cookies import SimpleCookie
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -854,6 +854,26 @@ def route(env):
         if not r.get('ok'):
             return jresp(r, 400)
         return jresp({**accounts.view(), 'result': r})
+    if path in ('/api/guide', '/api/guide/progress'):
+        # The Russian how-to guide: only for the people listed in kv config/guide (default: Alex), plus the owner (preview).
+        if not user:
+            return jresp({'ok': False}, 403)
+        who = [str(x).lower() for x in ((db.kv_data('config/guide') or {}).get('emails') or ['propaganda.tae@gmail.com'])]
+        email = str(user.get('email') or '').lower()
+        if email not in who and user['role'] != 'owner':
+            return jresp({'ok': True, 'show': False})
+        key = 'private/guide/' + hashlib.sha256(email.encode()).hexdigest()[:24]
+        if path == '/api/guide/progress':
+            if method != 'POST' or not same_origin(env):
+                return jresp({'ok': False}, 405)
+            done = [str(x)[:40] for x in (p.get('done') or [])][:200]
+            db.kv_set(key, {'done': done, 'at': datetime.datetime.now(datetime.timezone.utc).isoformat()})
+            return jresp({'ok': True})
+        try:
+            content = json.loads(open(os.path.join(os.path.dirname(__file__), '..', 'guide', 'ru.json'), encoding='utf-8').read())
+        except Exception as e:
+            return jresp({'ok': False, 'error': 'guide missing: ' + str(e)[:80]}, 500)
+        return jresp({'ok': True, 'show': True, 'preview': email not in who, 'guide': content, 'done': (db.kv_data(key) or {}).get('done') or []})
     if path == '/api/network-check':
         if not user or user['role'] not in ('owner', 'editor'):
             return jresp({'ok': False}, 403)
